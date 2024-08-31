@@ -1,0 +1,102 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+
+const AddProduct = () => {
+  const [name, setName] = useState("");
+  const [kategori, setKategori] = useState("");
+  const [file, setFile] = useState("");
+  const [preview, setPreview] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch kategori  when modal opens
+    const fetchKategori = async () => {
+      try {
+        const kategoriResponse = await axios.get(
+          "http://localhost:5000/getKategori"
+        );
+        console.log(kategoriResponse);
+        setKategori(kategoriResponse.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchKategori();
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/getproducts");
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  const loadImage = (e) => {
+    const image = e.target.files[0];
+    setFile(image);
+    setPreview(URL.createObjectURL(image));
+  };
+
+  const saveProduct = async (productData) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("name", productData.name);
+    formData.append("kategori_id", productData.kategori_id);
+    formData.append("price", productData.price);
+    formData.append("stock", productData.stock);
+    formData.append("description", productData.description);
+    formData.append("file", productData.file);
+    try {
+      await axios.post("http://localhost:5000/products", formData, {
+        headers: {
+          "Content-type": "multipart/form-data",
+        },
+      });
+      navigate("/product");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateProduct = async (id, productData) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("name", productData.name);
+    formData.append("kategori_id", productData.kategori_id);
+    formData.append("price", productData.price);
+    formData.append("stock", productData.stock);
+    formData.append("description", productData.description);
+    if (productData.file) formData.append("file", productData.file);
+    try {
+      await axios.patch(`http://localhost:5000/products/${id}`, formData, {
+        headers: {
+          "Content-type": "multipart/form-data",
+        },
+      });
+      navigate("/product");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteProduct = async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/products/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      throw error;
+    }
+  };
+
+  return <div></div>;
+};
+
+export default AddProduct;

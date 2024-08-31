@@ -1,0 +1,227 @@
+import React, { useState, useEffect } from "react";
+import { Button, Modal, Form, Pagination } from "react-bootstrap";
+import { CDBCard, CDBCardBody, CDBDataTable, CDBContainer } from "cdbreact";
+import axios from "axios";
+
+const Kategori_Table = ({ fetchData }) => {
+  const [kategoris, setKategoris] = useState([]);
+  const [newKategori, setNewKategori] = useState("");
+  const [NewDescription, setNewDescription] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [kategoriNameToDelete, setKategoriNameToDelete] = useState("");
+  const [kategoriNameToUpdate, setKategoriNameToUpdate] = useState("");
+  const [newName, setNewName] = useState("");
+  const itemsPerPage = 3;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    fetchKategoris();
+  }, []);
+
+  const fetchKategoris = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/getKategori");
+      setKategoris(response.data);
+    } catch (error) {
+      console.error("Error fetching kategoris:", error);
+    }
+  };
+
+  const handleCreateKategori = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/createKategori",
+        {
+          nameKategori: newKategori,
+          Description: NewDescription,
+        }
+      );
+      console.log("Response from creating kategori:", response.data);
+      fetchKategoris();
+      setNewKategori("");
+      setNewDescription("");
+      setShowModal(false);
+    } catch (error) {
+      console.error("Error creating kategori:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete("http://localhost:5000/deleteKategori", {
+        data: { nameKategori: kategoriNameToDelete },
+      });
+      setShowDeleteModal(false);
+      fetchKategoris();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await axios.put("http://localhost:5000/updateKategori", {
+        nameKategori: kategoriNameToUpdate,
+        newNameKategori: newName,
+      });
+      setShowUpdateModal(false);
+      fetchKategoris();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < Math.ceil(kategoris.length / itemsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentKategoris = kategoris.slice(indexOfFirstItem, indexOfLastItem);
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(kategoris.length / itemsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  // Data for CDBDataTable
+  const data = {
+    columns: [
+      {
+        label: "#",
+        field: "index",
+        sort: "asc",
+      },
+      {
+        label: "Kategori",
+        field: "nameKategori",
+        sort: "asc",
+      },
+      {
+        label: "Description",
+        field: "Description",
+        sort: "asc",
+      },
+      {
+        label: "Action",
+        field: "action",
+      },
+    ],
+    rows: currentKategoris.map((kategori, index) => ({
+      index: index + 1 + (currentPage - 1) * itemsPerPage,
+      nameKategori: kategori.nameKategori,
+      Description: kategori.Description,
+      action: (
+        <>
+          <Button
+            variant="danger"
+            onClick={() => {
+              setShowDeleteModal(true);
+              setKategoriNameToDelete(kategori.nameKategori);
+            }}
+          >
+            Delete
+          </Button>
+          <Button
+            className="mx-4"
+            variant="primary"
+            onClick={() => {
+              setShowUpdateModal(true);
+              setKategoriNameToUpdate(kategori.nameKategori);
+            }}
+          >
+            Update
+          </Button>
+        </>
+      ),
+    })),
+  };
+
+  return (
+    <div>
+      <div id="layoutSidenav_content">
+        <div className="container-fluid px-4">
+          <h2 className="mb-3">
+            <strong>Kategori</strong>
+          </h2>
+          <figcaption className="blockquote-footer mb-5">
+            Kategori for <cite title="Source Title">Product</cite>
+          </figcaption>
+          <Button onClick={() => setShowModal(true)} className="mb-2">
+            Tambah Kategori
+          </Button>
+          <Modal show={showModal} onHide={() => setShowModal(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Tambah Kategori</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <input
+                type="text"
+                value={newKategori}
+                onChange={(e) => setNewKategori(e.target.value)}
+                placeholder="Enter new kategori name"
+                className="form-control mb-3"
+              />
+              <input
+                type="text"
+                value={NewDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+                placeholder="Enter Description"
+                className="form-control"
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowModal(false)}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={handleCreateKategori}>
+                Create Kategori
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          <div className="bg-info p-4 shadow rounded-lg">
+            <CDBContainer>
+              <CDBDataTable striped bordered hover paging={false} data={data} />
+            </CDBContainer>
+            <Pagination className="justify-content-center mt-4">
+              <Pagination.Prev
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+              />
+              {pageNumbers.map((number) => (
+                <Pagination.Item
+                  key={number}
+                  active={number === currentPage}
+                  onClick={() => handlePageChange(number)}
+                >
+                  {number}
+                </Pagination.Item>
+              ))}
+              <Pagination.Next
+                onClick={handleNextPage}
+                disabled={currentPage === pageNumbers.length}
+              />
+            </Pagination>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Kategori_Table;

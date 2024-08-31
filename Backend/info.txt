@@ -1,0 +1,97 @@
+1. index.js 6. import index.js from folder router
+2. database.js
+3. userModels.js
+4. folder controllers ( User.js ) import userModels
+5. folder router ( index.js) import User.js
+
+admin 
+username : tinus0@gmail.com
+password : Agu5_tinus*
+
+cek token di inspek lalu ke aplication
+tidak menyimpan token di localstorage menyimpan token di httponly cookies 
+document.cookie untuk mengakses httponly cookie
+npm init untuk membuat package.json
+
+npm i express mysql2 sequelize jsonwebtoken dotenv bcrypt cookie-parser cors
+code folback () =>
+
+// interaksi dengan database 
+
+import { Sequelize } from "sequelize";
+
+const db = new Sequelize("db_ecommerce", "root", "", {
+  host: "localhost",
+  dialect: "mysql",
+});
+
+export default db;
+
+keterangan 
+Membuat objek Sequelize baru dengan menggunakan constructor Sequelize.
+Parameter pertama "db_ecommerce" adalah nama database yang akan digunakan.
+Parameter kedua "root" adalah nama pengguna (username) untuk mengakses database.
+Parameter ketiga "" adalah password untuk mengakses database. Dalam contoh ini, password dikosongkan.
+Objek konfigurasi ditentukan menggunakan objek JavaScript dengan properti-properti berikut:
+host: Menentukan alamat host dari database, dalam contoh ini "localhost" (database berada di mesin lokal).
+dialect: Menentukan jenis database yang akan digunakan, dalam contoh ini "mysql" untuk MySQL.
+Dengan membuat objek db menggunakan Sequelize seperti ini, 
+kita siap untuk berinteraksi dengan database "db_ecommerce" di MySQL yang berjalan pada localhost
+
+// memastikan database terkoneksi
+
+try {
+    await db.authenticate()
+    console.log('Database connected') # pesan jika database berhasil terkoneksi
+    await Users.sync(); code buat create table otomatis di database setelah konsep sudah dibuat di usermodels 
+                            (namun code tersebut akan dihapus setelah selesai mecreate table di database) beserta import usermodlesnya
+                            create table dilakukan jika kita memakai  {Sequelize}
+} catch (error) {
+    console.error('error')
+}
+
+// konsep usermodels
+import { Sequelize } from "sequelize";
+import db from "../config/Database.js";
+
+const { DataTypes } = Sequelize;
+
+const Users = db.define(
+  "users",
+  {
+    name: {
+      type: DataTypes.STRING,       bentuk table yang akan dibuat di database
+    },
+    email: {
+      type: DataTypes.STRING,
+    },
+    password: {
+      type: DataTypes.STRING,
+    },
+    refresh_token: {
+      type: DataTypes.TEXT,
+    },
+  },
+  {
+    freezeTableName: true,
+  }
+);
+export default Users;
+
+// cara membuat new fungsion getUser dengan 2 parameter ( req, res)
+const getUsers = (req, res) => {
+    }
+
+    // singkronus fungsion 
+    trycatch yang isinya 
+    try {
+        
+    } catch (error) {
+        
+    }
+    // hanya menampilkan id name email menghapus password dan token ketika request.rest
+    const users = await Users.findAll({
+      attributes: ["id", "name", "email"], // menambahkan atribut 
+    });
+
+    http://localhost/phpmyadmin/
