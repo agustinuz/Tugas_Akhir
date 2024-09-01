@@ -1,24 +1,61 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const Register = () => {
+function Register() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confPassword, setConfpassword] = useState("");
+  const [msg, setMsg] = useState("");
+  const navigate = useNavigate();
+
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s:]).{1,}$/;
+    return passwordRegex.test(password);
+  };
+
+  const Register = async (e) => {
+    e.preventDefault();
+    if (!validatePassword(password)) {
+      setMsg(
+        "Password harus memiliki setidaknya satu huruf besar, satu karakter khusus, dan satu angka."
+      );
+      return;
+    }
+
+    try {
+      await axios.post("http://localhost:5000/users", {
+        name: name,
+        email: email,
+        password: password,
+        confPassword: confPassword,
+      });
+      navigate("/Login");
+    } catch (error) {
+      if (error.response) {
+        setMsg(error.response.data.msg);
+      }
+    }
+  };
+
   return (
-    <body>
+    <body className="bg-transparent">
       <div id="layoutAuthentication">
         <div id="layoutAuthentication_content">
           <main>
             <div className="container">
               <div className="row justify-content-center">
-                <div className="col-lg-7">
-                  <div className="card shadow-lg border-0 rounded-lg mt-5">
+                <div className="col-lg-5">
+                  <div className="card shadow-lg border-0 rounded-lg mt-5 bg-white">
                     <div className="card-header">
                       <h3 className="text-center font-weight-light my-4">
                         Create Account
                       </h3>
                     </div>
                     <div className="card-body">
-                      <p className="font-italic"></p>
-                      <form>
+                      <p className="font-italic">{msg}</p>
+                      <form onSubmit={Register}>
                         <div className="row mb-3">
                           <div className="col">
                             <div className="form-floating mb-3 mb-md-0">
@@ -28,6 +65,8 @@ const Register = () => {
                                 type="text"
                                 placeholder="Enter your name"
                                 name="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                               />
                               <label for="inputName">Name</label>
                             </div>
@@ -40,6 +79,8 @@ const Register = () => {
                             type="email"
                             placeholder="Create email"
                             name="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                           />
                           <label for="inputEmail">Email address</label>
                         </div>
@@ -52,6 +93,8 @@ const Register = () => {
                                 type="password"
                                 placeholder="Create a password"
                                 name="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                               />
                               <label for="inputPassword">Password</label>
                             </div>
@@ -66,6 +109,10 @@ const Register = () => {
                                 type="password"
                                 placeholder="Create a password"
                                 name="confPassword"
+                                value={confPassword}
+                                onChange={(e) =>
+                                  setConfpassword(e.target.value)
+                                }
                               />
                               <label for="inputPassword">
                                 Confirm Password
@@ -87,7 +134,7 @@ const Register = () => {
                     </div>
                     <div className="card-footer text-center py-3">
                       <div className="small">
-                        <Link to="/login">Have an account? Go to login</Link>
+                        <Link to="/Login">Have an account? Go to login</Link>
                       </div>
                     </div>
                   </div>
@@ -96,9 +143,25 @@ const Register = () => {
             </div>
           </main>
         </div>
+        {/* <div id="layoutAuthentication_footer">
+          <footer className="py-4 bg-light mt-auto">
+            <div className="container-fluid px-4">
+              <div className="d-flex align-items-center justify-content-between small">
+                <div className="text-muted">
+                  Copyright &copy; Website PetShop
+                </div>
+                <div>
+                  <Link href="#">Privacy Policy</Link>
+                  &middot;
+                  <Link href="#">Terms &amp; Conditions</Link>
+                </div>
+              </div>
+            </div>
+          </footer>
+        </div> */}
       </div>
     </body>
   );
-};
+}
 
 export default Register;

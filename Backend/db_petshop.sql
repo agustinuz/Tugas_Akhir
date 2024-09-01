@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 29, 2024 at 08:23 PM
+-- Generation Time: Sep 01, 2024 at 05:08 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,32 @@ SET time_zone = "+00:00";
 --
 -- Database: `db_petshop`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `form_service`
+--
+
+CREATE TABLE `form_service` (
+  `id` int(11) NOT NULL,
+  `Name_Owner` varchar(255) DEFAULT NULL,
+  `Name_Animal` varchar(255) DEFAULT NULL,
+  `birthday_Animal` datetime NOT NULL,
+  `Jenis` varchar(255) DEFAULT NULL,
+  `RAS` varchar(255) DEFAULT NULL,
+  `Quantity` int(11) DEFAULT NULL,
+  `kategori_service` int(11) DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `form_service`
+--
+
+INSERT INTO `form_service` (`id`, `Name_Owner`, `Name_Animal`, `birthday_Animal`, `Jenis`, `RAS`, `Quantity`, `kategori_service`, `createdAt`, `updatedAt`) VALUES
+(1, 'Ellyn Mariana', 'dudu2', '2021-01-01 00:00:00', 'anjing', 'buldog', 3, 1, '2024-08-31 21:36:01', '2024-08-31 21:36:01');
 
 -- --------------------------------------------------------
 
@@ -44,6 +70,27 @@ INSERT INTO `kategori` (`id`, `nameKategori`, `Description`, `createdAt`, `updat
 (13, 'anjing', 'makanan anjing', '2024-08-28 19:07:30', '2024-08-28 19:07:30'),
 (14, 'ular', 'makanan ular', '2024-08-29 11:57:18', '2024-08-29 11:57:18'),
 (15, 'kelinci', 'makanan kelinci', '2024-08-29 11:57:31', '2024-08-29 11:57:31');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kategori_service`
+--
+
+CREATE TABLE `kategori_service` (
+  `id` int(11) NOT NULL,
+  `nameKategori` varchar(255) DEFAULT NULL,
+  `createdAt` datetime NOT NULL,
+  `updatedAt` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `kategori_service`
+--
+
+INSERT INTO `kategori_service` (`id`, `nameKategori`, `createdAt`, `updatedAt`) VALUES
+(1, 'Grooming Cat', '2024-08-31 19:50:54', '2024-08-31 19:50:54'),
+(3, 'pet Boarding', '2024-08-31 20:11:01', '2024-08-31 20:11:01');
 
 -- --------------------------------------------------------
 
@@ -86,7 +133,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `refresh_token`, `role`, `createdAt`, `updatedAt`) VALUES
-(1, 'Agustinus Sitompul', 'tinus0@gmail.com', '$2b$10$Znvq5BbJ3iGVjrBpm9fBRe/omD5V4hOIohd/cyjIUvhoLWObAuImC', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsIm5hbWUiOiJBZ3VzdGludXMgU2l0b21wdWwiLCJlbWFpbCI6InRpbnVzMEBnbWFpbC5jb20iLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzI0OTQyNTQyLCJleHAiOjE3MjQ5NDYxNDJ9.U4PmgcBLugB0BLMc66rAzw5mpwF7I30uJLRVbIZ2Bl8', 'admin', '2024-08-18 15:37:02', '2024-08-29 14:42:22'),
+(1, 'Agustinus Sitompul', 'tinus0@gmail.com', '$2b$10$Znvq5BbJ3iGVjrBpm9fBRe/omD5V4hOIohd/cyjIUvhoLWObAuImC', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsIm5hbWUiOiJBZ3VzdGludXMgU2l0b21wdWwiLCJlbWFpbCI6InRpbnVzMEBnbWFpbC5jb20iLCJ1c2VyUm9sZSI6ImFkbWluIiwiaWF0IjoxNzI1MTI3MzkyLCJleHAiOjE3MjUxMzA5OTJ9.OT_VmACvrnEymkTszMyaDrt_VxkXx6HoLnb5Fr_BQrI', 'admin', '2024-08-18 15:37:02', '2024-08-31 18:03:12'),
 (3, 'Customer1', 'customer01@gmail.com', '$2b$10$f9oETLkbAPL3Mo7K9okzHOwzGnUxGXeQROPVZ.La1gqFgRlIftoz.', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsIm5hbWUiOiJDdXN0b21lcjEiLCJlbWFpbCI6ImN1c3RvbWVyMDFAZ21haWwuY29tIiwidXNlclJvbGUiOiJjdXN0b21lciIsImlhdCI6MTcyMzk5ODkzMCwiZXhwIjoxNzI0MDAyNTMwfQ.cS_BoKAjFqwZbVGIAYPO62emRLtmG711EeUegsWrJSo', 'customer', '2024-08-18 16:28:52', '2024-08-18 16:35:30');
 
 --
@@ -94,9 +141,22 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `refresh_token`, `role`,
 --
 
 --
+-- Indexes for table `form_service`
+--
+ALTER TABLE `form_service`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `kategori_service` (`kategori_service`);
+
+--
 -- Indexes for table `kategori`
 --
 ALTER TABLE `kategori`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `kategori_service`
+--
+ALTER TABLE `kategori_service`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -117,10 +177,22 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `form_service`
+--
+ALTER TABLE `form_service`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT for table `kategori`
 --
 ALTER TABLE `kategori`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT for table `kategori_service`
+--
+ALTER TABLE `kategori_service`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `product`
@@ -137,6 +209,12 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `form_service`
+--
+ALTER TABLE `form_service`
+  ADD CONSTRAINT `form_service_ibfk_1` FOREIGN KEY (`kategori_service`) REFERENCES `kategori_service` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `product`

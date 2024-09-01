@@ -5,7 +5,7 @@ import cors from "cors";
 import router from "./routers/index.js";
 import dotenv from "dotenv";
 import fileUpload from "express-fileupload";
-import Form_Service from "./models/FormService.js";
+// import Form_Service from "./models/FormService.js";
 
 dotenv.config();
 
@@ -14,7 +14,7 @@ const app = express();
 try {
   await db.authenticate();
   console.log("Database connected");
-  await Form_Service.sync();
+  // await Form_Service.sync();
 } catch (error) {
   console.error("error");
 }

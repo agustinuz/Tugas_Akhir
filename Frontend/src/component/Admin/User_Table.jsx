@@ -87,6 +87,7 @@ const User_Table = () => {
       <CDBCard>
         <CDBCardBody>
           <CDBDataTable
+            responsive
             striped
             bordered
             hover
