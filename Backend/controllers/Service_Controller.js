@@ -7,6 +7,7 @@ export const getService = async (req, res) => {
     res.json(response);
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

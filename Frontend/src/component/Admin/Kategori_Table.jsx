@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 // import { Link } from "react-router-dom";
-import { CDBCard, CDBCardBody, CDBDataTable, CDBContainer } from "cdbreact";
+import {
+  CDBCard,
+  CDBCardBody,
+  CDBDataTable,
+  CDBContainer,
+  CDBBtn,
+} from "cdbreact";
 import axios from "axios";
 
 const Kategori_Table = ({ fetchData }) => {
@@ -191,64 +197,65 @@ const Kategori_Table = ({ fetchData }) => {
   };
   return (
     <div>
-      {/* Content AddCategory */}
-      <div id="layoutSidenav_content">
-        <div className="container-fluid px-4">
-          <h2 className="mb-3">
-            <strong>Kategori</strong>
-          </h2>
-          <figcaption className="blockquote-footer mb-5">
-            Kategori for <cite title="Source Title">Product</cite>
-          </figcaption>
-          <Button onClick={() => setShowModal(true)} className="mb-2">
-            Tambah Kategori
-          </Button>
-          <Modal show={showModal} onHide={() => setShowModal(false)}>
-            <Modal.Header closeButton>
-              <Modal.Title>Tambah Kategori</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <input
-                type="text"
-                value={newKategori}
-                onChange={(e) => setNewKategori(e.target.value)}
-                placeholder="Enter new kategori name"
-                className="form-control mb-3"
+      <div className="container-fluid px-4">
+        <h2 className="mb-3">
+          <strong>Kategori</strong>
+        </h2>
+        <figcaption className="blockquote-footer mb-5">
+          Kategori for <cite title="Source Title">Product</cite>
+        </figcaption>
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Tambah Kategori</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <input
+              type="text"
+              value={newKategori}
+              onChange={(e) => setNewKategori(e.target.value)}
+              placeholder="Enter new kategori name"
+              className="form-control mb-3"
+            />
+            <input
+              type="text"
+              value={NewDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+              placeholder="Enter Description"
+              className="form-control"
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={handleCreateKategori}>
+              Create Kategori
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <CDBContainer fluid>
+          <CDBCard style={{ borderRadius: "15px" }}>
+            <CDBCardBody>
+              <CDBBtn
+                color="primary"
+                size="large"
+                circle
+                onClick={() => setShowModal(true)}
+              >
+                Create New Service
+              </CDBBtn>
+              <CDBDataTable
+                responsive
+                striped
+                bordered
+                hover
+                data={data}
+                pagination
+                materialSearch={true}
               />
-              <input
-                type="text"
-                value={NewDescription}
-                onChange={(e) => setNewDescription(e.target.value)}
-                placeholder="Enter Description"
-                className="form-control"
-              />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={() => setShowModal(false)}>
-                Close
-              </Button>
-              <Button variant="primary" onClick={handleCreateKategori}>
-                Create Kategori
-              </Button>
-            </Modal.Footer>
-          </Modal>
-          <CDBContainer>
-            <CDBCard>
-              <CDBCardBody>
-                <CDBDataTable
-                  striped
-                  bordered
-                  hover
-                  entriesOptions={[5, 20, 25]}
-                  entries={5}
-                  pagesAmount={4}
-                  data={data}
-                  materialSearch={true}
-                />
-              </CDBCardBody>
-            </CDBCard>
-          </CDBContainer>
-        </div>
+            </CDBCardBody>
+          </CDBCard>
+        </CDBContainer>
       </div>
     </div>
   );

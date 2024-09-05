@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode as jwt_decode } from "jwt-decode";
+import Swal from "sweetalert2";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -20,19 +21,30 @@ const Login = () => {
       localStorage.setItem("accessToken", accessToken); // Simpan token di localStorage
       const decodedToken = jwt_decode(accessToken); // Ambil peran (role) pengguna dari token
       const userRole = decodedToken.userRole;
-      alert("Login successful!");
 
-      if (userRole === "admin") {
-        navigate("/Dashboard/*");
-      } else if (userRole === "customer") {
-        navigate("/Dashboard2/*");
-      }
+      Swal.fire({
+        title: "Login successful!",
+        text: "You will be redirected shortly.",
+        icon: "success",
+        confirmButtonText: "OK",
+      }).then(() => {
+        if (userRole === "admin") {
+          navigate("/Dashboard/*");
+        } else if (userRole === "customer") {
+          navigate("/Dashboard2/*");
+        }
+      });
     } catch (error) {
       console.error(error);
-      alert("wrong password or email. Please try again later.");
+      // Tampilkan SweetAlert2 popup untuk error
+      Swal.fire({
+        title: "Login failed!",
+        text: "Wrong email or password. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
-
   return (
     <body className="bg-transparent">
       <div id="layoutAuthentication">

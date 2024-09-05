@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { CDBCard, CDBCardBody, CDBDataTable, CDBContainer } from "cdbreact";
+import {
+  CDBCard,
+  CDBCardBody,
+  CDBDataTable,
+  CDBContainer,
+  CDBBtn,
+} from "cdbreact";
 
 const User_Table = () => {
   const [users, setUsers] = useState([]);
@@ -76,16 +82,12 @@ const User_Table = () => {
   };
 
   return (
-    <CDBContainer>
-      <div className="card-header">
-        <div className="me-3">
-          <button className="btn btn-primary text-capitalize">
-            Create New User
-          </button>
-        </div>
-      </div>
-      <CDBCard>
+    <CDBContainer fluid>
+      <CDBCard style={{ borderRadius: "15px" }}>
         <CDBCardBody>
+          <CDBBtn color="primary" size="large" circle>
+            Create New User
+          </CDBBtn>
           <CDBDataTable
             responsive
             striped

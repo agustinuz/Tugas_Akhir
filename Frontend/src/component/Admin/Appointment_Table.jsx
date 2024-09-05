@@ -1,68 +1,133 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-// import { Link } from "react-router-dom";
+import {
+  CDBCard,
+  CDBCardBody,
+  CDBDataTable,
+  CDBContainer,
+  CDBBtn,
+} from "cdbreact";
 
-const AppointmetTable = () => {
-  const [users, setUsers] = useState([]);
+const AppointmentTable = () => {
+  const [service, setService] = useState([]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchService = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/getUsers");
-        setUsers(response.data);
+        const response = await axios.get("http://localhost:5000/getservice");
+        setService(response.data);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchUsers();
+    fetchService();
   }, []);
 
-  return (
-    <div className="card border-0">
-      <div className="card-header">
-        <div className="me-3">
-          <button className="btn btn-primary text-capitalize">
-            Create New Appointment
+  // Define the columns for CDBDataTable
+  const columns = [
+    {
+      label: "#",
+      field: "index",
+      sort: "asc",
+      width: 50,
+    },
+    {
+      label: "Name Owner",
+      field: "Name_Owner",
+      sort: "asc",
+      width: 150,
+    },
+    {
+      label: "Animal",
+      field: "Name_Animal",
+      sort: "asc",
+      width: 270,
+    },
+    {
+      label: "Birthday Animal",
+      field: "birthday_Animal",
+      sort: "asc",
+      width: 100,
+    },
+    {
+      label: "Jenis",
+      field: "Jenis",
+      sort: "asc",
+      width: 100,
+    },
+    {
+      label: "RAS",
+      field: "RAS",
+      sort: "asc",
+      width: 100,
+    },
+    {
+      label: "Quantity",
+      field: "Quantity",
+      sort: "asc",
+      width: 100,
+    },
+    {
+      label: "Kategori",
+      field: "kategori_service",
+      sort: "asc",
+      width: 100,
+    },
+    {
+      label: "Action",
+      field: "action",
+      width: 150,
+    },
+  ];
+
+  const data = {
+    columns: columns,
+    rows: service.map((serviceitem, index) => ({
+      index: index + 1,
+      Name_Owner: serviceitem.Name_Owner,
+      Name_Animal: serviceitem.Name_Animal,
+      birthday_Animal: serviceitem.birthday_Animal,
+      Jenis: serviceitem.Jenis,
+      RAS: serviceitem.RAS,
+      Quantity: serviceitem.Quantity,
+      kategori_service: serviceitem.kategori_service,
+      action: (
+        <>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm me-3 text-capitalize"
+          >
+            Edit
           </button>
-        </div>
-      </div>
-      <div className="card-body">
-        <table className="table table-hover caption-top">
-          <caption>List of users</caption>
-          <thead className="table-secondary">
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Name Users</th>
-              <th scope="col">Email</th>
-              <th scope="col">Role</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody className="table-group-divider">
-            {users.map((user, index) => (
-              <tr key={user.id}>
-                <td>{index + 1}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.role}</td>
-                <td>
-                  <button
-                    type="button"
-                    class=" btn btn-secondary btn-sm me-3 text-capitalize"
-                  >
-                    Edit
-                  </button>
-                  <button className="btn btn-outline-danger btn-sm text-capitalize">
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          <button className="btn btn-outline-danger btn-sm text-capitalize">
+            Delete
+          </button>
+        </>
+      ),
+    })),
+  };
+
+  return (
+    <CDBContainer fluid>
+      <CDBCard style={{ borderRadius: "15px" }}>
+        <CDBCardBody>
+          <CDBBtn color="primary" size="large" circle>
+            Create New Appointment
+          </CDBBtn>
+          <CDBDataTable
+            responsive
+            striped
+            bordered
+            hover
+            data={data}
+            pagination
+            materialSearch={true}
+          />
+        </CDBCardBody>
+      </CDBCard>
+    </CDBContainer>
   );
 };
-export default AppointmetTable;
+
+export default AppointmentTable;

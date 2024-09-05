@@ -127,7 +127,7 @@ const AddProduct = () => {
             <tr key={product.id}>
               <td>{product.name}</td>
               <td>
-                {categories.find((cat) => cat.id === product.kategori_id)?.name}
+                {/* {categories.find((cat) => cat.id === product.kategori_id)?.name} */}
               </td>
               <td>{product.price}</td>
               <td>{product.stock}</td>
@@ -169,7 +169,7 @@ const AddProduct = () => {
                 placeholder="Product name"
                 name="name"
                 value={formData.name}
-                onChange={handleChange}
+                /*onChange={handleChange}*/
               />
             </Form.Group>
             <Form.Group controlId="formProductCategory">
@@ -178,14 +178,14 @@ const AddProduct = () => {
                 as="select"
                 name="kategori_id"
                 value={formData.kategori_id}
-                onChange={handleChange}
+                /*onChange={handleChange}*/
               >
-                <option value="">Select Category</option>
+                {/* <option value="">Select Category</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.nameKategori}
                   </option>
-                ))}
+                ))} */}
               </Form.Control>
             </Form.Group>
             <Form.Group controlId="formProductPrice">
@@ -195,7 +195,7 @@ const AddProduct = () => {
                 placeholder="Product price"
                 name="price"
                 value={formData.price}
-                onChange={handleChange}
+                /*onChange={handleChange}*/
               />
             </Form.Group>
             <Form.Group controlId="formProductStock">
@@ -205,7 +205,7 @@ const AddProduct = () => {
                 placeholder="Product stock"
                 name="stock"
                 value={formData.stock}
-                onChange={handleChange}
+                /*onChange={handleChange}*/
               />
             </Form.Group>
             <Form.Group controlId="formProductDescription">
@@ -216,12 +216,15 @@ const AddProduct = () => {
                 placeholder="Product description"
                 name="description"
                 value={formData.description}
-                onChange={handleChange}
+                /*onChange={handleChange}*/
               />
             </Form.Group>
             <Form.Group controlId="formProductImage">
               <Form.Label>Image</Form.Label>
-              <Form.Control type="file" name="file" onChange={handleChange} />
+              <Form.Control
+                type="file"
+                name="file" /*onChange={handleChange}*/
+              />
               {preview && <Image src={preview} thumbnail />}
             </Form.Group>
           </Form>

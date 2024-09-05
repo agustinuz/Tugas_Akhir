@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-// import { Link } from "react-router-dom";
+import {
+  CDBCard,
+  CDBCardBody,
+  CDBDataTable,
+  CDBContainer,
+  CDBBtn,
+} from "cdbreact";
 
-const Order_Table = () => {
+const User_Table = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -18,51 +24,83 @@ const Order_Table = () => {
     fetchUsers();
   }, []);
 
-  return (
-    <div className="card border-0">
-      <div className="card-header">
-        <div className="me-3">
-          <button className="btn btn-primary text-capitalize">
-            Create New Order
+  // Define the columns for CDBDataTable
+  const columns = [
+    {
+      label: "#",
+      field: "index",
+      sort: "asc",
+      width: 50,
+    },
+    {
+      label: "Name Users",
+      field: "name",
+      sort: "asc",
+      width: 150,
+    },
+    {
+      label: "Email",
+      field: "email",
+      sort: "asc",
+      width: 270,
+    },
+    {
+      label: "Role",
+      field: "role",
+      sort: "asc",
+      width: 100,
+    },
+    {
+      label: "Action",
+      field: "action",
+      width: 150,
+    },
+  ];
+
+  // Format the user data for the DataTable
+  const data = {
+    columns: columns,
+    rows: users.map((user, index) => ({
+      index: index + 1,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      action: (
+        <>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm me-3 text-capitalize"
+          >
+            Edit
           </button>
-        </div>
-      </div>
-      <div className="card-body">
-        <table className="table table-hover caption-top">
-          <caption>List of users</caption>
-          <thead className="table-secondary">
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Name Users</th>
-              <th scope="col">Email</th>
-              <th scope="col">Role</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody className="table-group-divider">
-            {users.map((user, index) => (
-              <tr key={user.id}>
-                <td>{index + 1}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.role}</td>
-                <td>
-                  <button
-                    type="button"
-                    class=" btn btn-secondary btn-sm me-3 text-capitalize"
-                  >
-                    Edit
-                  </button>
-                  <button className="btn btn-outline-danger btn-sm text-capitalize">
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          <button className="btn btn-outline-danger btn-sm text-capitalize">
+            Delete
+          </button>
+        </>
+      ),
+    })),
+  };
+
+  return (
+    <CDBContainer fluid>
+      <CDBCard style={{ borderRadius: "15px" }}>
+        <CDBCardBody>
+          <CDBBtn color="primary" size="large" circle>
+            Create Order
+          </CDBBtn>
+          <CDBDataTable
+            responsive
+            striped
+            bordered
+            hover
+            data={data}
+            pagination
+            materialSearch={true}
+          />
+        </CDBCardBody>
+      </CDBCard>
+    </CDBContainer>
   );
 };
-export default Order_Table;
+
+export default User_Table;

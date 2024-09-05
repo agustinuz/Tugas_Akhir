@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const CreateServiceModal = ({ show, handleClose }) => {
   const [formData, setFormData] = useState({
@@ -47,7 +48,12 @@ const CreateServiceModal = ({ show, handleClose }) => {
         formData
       );
       console.log(response.data);
-      alert("Data berhasil ditambahkan");
+      Swal.fire({
+        title: "Login successful!",
+        text: "You will be redirected shortly.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
       handleClose();
     } catch (error) {
       console.error("Error adding service:", error);

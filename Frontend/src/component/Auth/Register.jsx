@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 function Register() {
   const [name, setName] = useState("");
@@ -30,6 +31,12 @@ function Register() {
         email: email,
         password: password,
         confPassword: confPassword,
+      });
+      Swal.fire({
+        title: "Register successful!",
+        text: "You will be redirected shortly.",
+        icon: "success",
+        confirmButtonText: "OK",
       });
       navigate("/Login");
     } catch (error) {

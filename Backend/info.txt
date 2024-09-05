@@ -8,6 +8,10 @@ admin
 username : tinus0@gmail.com
 password : Agu5_tinus*
 
+customer
+username : user0@gmail.com
+password : Agu5_tinus*
+
 cek token di inspek lalu ke aplication
 tidak menyimpan token di localstorage menyimpan token di httponly cookies 
 document.cookie untuk mengakses httponly cookie
