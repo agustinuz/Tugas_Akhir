@@ -9,7 +9,8 @@ import Login from "./component/Auth/Login";
 import Register from "./component/Auth/Register";
 import Main_Dashboard from "./component/Admin/Dashboard";
 import Dashboard_2 from "./component/Customer/Dashboard2";
-import ProductList from "./component/ShowProduct";
+// import ProductList from "./component/ShowProduct";
+// import ProductList2 from "./component/Product_List";
 
 function App() {
   return (
@@ -17,7 +18,8 @@ function App() {
       <div className="App">
         <Routes>
           <Route exact path="/*" element={<Navbar />} />
-          <Route path="/product" element={<ProductList />} />
+          {/* <Route path="/product" element={<ProductList />} /> */}
+          {/* <Route path="/listproduct" element={<ProductList2 />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="Dashboard/*" element={<Main_Dashboard />} />

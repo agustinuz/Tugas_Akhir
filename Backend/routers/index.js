@@ -33,7 +33,7 @@ import {
 const router = express.Router();
 
 router.get("/getproducts", getProduct);
-router.get("/products/:id", getProductById);
+router.get("/getproducts/:id", getProductById);
 router.get("/getKategori", getKategori);
 router.get("/getUsers", getUsers);
 router.get("/getAppointment", getAppointment);

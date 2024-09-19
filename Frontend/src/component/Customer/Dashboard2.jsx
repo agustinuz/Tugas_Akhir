@@ -84,7 +84,7 @@ const Dashboard_2 = () => {
                   Dashboard
                 </Link>
               </li>
-              <li className="sidebar-item">
+              {/* <li className="sidebar-item">
                 <a
                   href="#"
                   className="sidebar-link collapsed"
@@ -116,7 +116,7 @@ const Dashboard_2 = () => {
                     </a>
                   </li>
                 </ul>
-              </li>
+              </li> */}
               <li className="sidebar-item">
                 <a
                   href="#"
@@ -140,7 +140,7 @@ const Dashboard_2 = () => {
                   </li>
                   <li className="sidebar-item">
                     <a href="#" className="sidebar-link">
-                      List Order
+                      Payment
                     </a>
                   </li>
                   <li className="sidebar-item">

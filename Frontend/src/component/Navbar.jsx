@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Routes, Route } from "react-router-dom";
 import "../Css/Navbar.css";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import ServiceFormModal from "./FormService";
+import ProductList from "./ShowProduct";
 
 const Navbar = () => {
   const [showModal, setShowModal] = useState(false);
@@ -38,19 +39,19 @@ const Navbar = () => {
         </button>
         <div className="collapse navbar-collapse" id="navbarCollapse">
           <div className="navbar-nav ms-auto py-0 ">
-            <Link to="/" className="nav-item nav-link active">
+            <a href="#home" className="nav-item nav-link active">
               Home
-            </Link>
+            </a>
+            <a href="#listproduct" className="nav-item nav-link">
+              Product
+            </a>
             <a href="#aboutUS" className="nav-item nav-link">
-              About
+              {" "}
+              News
             </a>
             <a href="#service" className="nav-item nav-link">
-              {" "}
               Service
             </a>
-            <Link to="/product" className="nav-item nav-link">
-              Product
-            </Link>
             <Link to="/product" className="nav-item nav-link me-5 ">
               <FontAwesomeIcon icon={faCartShopping} />
             </Link>
@@ -59,7 +60,7 @@ const Navbar = () => {
       </nav>
 
       {/* Hero Start */}
-      <div class="container-fluid bg-primary py-5 mb-5 hero-header" id="/">
+      <div class="container-fluid bg-primary py-5 mb-5 hero-header" id="home">
         <div class="container py-5">
           <div class="row justify-content-start">
             <div class="col-lg-8 text-center text-lg-start">
@@ -86,6 +87,24 @@ const Navbar = () => {
         </div>
       </div>
       {/* Hero End */}
+
+      {/* product list */}
+      <div className="container-fluid py-5" id="listproduct">
+        <div className="container">
+          <div className="row gx-5">
+            <div
+              class="border-start border-5 border-primary ps-5 mb-5"
+              style={{ maxwidth: "600px" }}
+            >
+              <h6 class="text-primary text-uppercase">Product</h6>
+              <h1 class="display-5 text-uppercase mb-0">All Of Products</h1>
+            </div>
+            <ProductList />
+          </div>
+        </div>
+      </div>
+
+      {/* end product */}
 
       {/* About Us */}
       <div className="container-fluid py-5" id="aboutUS">

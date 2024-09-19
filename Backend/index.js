@@ -26,6 +26,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(fileUpload());
 app.use(bodyParser.json());
+app.use(express.static("static"));
 app.use(express.json());
 app.use(router);
 app.listen(5000, () => console.log("server running at port 5000"));

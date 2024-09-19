@@ -1,244 +1,267 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Table, Button, Form, Modal, Image } from "react-bootstrap";
-// import { useNavigate } from "react-router-dom";
+import { Button, Form, Modal } from "react-bootstrap";
+import {
+  CDBCard,
+  CDBCardBody,
+  CDBDataTable,
+  CDBContainer,
+  CDBBtn,
+} from "cdbreact";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const AddProduct = () => {
-  const [products, setProducts] = useState([]);
-  const [kategori, setKategori] = useState([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    kategori_id: "",
-    price: "",
-    stock: "",
-    description: "",
-    file: null,
-  });
-  const [preview, setPreview] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [editProduct, setEditProduct] = useState(null);
-  // const navigate = useNavigate();
+  const [product, setProduct] = useState([]);
+  const [name, setName] = useState("");
+  const [kategoriId, setKategoriId] = useState("");
+  const [kategoris, setKategoris] = useState([]);
+  const [price, setPrice] = useState("");
+  const [stock, setStock] = useState("");
+  const [description, setDescription] = useState("");
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [show, setShow] = useState(false);
+  const navigate = useNavigate();
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   useEffect(() => {
-    fetchKategori();
-    fetchProducts();
-  }, []);
-
-  const fetchKategori = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/getKategori");
-      setKategori(response.data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
+    const fetchKategori = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/getKategori");
+        setKategoris(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    if (show) {
+      fetchKategori(); // Memanggil fungsi hanya ketika modal ditampilkan
     }
-  };
+    fetchProducts();
+  }, [show]);
 
   const fetchProducts = async () => {
     try {
       const response = await axios.get("http://localhost:5000/getproducts");
-      setProducts(response.data);
+      setProduct(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   };
 
-  const handleSaveProduct = async () => {
-    const productData = new FormData();
-    for (const key in formData) {
-      productData.append(key, formData[key]);
-    }
-    try {
-      if (editProduct) {
-        await axios.patch(
-          `http://localhost:5000/products/${editProduct.id}`,
-          productData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
-      } else {
-        await axios.post("http://localhost:5000/products", productData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
-      fetchProducts();
-      handleClose();
-    } catch (error) {
-      console.error("Error saving product:", error);
-    }
+  const loadImage = (e) => {
+    const image = e.target.files[0];
+    setFile(image);
+    setPreview(URL.createObjectURL(image));
   };
 
-  const handleEditProduct = (product) => {
-    setEditProduct(product);
-    setFormData({
-      name: product.name,
-      kategori_id: product.kategori_id,
-      price: product.price,
-      stock: product.stock,
-      description: product.description,
-      file: null,
-    });
-    setPreview(product.image_url); // Assuming the response has `image_url`
-    setShowModal(true);
-  };
-
-  const handleDeleteProduct = async (id) => {
+  const saveProduct = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("name", name);
+    formData.append("kategori_id", kategoriId);
+    formData.append("price", price);
+    formData.append("stock", stock);
+    formData.append("description", description);
     try {
-      await axios.delete(`http://localhost:5000/products/${id}`);
+      await axios.postForm("http://localhost:5000/products", formData, {
+        headers: {
+          "Content-type": "multipart/form-data",
+        },
+      });
+      Swal.fire({
+        title: "Create Product successful!",
+        text: "Saved.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      navigate("/Dashboard/product");
       fetchProducts();
     } catch (error) {
-      console.error("Error deleting product:", error);
+      console.log(error);
     }
   };
 
-  const handleClose = () => {
-    setShowModal(false);
-    setEditProduct(null);
-    setFormData({
-      name: "",
-      kategori_id: "",
-      price: "",
-      stock: "",
-      description: "",
-      file: null,
-    });
-    setPreview("");
+  // Data for CDBDataTable
+  const data = {
+    columns: [
+      {
+        label: "#",
+        field: "index",
+        sort: "asc",
+      },
+      {
+        label: "Name",
+        field: "name",
+        sort: "asc",
+      },
+      {
+        label: "Kategori", // Kolom kategori
+        field: "kategori_id", // Ubah dari kategori_id menjadi kategori
+        sort: "asc",
+      },
+      {
+        label: "Price",
+        field: "price",
+        sort: "asc",
+      },
+      {
+        label: "Stock",
+        field: "stock",
+        sort: "asc",
+      },
+      {
+        label: "Description",
+        field: "description",
+        sort: "asc",
+      },
+      {
+        label: "image",
+        field: "image",
+        sort: "asc",
+      },
+      {
+        label: "Action",
+        field: "action",
+      },
+    ],
+    rows: product.map((products, index) => ({
+      index: index + 1,
+      name: products.name,
+      kategori_id: products.kategori_id,
+      price: products.price,
+      stock: products.stock,
+      description: products.description,
+      image: (
+        <img
+          src={`http://localhost:5000/imageProduct/${products.image}`}
+          alt={products.name}
+          style={{ width: "100px" }}
+        />
+      ),
+      action: (
+        <>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm me-3 text-capitalize"
+          >
+            Edit
+          </button>
+          <button className="btn btn-outline-danger btn-sm text-capitalize">
+            Delete
+          </button>
+        </>
+      ),
+      clickEvent: () => alert("Klik Oke Untuk Melanjutkan Delete"),
+    })),
   };
 
   return (
-    <div>
-      <Button onClick={() => setShowModal(true)} variant="primary">
-        Add Product
-      </Button>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Kategori</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Description</th>
-            <th>Image</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => (
-            <tr key={product.id}>
-              <td>{product.name}</td>
-              <td>
-                {/* {categories.find((cat) => cat.id === product.kategori_id)?.name} */}
-              </td>
-              <td>{product.price}</td>
-              <td>{product.stock}</td>
-              <td>{product.description}</td>
-              <td>
-                <Image src={product.image_url} rounded width={100} />
-              </td>
-              <td>
-                <Button
-                  onClick={() => handleEditProduct(product)}
-                  variant="warning"
-                >
-                  Edit
-                </Button>{" "}
-                <Button
-                  onClick={() => handleDeleteProduct(product.id)}
-                  variant="danger"
-                >
-                  Delete
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-
-      <Modal show={showModal} onHide={handleClose}>
+    <>
+      {/* <Button variant="primary" onClick={handleShow}>
+        Create Product
+      </Button> */}
+      <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>
-            {editProduct ? "Edit Product" : "Add Product"}
-          </Modal.Title>
+          <Modal.Title>Add Product</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
-            <Form.Group controlId="formProductName">
-              <Form.Label>Name</Form.Label>
+          <Form onSubmit={saveProduct}>
+            <Form.Group className="mb-3" controlId="productName">
+              <Form.Label>Product Name</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Product name"
-                name="name"
-                value={formData.name}
-                /*onChange={handleChange}*/
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
               />
             </Form.Group>
-            <Form.Group controlId="formProductCategory">
+            <Form.Group className="mb-3" controlId="productCategory">
               <Form.Label>Category</Form.Label>
-              <Form.Control
-                as="select"
-                name="kategori_id"
-                value={formData.kategori_id}
-                /*onChange={handleChange}*/
+              <Form.Select
+                value={kategoriId}
+                onChange={(e) => setKategoriId(e.target.value)}
+                required
               >
-                {/* <option value="">Select Category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.nameKategori}
+                <option value="">Select Category</option>
+                {kategoris.map((list) => (
+                  <option key={list.id} value={list.id}>
+                    {list.nameKategori}
                   </option>
-                ))} */}
-              </Form.Control>
+                ))}
+              </Form.Select>
             </Form.Group>
-            <Form.Group controlId="formProductPrice">
+            <Form.Group className="mb-3" controlId="productPrice">
               <Form.Label>Price</Form.Label>
               <Form.Control
                 type="number"
-                placeholder="Product price"
-                name="price"
-                value={formData.price}
-                /*onChange={handleChange}*/
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                required
               />
             </Form.Group>
-            <Form.Group controlId="formProductStock">
+            <Form.Group className="mb-3" controlId="productStock">
               <Form.Label>Stock</Form.Label>
               <Form.Control
                 type="number"
-                placeholder="Product stock"
-                name="stock"
-                value={formData.stock}
-                /*onChange={handleChange}*/
+                value={stock}
+                onChange={(e) => setStock(e.target.value)}
+                required
               />
             </Form.Group>
-            <Form.Group controlId="formProductDescription">
+            <Form.Group className="mb-3" controlId="productDescription">
               <Form.Label>Description</Form.Label>
               <Form.Control
                 as="textarea"
-                rows={3}
-                placeholder="Product description"
-                name="description"
-                value={formData.description}
-                /*onChange={handleChange}*/
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
               />
             </Form.Group>
-            <Form.Group controlId="formProductImage">
+            <Form.Group className="mb-3" controlId="productImage">
               <Form.Label>Image</Form.Label>
-              <Form.Control
-                type="file"
-                name="file" /*onChange={handleChange}*/
-              />
-              {preview && <Image src={preview} thumbnail />}
+              <Form.Control type="file" onChange={loadImage} required />
+              {preview && (
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="img-thumbnail mt-2"
+                />
+              )}
             </Form.Group>
+            <Button variant="primary" type="submit" onClick={handleClose}>
+              Save Product
+            </Button>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleSaveProduct}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
       </Modal>
-    </div>
+      <CDBContainer fluid>
+        <CDBCard style={{ borderRadius: "15px" }}>
+          <CDBCardBody>
+            <CDBBtn
+              color="primary"
+              size="large"
+              circle
+              onClick={() => handleShow(true)}
+            >
+              Create New Product
+            </CDBBtn>
+            <CDBDataTable
+              responsive
+              striped
+              bordered
+              hover
+              data={data}
+              pagination
+              materialSearch={true}
+            />
+          </CDBCardBody>
+        </CDBCard>
+      </CDBContainer>
+    </>
   );
 };
 

@@ -37,7 +37,9 @@ export const saveProduct = (req, res) => {
   const fileSize = file.data.length;
   const ext = path.extname(file.name);
   const fileName = file.md5 + ext;
-  const url = `${req.protocol}://${req.get("host")}/images/${fileName}`;
+  const url = `${req.protocol}://${req.get(
+    "host"
+  )}./static/imageProduct/${fileName}`;
   const allowedType = [".png", ".jpg", ".jpeg"];
 
   if (!allowedType.includes(ext.toLowerCase()))
@@ -45,7 +47,7 @@ export const saveProduct = (req, res) => {
   if (fileSize > 5000000)
     return res.status(422).json({ msg: "Image must be less than 5 MB" });
 
-  file.mv(`./imageProduct/${fileName}`, async (err) => {
+  file.mv(`./static/imageProduct/${fileName}`, async (err) => {
     if (err) return res.status(500).json({ msg: err.message });
     try {
       await Product.create({
