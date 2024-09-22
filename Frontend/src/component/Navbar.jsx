@@ -8,16 +8,24 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faAddressBook } from "@fortawesome/free-solid-svg-icons";
 import ServiceFormModal from "./FormService";
 import ProductList from "./ShowProduct";
-import UserProfile from "./Profile";
+// import UserProfile from "./ShoppingCard";
+import ShoppingCartModal from "./ShoppingCard";
 
 const Navbar = () => {
   const [showModal, setShowModal] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
-
-  const handleShow = () => setShowModal(true);
-  const handleShowProfile = () => setShowProfile(true);
   const handleClose = () => setShowModal(false);
-  const CloseProfile = () => setShowProfile(false);
+  const handleShow = () => setShowModal(true);
+
+  const [showCartModal, setShowCartModal] = useState(false);
+  const handleCartModalClose = () => setShowCartModal(false);
+  const handleCartModalShow = (e) => {
+    e.preventDefault();
+    setShowCartModal(true);
+  };
+
+  // // const [showProfile, setShowProfile] = useState(false);
+  // const handleShowProfile = () => setShowProfile(true);
+  // const CloseProfile = () => setShowProfile(false);
 
   return (
     <div>
@@ -57,9 +65,13 @@ const Navbar = () => {
             <a href="#service" className="nav-item nav-link">
               Service
             </a>
-            <Link to="/product" className="nav-item nav-link me-1 ">
+            <a
+              href=""
+              className="nav-item nav-link me-1 "
+              onClick={handleCartModalShow}
+            >
               <FontAwesomeIcon icon={faCartShopping} />
-            </Link>
+            </a>
             <li class="nav-item dropdown me-3">
               <a
                 class="nav-link dropdown-toggle"
@@ -103,6 +115,10 @@ const Navbar = () => {
                     </Button>
                   </Modal.Footer>
                 </Modal> */}
+                <ShoppingCartModal
+                  show={showCartModal}
+                  handleClose={handleCartModalClose}
+                />
               </ul>
             </li>
           </div>

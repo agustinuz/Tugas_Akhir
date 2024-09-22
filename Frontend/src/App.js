@@ -9,7 +9,7 @@ import Login from "./component/Auth/Login";
 import Register from "./component/Auth/Register";
 import Main_Dashboard from "./component/Admin/Dashboard";
 import Dashboard_2 from "./component/Customer/Dashboard2";
-import UserProfile from "./component/Profile";
+// import UserProfile from "./component/ShoppingCard";
 // import ProductList from "./component/ShowProduct";
 // import ProductList2 from "./component/Product_List";
 
@@ -19,7 +19,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route exact path="/*" element={<Navbar />} />
-          <Route path="/profile" element={<UserProfile />} />
+          {/* <Route path="/profile" element={<UserProfile />} /> */}
           {/* <Route path="/listproduct" element={<ProductList2 />} /> */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
