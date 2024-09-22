@@ -29,7 +29,7 @@ import {
   getKategoriService,
   getService,
 } from "../controllers/Service_Controller.js";
-import { addCart, getCart } from "../controllers/Cart.js";
+import { addCart, deleteCartUser, getCart, removeCart } from "../controllers/Cart.js";
 
 const router = express.Router();
 
@@ -61,4 +61,6 @@ router.put("/updateSchedule", updateSchedule);
 router.patch("/products/:id", updateProduct);
 router.post("/cart",addCart);
 router.get("/cart/:userId",getCart);
+router.delete('/cart/:userId',deleteCartUser);
+router.put('/cart/:cartId',removeCart);
 export default router;
