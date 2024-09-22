@@ -29,6 +29,7 @@ import {
   getKategoriService,
   getService,
 } from "../controllers/Service_Controller.js";
+import { addCart, getCart } from "../controllers/Cart.js";
 
 const router = express.Router();
 
@@ -58,4 +59,6 @@ router.put("/updateKategori", updateKategori);
 router.put("/updateAppointment", updateAppointment);
 router.put("/updateSchedule", updateSchedule);
 router.patch("/products/:id", updateProduct);
+router.post("/cart",addCart);
+router.get("/cart/:userId",getCart);
 export default router;
