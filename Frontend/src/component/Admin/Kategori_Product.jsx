@@ -20,9 +20,6 @@ const Kategori_Table = ({ fetchData }) => {
   const [kategoriNameToDelete, setKategoriNameToDelete] = useState("");
   const [kategoriNameToUpdate, setKategoriNameToUpdate] = useState("");
   const [newName, setNewName] = useState("");
-  function testClickEvent(param) {
-    alert("Row Click Event");
-  }
 
   useEffect(() => {
     fetchKategoris();
@@ -113,7 +110,8 @@ const Kategori_Table = ({ fetchData }) => {
       action: (
         <>
           <Button
-            variant="danger"
+            variant="outline-danger"
+            size="sm"
             onClick={() => {
               setShowDeleteModal(true);
               setKategoriNameToDelete(kategori.nameKategori);
@@ -144,8 +142,9 @@ const Kategori_Table = ({ fetchData }) => {
             </Modal.Footer>
           </Modal>
           <Button
-            className="mx-4"
-            variant="primary"
+            className=" mx-3"
+            variant="outline-primary"
+            size="sm"
             onClick={() => {
               setShowUpdateModal(true);
               setKategoriNameToUpdate(kategori.nameKategori);
@@ -192,7 +191,6 @@ const Kategori_Table = ({ fetchData }) => {
           </Modal>
         </>
       ),
-      clickEvent: () => testClickEvent(kategori.nameKategori),
     })),
   };
   return (

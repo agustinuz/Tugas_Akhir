@@ -77,3 +77,27 @@ export const Login = async (req, res) => {
     res.status(404).json({ msg: "Email tidak ditemukan" });
   }
 };
+
+export const DeleteUser = async (req, res) => {
+  try {
+    const response = await Users.findOne({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    if (response) {
+      await Users.destroy({
+        where: {
+          id: req.params.id,
+        },
+      });
+      res.json({ msg: "User deleted successfully" });
+    } else {
+      res.status(404).json({ msg: "User not found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Internal Server Error" });
+  }
+};

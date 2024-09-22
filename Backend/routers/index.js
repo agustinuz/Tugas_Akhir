@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, Register, Login } from "../controllers/User.js";
+import { getUsers, Register, Login, DeleteUser } from "../controllers/User.js";
 // import { verifyToken } from "../middleware/VerifyToken.js";
 import {
   createSchedule,
@@ -48,6 +48,7 @@ router.post("/kategoriService", CreateKategoriService);
 router.post("/users", Register);
 router.post("/createAppointment", createAppointment);
 router.post("/login", Login);
+router.delete("/deleteuser/:id", DeleteUser);
 router.delete("/products/:id", deleteProduct);
 router.delete("/deleteKategori", deleteKategori);
 router.delete("/deleteAppointment", deleteAppointment);

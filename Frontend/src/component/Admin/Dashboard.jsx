@@ -14,7 +14,7 @@ import { jwtDecode as jwt_decode } from "jwt-decode";
 import AppointmetTable from "./Appointment_Table";
 import Order_Table from "./Order_Table";
 import Product_Table from "./Product_Table";
-import Kategori_Table from "./Kategori_Table";
+import Kategori_Table from "./Kategori_Product";
 import HomePage from "./nav";
 import Kategori_Service from "./Kategori_Service";
 // import HomePage from "./nav";

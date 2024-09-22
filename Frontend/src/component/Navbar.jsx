@@ -1,18 +1,23 @@
 import React, { useState } from "react";
-import { Link, Routes, Route } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../Css/Navbar.css";
-import { Button } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faAddressBook } from "@fortawesome/free-solid-svg-icons";
 import ServiceFormModal from "./FormService";
 import ProductList from "./ShowProduct";
+import UserProfile from "./Profile";
 
 const Navbar = () => {
   const [showModal, setShowModal] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   const handleShow = () => setShowModal(true);
+  const handleShowProfile = () => setShowProfile(true);
   const handleClose = () => setShowModal(false);
+  const CloseProfile = () => setShowProfile(false);
 
   return (
     <div>
@@ -52,9 +57,54 @@ const Navbar = () => {
             <a href="#service" className="nav-item nav-link">
               Service
             </a>
-            <Link to="/product" className="nav-item nav-link me-5 ">
+            <Link to="/product" className="nav-item nav-link me-1 ">
               <FontAwesomeIcon icon={faCartShopping} />
             </Link>
+            <li class="nav-item dropdown me-3">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <FontAwesomeIcon icon={faAddressBook} />
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <Link class="dropdown-item" to="/login">
+                    Login
+                  </Link>
+                </li>
+                <li>
+                  <Link class="dropdown-item" to="/register">
+                    Register
+                  </Link>
+                </li>
+                <li>
+                  <hr class="dropdown-divider" />
+                </li>
+                <li>
+                  <Link className="dropdown-item" to="/profile">
+                    My Profile
+                  </Link>
+                </li>
+                {/* Modal Profil
+                <Modal show={showProfile} onHide={CloseProfile}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Profil</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <UserProfile />
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={CloseProfile}>
+                      Close
+                    </Button>
+                  </Modal.Footer>
+                </Modal> */}
+              </ul>
+            </li>
           </div>
         </div>
       </nav>
