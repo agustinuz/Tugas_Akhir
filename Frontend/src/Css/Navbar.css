@@ -114,7 +114,9 @@
 
 .hero-header {
   background: url("/public/Picture/hero.jpg") top right no-repeat;
-  background-size: cover;
+  background-size: auto;
+  padding: 150px;
+  border-radius: 40px;
 }
 
 .btn-play {

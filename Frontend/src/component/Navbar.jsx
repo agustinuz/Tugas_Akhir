@@ -155,7 +155,7 @@ const Navbar = () => {
       {/* Hero End */}
 
       {/* product list */}
-      <div className="container-fluid py-5" id="listproduct">
+      <div className="container-fluid py-2 " id="listproduct">
         <div className="container">
           <div className="row gx-5">
             <div

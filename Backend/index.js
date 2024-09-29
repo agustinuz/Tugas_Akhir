@@ -5,7 +5,6 @@ import cors from "cors";
 import router from "./routers/index.js";
 import dotenv from "dotenv";
 import fileUpload from "express-fileupload";
-import ProductCart from "./models/productCart.js";
 
 dotenv.config();
 
@@ -14,7 +13,6 @@ const app = express();
 try {
   await db.authenticate();
   console.log("Database connected");
-  // await ProductCart.sync();
 } catch (error) {
   console.error("error");
 }
