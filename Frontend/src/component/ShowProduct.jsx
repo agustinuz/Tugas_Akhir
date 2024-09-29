@@ -8,12 +8,33 @@ import {
   Carousel,
   Row,
   Col,
+  Form,
 } from "react-bootstrap";
+import { jwtDecode as jwt_decode } from "jwt-decode";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [show, setShow] = useState(false);
+  const [qty, setQty] = useState(1); // Default quantity is 1
+  const [message, setMessage] = useState("");
+
+  const getUserData = () => {
+    // Decode token untuk mendapatkan userId
+
+    const token = localStorage.getItem("accessToken"); // Ambil token dari localStorage
+    if (token) {
+      const decodedToken = jwt_decode(token);
+      console.log(decodedToken);
+      console.log("Decoded Token:", decodedToken); // Lihat struktur token di console
+      //      userId = decodedToken.id || decodedToken.userId || decodedToken.sub; // Sesuaikan key yang mengandung ID user
+      //      console.log("User ID from Token:", userId);
+      return decodedToken;
+    } else {
+      console.error("Token is missing!");
+      return null;
+    }
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -29,10 +50,41 @@ const ProductList = () => {
 
   const handleShow = (product) => {
     setSelectedProduct(product);
+    setQty(1); // Reset jumlah produk
+    setMessage(""); // Reset pesan
     setShow(true);
   };
 
   const handleClose = () => setShow(false);
+
+  const handleAddToCart = async () => {
+    const userId = getUserData().userId;
+    if (!userId) {
+      setMessage("User ID not found in token.");
+      return;
+    }
+    const userData = getUserData();
+    console.log(userData);
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/cart", // Ganti dengan URL API backend
+        {
+          userId: userData.userId, // Gunakan userId yang sudah di-decode dari token
+          productId: selectedProduct.id,
+          qty: qty,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${getUserData().userId}`, // Sertakan token untuk autentikasi
+          },
+        }
+      );
+      setMessage("Product added to cart successfully!", response);
+    } catch (error) {
+      setMessage("Failed to add product to cart.");
+      console.error(error);
+    }
+  };
 
   // Function to group products into chunks of 4
   const groupProducts = (arr, chunkSize) => {
@@ -76,7 +128,7 @@ const ProductList = () => {
                       src={`http://localhost:5000/imageProduct/${product.image}`}
                       alt={product.name}
                       className="img-fluid"
-                      style={{ height: "20rem", objectFit: "cover" }}
+                      style={{ height: "15rem", objectFit: "cover" }}
                     />
                     <Card.Body>
                       <Card.Title
@@ -85,22 +137,17 @@ const ProductList = () => {
                       >
                         {product.name}
                       </Card.Title>
+                      <Card.Text>{product.description}</Card.Text>
+                      <strong>Stock : {product.stock}</strong> Pcs
                       <Card.Text>
-                        <strong>Price: </strong> ${product.price}
+                        <strong>Price: Rp. {product.price}</strong>
                       </Card.Text>
                       <Button
-                        variant="outline-primary"
+                        variant="primary"
                         onClick={() => handleShow(product)}
-                        style={{ zIndex: 2, position: "relative" }}
+                        style={{ zIndex: 2, position: "relative" }} // Ensure button is on top
                       >
-                        View Details
-                      </Button>
-                      <Button
-                        variant="outline-primary ms-2"
-                        onClick={() => handleShow(product)}
-                        style={{ zIndex: 2, position: "relative" }}
-                      >
-                        Checkout
+                        Add To Cart
                       </Button>
                     </Card.Body>
                   </Card>
@@ -111,37 +158,42 @@ const ProductList = () => {
         ))}
       </Carousel>
 
-      {/* Modal to display product details */}
+      {/* Modal for adding product to cart */}
       {selectedProduct && (
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>{selectedProduct.name}</Modal.Title>
+            <Modal.Title>Add {selectedProduct.name} to Cart</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <img
               src={`http://localhost:5000/imageProduct/${selectedProduct.image}`}
               alt={selectedProduct.name}
-              className="img-fluid"
+              className="img-fluid mb-3"
             />
             <p>
-              <strong>Category: </strong>
-              {selectedProduct.kategori_id}
+              <strong>Price: Rp. {selectedProduct.price}</strong>
             </p>
             <p>
-              <strong>Price: </strong>${selectedProduct.price}
-            </p>
-            <p>
-              <strong>Stock: </strong>
-              {selectedProduct.stock}
-            </p>
-            <p>
-              <strong>Description: </strong>
+              <strong>Description : </strong>
               {selectedProduct.description}
             </p>
+            <Form.Group controlId="formQty">
+              <Form.Label>Quantity</Form.Label>
+              <Form.Control
+                type="number"
+                min="1"
+                value={qty}
+                onChange={(e) => setQty(e.target.value)}
+              />
+            </Form.Group>
+            {message && <p>{message}</p>}
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
               Close
+            </Button>
+            <Button variant="primary" onClick={handleAddToCart}>
+              Add to Cart
             </Button>
           </Modal.Footer>
         </Modal>

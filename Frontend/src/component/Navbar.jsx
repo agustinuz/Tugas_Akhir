@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import "../Css/Navbar.css";
 import { Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faAddressBook } from "@fortawesome/free-solid-svg-icons";
 import ServiceFormModal from "./FormService";
 import ProductList from "./ShowProduct";
 // import UserProfile from "./ShoppingCard";
+import Login from "./Auth/Login";
 import ShoppingCartModal from "./ShoppingCard";
 
 const Navbar = () => {
@@ -16,12 +16,13 @@ const Navbar = () => {
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
+  const [showLogin, setShowLogin] = useState(false);
+  const CloseLogin = () => setShowLogin(false);
+  const ShowModalLogin = () => setShowLogin(true);
+
   const [showCartModal, setShowCartModal] = useState(false);
   const handleCartModalClose = () => setShowCartModal(false);
-  const handleCartModalShow = (e) => {
-    e.preventDefault();
-    setShowCartModal(true);
-  };
+  const handleCartModalShow = () => setShowCartModal(true);
 
   // // const [showProfile, setShowProfile] = useState(false);
   // const handleShowProfile = () => setShowProfile(true);
@@ -65,13 +66,10 @@ const Navbar = () => {
             <a href="#service" className="nav-item nav-link">
               Service
             </a>
-            <a
-              href=""
-              className="nav-item nav-link me-1 "
-              onClick={handleCartModalShow}
-            >
-              <FontAwesomeIcon icon={faCartShopping} />
-            </a>
+            <ShoppingCartModal
+              show={showCartModal}
+              handleClose={handleCartModalClose}
+            />
             <li class="nav-item dropdown me-3">
               <a
                 class="nav-link dropdown-toggle"
@@ -84,9 +82,13 @@ const Navbar = () => {
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
-                  <Link class="dropdown-item" to="/login">
+                  <a
+                    className="dropdown-item nav-item nav-link me-1"
+                    href="#"
+                    onClick={ShowModalLogin}
+                  >
                     Login
-                  </Link>
+                  </a>
                 </li>
                 <li>
                   <Link class="dropdown-item" to="/register">
@@ -115,10 +117,8 @@ const Navbar = () => {
                     </Button>
                   </Modal.Footer>
                 </Modal> */}
-                <ShoppingCartModal
-                  show={showCartModal}
-                  handleClose={handleCartModalClose}
-                />
+                {/* Modal Shopping Cart */}
+                <Login show={showLogin} handleClose={CloseLogin} />
               </ul>
             </li>
           </div>

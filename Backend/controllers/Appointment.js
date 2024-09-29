@@ -45,7 +45,7 @@ export const createAppointment = async (req, res) => {
   }
 };
 
-// Delete a product by ID
+// Delete
 export const deleteAppointment = async (req, res) => {
   const { id } = req.body;
   try {

@@ -29,7 +29,13 @@ import {
   getKategoriService,
   getService,
 } from "../controllers/Service_Controller.js";
-import { addCart, getCart } from "../controllers/Cart.js";
+import {
+  addCart,
+  deleteCartItem,
+  deleteCartUser,
+  getCart,
+} from "../controllers/Cart.js";
+import { getImageById, saveImage } from "../controllers/UserImage.js";
 
 const router = express.Router();
 
@@ -55,10 +61,14 @@ router.delete("/deleteKategori", deleteKategori);
 router.delete("/deleteAppointment", deleteAppointment);
 router.delete("/deleteSchedule", deleteSchedule);
 router.delete("/kategoriService/:id", deleteKategoriService);
-router.put("/updateKategori", updateKategori);
+router.put("/updateKategori/:id", updateKategori);
 router.put("/updateAppointment", updateAppointment);
 router.put("/updateSchedule", updateSchedule);
 router.patch("/products/:id", updateProduct);
-router.post("/cart",addCart);
-router.get("/cart/:userId",getCart);
+router.post("/cart", addCart);
+router.get("/cart/:userId", getCart);
+router.delete("/cart/:userId", deleteCartUser);
+router.delete("/cart/:cartId", deleteCartItem);
+router.get("/profile-image/:userId", getImageById);
+router.post("/upload-profile-image", saveImage);
 export default router;

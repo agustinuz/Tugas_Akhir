@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
-// import { Link } from "react-router-dom";
 import {
   CDBCard,
   CDBCardBody,
@@ -9,17 +8,21 @@ import {
   CDBBtn,
 } from "cdbreact";
 import axios from "axios";
+import Swal from "sweetalert2";
 
-const Kategori_Table = ({ fetchData }) => {
+const Kategori_Table = () => {
   const [kategoris, setKategoris] = useState([]);
   const [newKategori, setNewKategori] = useState("");
-  const [NewDescription, setNewDescription] = useState([]);
+  const [newDescription, setNewDescription] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [kategoriNameToDelete, setKategoriNameToDelete] = useState("");
-  const [kategoriNameToUpdate, setKategoriNameToUpdate] = useState("");
-  const [newName, setNewName] = useState("");
+  const [currentKategori, setCurrentKategori] = useState({
+    id: "",
+    nameKategori: "",
+    Description: "",
+  });
 
   useEffect(() => {
     fetchKategoris();
@@ -36,18 +39,19 @@ const Kategori_Table = ({ fetchData }) => {
 
   const handleCreateKategori = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:5000/createKategori",
-        {
-          nameKategori: newKategori,
-          Description: NewDescription,
-        }
-      );
-      console.log("Response from creating kategori:", response.data);
+      await axios.post("http://localhost:5000/createKategori", {
+        nameKategori: newKategori,
+        Description: newDescription,
+      });
       fetchKategoris();
       setNewKategori("");
       setNewDescription("");
       setShowModal(false);
+      Swal.fire({
+        title: "Kategori created successfully!",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     } catch (error) {
       console.error("Error creating kategori:", error);
     }
@@ -59,49 +63,56 @@ const Kategori_Table = ({ fetchData }) => {
         data: { nameKategori: kategoriNameToDelete },
       });
       setShowDeleteModal(false);
-      // Lakukan hal lain yang diperlukan setelah penghapusan
-      fetchKategoris(); // Ambil ulang kategoris setelah penghapusan
+      fetchKategoris();
+      Swal.fire({
+        title: "Kategori deleted successfully!",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error deleting kategori:", error);
     }
+  };
+
+  const handleShowUpdateModal = (kategori) => {
+    setCurrentKategori(kategori);
+    setShowUpdateModal(true);
+  };
+
+  const handleCloseUpdateModal = () => setShowUpdateModal(false);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentKategori({ ...currentKategori, [name]: value });
   };
 
   const handleUpdate = async () => {
     try {
-      await axios.put("http://localhost:5000/updateKategori", {
-        nameKategori: kategoriNameToUpdate,
-        newNameKategori: newName,
+      await axios.put(
+        `http://localhost:5000/updateKategori/${currentKategori.id}`,
+        {
+          newNameKategori: currentKategori.nameKategori, // sesuai dengan controller backend
+          newDescription: currentKategori.Description, // sesuai dengan controller backend
+        }
+      );
+      fetchKategoris();
+      handleCloseUpdateModal();
+      Swal.fire({
+        title: "Kategori updated successfully!",
+        icon: "success",
+        confirmButtonText: "OK",
       });
-      setShowUpdateModal(false);
-      // Lakukan hal lain yang diperlukan setelah pembaruan
-      fetchKategoris(); // Ambil ulang kategoris setelah pembaruan
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error updating kategori:", error);
     }
   };
 
-  // Data for CDBDataTable
   const data = {
     columns: [
-      {
-        label: "#",
-        field: "index",
-        sort: "asc",
-      },
-      {
-        label: "Kategori",
-        field: "nameKategori",
-        sort: "asc",
-      },
-      {
-        label: "Description",
-        field: "Description",
-        sort: "asc",
-      },
-      {
-        label: "Action",
-        field: "action",
-      },
+      { label: "#", field: "index", sort: "asc" },
+      { label: "Kategori", field: "nameKategori", sort: "asc" },
+      { label: "Description", field: "Description", sort: "asc" },
+      { label: "Action", field: "action" },
     ],
     rows: kategoris.map((kategori, index) => ({
       index: index + 1,
@@ -119,80 +130,19 @@ const Kategori_Table = ({ fetchData }) => {
           >
             Delete
           </Button>
-          <Modal
-            show={showDeleteModal}
-            onHide={() => setShowDeleteModal(false)}
-          >
-            <Modal.Header closeButton>
-              <Modal.Title>Confirm Delete</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              Are you sure you want to delete the kategori?
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                variant="secondary"
-                onClick={() => setShowDeleteModal(false)}
-              >
-                Cancel
-              </Button>
-              <Button variant="danger" onClick={handleDelete}>
-                Delete
-              </Button>
-            </Modal.Footer>
-          </Modal>
           <Button
-            className=" mx-3"
+            className="mx-3"
             variant="outline-primary"
             size="sm"
-            onClick={() => {
-              setShowUpdateModal(true);
-              setKategoriNameToUpdate(kategori.nameKategori);
-            }}
+            onClick={() => handleShowUpdateModal(kategori)}
           >
             Update
           </Button>
-          <Modal
-            show={showUpdateModal}
-            onHide={() => setShowUpdateModal(false)}
-          >
-            <Modal.Header closeButton>
-              <Modal.Title>Update Kategori</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Form.Group controlId="formMerkNameToUpdate">
-                <Form.Label>Kategori Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={kategoriNameToDelete}
-                  onChange={(e) => setKategoriNameToUpdate(e.target.value)}
-                />
-              </Form.Group>
-              <Form.Group controlId="formNewName">
-                <Form.Label>New Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                />
-              </Form.Group>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                variant="secondary"
-                onClick={() => setShowUpdateModal(false)}
-              >
-                Cancel
-              </Button>
-              <Button variant="primary" onClick={handleUpdate}>
-                Update
-              </Button>
-            </Modal.Footer>
-          </Modal>
         </>
       ),
     })),
   };
+
   return (
     <div>
       <div className="container-fluid px-4">
@@ -202,6 +152,8 @@ const Kategori_Table = ({ fetchData }) => {
         <figcaption className="blockquote-footer mb-5">
           Kategori for <cite title="Source Title">Product</cite>
         </figcaption>
+
+        {/* Modal for Create Kategori */}
         <Modal show={showModal} onHide={() => setShowModal(false)}>
           <Modal.Header closeButton>
             <Modal.Title>Tambah Kategori</Modal.Title>
@@ -216,7 +168,7 @@ const Kategori_Table = ({ fetchData }) => {
             />
             <input
               type="text"
-              value={NewDescription}
+              value={newDescription}
               onChange={(e) => setNewDescription(e.target.value)}
               placeholder="Enter Description"
               className="form-control"
@@ -231,6 +183,61 @@ const Kategori_Table = ({ fetchData }) => {
             </Button>
           </Modal.Footer>
         </Modal>
+
+        {/* Modal for Update Kategori */}
+        <Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Update Kategori</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group controlId="formMerkNameToUpdate">
+              <Form.Label>Kategori Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="nameKategori"
+                value={currentKategori.nameKategori}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+            <Form.Group controlId="formNewDescription">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                type="text"
+                name="Description"
+                value={currentKategori.Description}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseUpdateModal}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleUpdate}>
+              Update
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Modal for Delete Confirmation */}
+        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Delete</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to delete the kategori?</Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowDeleteModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={handleDelete}>
+              Delete
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
         <CDBContainer fluid>
           <CDBCard style={{ borderRadius: "15px" }}>
             <CDBCardBody>
@@ -240,7 +247,7 @@ const Kategori_Table = ({ fetchData }) => {
                 circle
                 onClick={() => setShowModal(true)}
               >
-                Create New Service
+                Create New Kategori
               </CDBBtn>
               <CDBDataTable
                 responsive

@@ -89,10 +89,10 @@ export const updateProduct = async (req, res) => {
     if (fileSize > 5000000)
       return res.status(422).json({ msg: "Image must be less than 5 MB" });
 
-    const filepath = `./imageProduct/${product.image}`;
+    const filepath = `./static/imageProduct/${product.image}`;
     fs.unlinkSync(filepath);
 
-    file.mv(`./public/images/${fileName}`, (err) => {
+    file.mv(`./static/imageProduct/${fileName}`, (err) => {
       if (err) return res.status(500).json({ msg: err.message });
     });
   }
@@ -131,7 +131,7 @@ export const deleteProduct = async (req, res) => {
   if (!product) return res.status(404).json({ msg: "No Data Found" });
 
   try {
-    const filepath = `./imageProduct/${product.image}`;
+    const filepath = `./static/imageProduct/${product.image}`;
     fs.unlinkSync(filepath);
     await Product.destroy({
       where: {
@@ -395,21 +395,29 @@ export const deleteKategori = async (req, res) => {
 };
 
 // Update a kategori by nameKategori
+// Update a kategori by nameKategori
 export const updateKategori = async (req, res) => {
-  const { nameKategori, newNameKategori } = req.body;
+  const { newNameKategori, newDescription } = req.body; // Data baru dari body request
+
   try {
-    const updatedKategori = await Kategori.update(
-      {
-        nameKategori: newNameKategori,
+    // Cari kategori berdasarkan id
+    const kategori = await Kategori.findOne({
+      where: {
+        id: req.params.id,
       },
-      {
-        where: {
-          nameKategori: nameKategori,
-        },
-      }
-    );
-    if (updatedKategori[0] !== 0) {
-      res.json({ msg: "Kategori updated successfully" });
+    });
+
+    // Jika kategori ditemukan, lakukan update
+    if (kategori) {
+      kategori.nameKategori = newNameKategori || kategori.nameKategori;
+      kategori.Description = newDescription || kategori.Description;
+
+      await kategori.save(); // Simpan perubahan
+
+      res.json({
+        msg: "Kategori updated successfully",
+        updatedKategori: kategori,
+      });
     } else {
       res.status(404).json({ msg: "Kategori not found" });
     }

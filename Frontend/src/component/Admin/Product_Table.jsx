@@ -23,9 +23,8 @@ const AddProduct = () => {
   const [preview, setPreview] = useState(null);
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const [showdelete, setShowdelete] = useState(false);
+  const [selectProductId, setSelectedProductId] = useState(null);
 
   useEffect(() => {
     const fetchKategori = async () => {
@@ -37,7 +36,7 @@ const AddProduct = () => {
       }
     };
     if (show) {
-      fetchKategori(); // Memanggil fungsi hanya ketika modal ditampilkan
+      fetchKategori();
     }
     fetchProducts();
   }, [show]);
@@ -74,12 +73,35 @@ const AddProduct = () => {
       });
       Swal.fire({
         title: "Create Product successful!",
-        text: "Saved.",
+        text: "Status: Saved.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      // Reset form state
+      setName("");
+      setKategoriId("");
+      setPrice("");
+      setStock("");
+      setDescription("");
+      setFile(null);
+      setPreview(null);
+      navigate("/Dashboard/product");
+      fetchProducts();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const deleteProduct = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/products/${id}`);
+      fetchProducts();
+      setShowdelete(false); // Tutup modal setelah menghapus
+      Swal.fire({
+        title: "Delete Product successful!",
         icon: "success",
         confirmButtonText: "OK",
       });
       navigate("/Dashboard/product");
-      fetchProducts();
     } catch (error) {
       console.log(error);
     }
@@ -150,12 +172,37 @@ const AddProduct = () => {
           >
             Edit
           </button>
-          <button className="btn btn-outline-danger btn-sm text-capitalize">
+          <Button
+            className="btn btn-danger btn-sm text-capitalize"
+            variant="danger"
+            onClick={() => {
+              setShowdelete(true);
+              setSelectedProductId(products.id);
+            }}
+          >
             Delete
-          </button>
+          </Button>
+          <Modal show={showdelete} onHide={() => setShowdelete(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Confirm Delete</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              Are you sure you want to delete the kategori?
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowdelete(false)}>
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => deleteProduct(selectProductId)}
+              >
+                Delete
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </>
       ),
-      clickEvent: () => alert("Klik Oke Untuk Melanjutkan Delete"),
     })),
   };
 
@@ -164,7 +211,7 @@ const AddProduct = () => {
       {/* <Button variant="primary" onClick={handleShow}>
         Create Product
       </Button> */}
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Add Product</Modal.Title>
         </Modal.Header>
@@ -232,7 +279,11 @@ const AddProduct = () => {
                 />
               )}
             </Form.Group>
-            <Button variant="primary" type="submit" onClick={handleClose}>
+            <Button
+              variant="primary"
+              type="submit"
+              onClick={() => setShow(false)}
+            >
               Save Product
             </Button>
           </Form>
@@ -245,7 +296,7 @@ const AddProduct = () => {
               color="primary"
               size="large"
               circle
-              onClick={() => handleShow(true)}
+              onClick={() => setShow(true)}
             >
               Create New Product
             </CDBBtn>
