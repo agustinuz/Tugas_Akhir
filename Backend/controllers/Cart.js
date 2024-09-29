@@ -111,3 +111,26 @@ export const deleteCartUser = async (req, res) => {
     return res.status(500).json({ error: "Failed to delete cart items" });
   }
 };
+
+export const removeCart = async (req, res) => {
+  const { cartId } = req.params;
+  const { qty } = req.qty;
+
+  const cart = await ProductCart.findOne({
+    where: {
+      cartId: cartId,
+    },
+  });
+  if (!cart) return res.status(404).json({ msg: "Cart Not Found" });
+  if (cart.dataValues.qty - qty < 1) {
+    await ProductCart.destroy({
+      where: {
+        cartId: cartId,
+      },
+    });
+  } else {
+    cart.setDataValue("qty", cart.dataValues.qty - qty);
+    await cart.save();
+  }
+  return res.status(200).json({ msg: "OK" });
+};
