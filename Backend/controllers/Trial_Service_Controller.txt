@@ -1,7 +1,6 @@
 import Form_Service from "../models/FormService.js";
 import Kategori_Service from "../models/KategoriService.js";
 
-// Ambil semua form service
 export const getService = async (req, res) => {
   try {
     const response = await Form_Service.findAll();
@@ -12,7 +11,6 @@ export const getService = async (req, res) => {
   }
 };
 
-// Buat form service baru, userId diambil dari frontend
 export const CreateService = async (req, res) => {
   const {
     Name_Owner,
@@ -22,7 +20,6 @@ export const CreateService = async (req, res) => {
     RAS,
     Quantity,
     kategori_service,
-    userId, // Ambil userId dari request body (frontend akan menyertakan ini)
   } = req.body;
 
   try {
@@ -34,8 +31,6 @@ export const CreateService = async (req, res) => {
       RAS: RAS,
       Quantity: Quantity,
       kategori_service: kategori_service,
-      userId: userId, // Set userId yang diterima dari frontend
-      status: "pending", // Set status menjadi 'pending'
     });
     res.status(201).json({ msg: "created successfully", newService });
   } catch (error) {
@@ -44,7 +39,6 @@ export const CreateService = async (req, res) => {
   }
 };
 
-// Hapus form service
 export const DeleteService = async (req, res) => {
   try {
     const service = await Form_Service.findOne({
@@ -53,24 +47,17 @@ export const DeleteService = async (req, res) => {
       },
     });
 
-    if (!service) {
-      return res.status(404).json({ msg: "Form not found" });
+    if (service) {
+      res.json({ msg: "form service deleted successfully" });
+    } else {
+      res.status(404).json({ msg: "Form not found" });
     }
-
-    await Form_Service.destroy({
-      where: {
-        id: req.params.id,
-      },
-    });
-
-    res.json({ msg: "Form service deleted successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Internal Server Error" });
   }
 };
 
-// Ambil kategori service
 export const getKategoriService = async (req, res) => {
   try {
     const response = await Kategori_Service.findAll();
@@ -80,7 +67,6 @@ export const getKategoriService = async (req, res) => {
   }
 };
 
-// Buat kategori service baru
 export const CreateKategoriService = async (req, res) => {
   const { nameKategori } = req.body;
   try {
@@ -94,7 +80,6 @@ export const CreateKategoriService = async (req, res) => {
   }
 };
 
-// Hapus kategori service
 export const deleteKategoriService = async (req, res) => {
   try {
     const kategoriService = await Kategori_Service.findOne({
@@ -107,36 +92,19 @@ export const deleteKategoriService = async (req, res) => {
       return res.status(404).json({ msg: "No Data Found" });
     }
 
-    await Kategori_Service.destroy({
+    const kategoriDelete = await Kategori_Service.destroy({
       where: {
         id: req.params.id,
       },
     });
 
-    res.json({ msg: "Kategori deleted successfully" });
+    if (kategoriDelete) {
+      return res.json({ msg: "Kategori deleted successfully" });
+    } else {
+      return res.status(404).json({ msg: "Kategori not found" });
+    }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: "Internal Server Error" });
-  }
-};
-
-// Admin mengubah status form service
-export const updateServiceStatus = async (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body; // 'disetujui' atau status lain
-
-  try {
-    const service = await Form_Service.findByPk(id);
-    if (!service) {
-      return res.status(404).json({ msg: "Service form not found" });
-    }
-
-    service.status = status; // Ubah status form
-    await service.save();
-
-    res.json({ msg: "Service status updated", service });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ msg: "Internal Server Error" });
+    return res.status(500).json({ msg: "Internal Server Error" });
   }
 };

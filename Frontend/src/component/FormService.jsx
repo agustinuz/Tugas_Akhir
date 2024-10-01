@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { jwtDecode as jwt_decode } from "jwt-decode";
 
 const CreateServiceModal = ({ show, handleClose }) => {
   const [formData, setFormData] = useState({
@@ -12,9 +13,20 @@ const CreateServiceModal = ({ show, handleClose }) => {
     RAS: "",
     Quantity: "",
     kategori_service: "",
+    userId: "", // Tambahkan field userId ke formData
   });
 
   const [categories, setCategories] = useState([]); // State untuk menyimpan daftar kategori
+
+  // Fungsi untuk mendapatkan userId dari token
+  const getUserIdFromToken = () => {
+    const token = localStorage.getItem("token"); // Ambil token dari localStorage
+    if (token) {
+      const decoded = jwt_decode(token); // Decode token untuk mendapatkan userId
+      return decoded.userId;
+    }
+    return null;
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -42,15 +54,29 @@ const CreateServiceModal = ({ show, handleClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Dapatkan userId dari token sebelum submit
+    const userId = getUserIdFromToken();
+
+    if (!userId) {
+      Swal.fire({
+        title: "Login required!",
+        text: "You need to log in to submit the form.",
+        icon: "warning",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:5000/createService",
-        formData
+        { ...formData, userId } // Sertakan userId dalam data yang dikirim
       );
       console.log(response.data);
       Swal.fire({
-        title: "Login successful!",
-        text: "You will be redirected shortly.",
+        title: "Service created successfully!",
+        text: "Your service request has been submitted.",
         icon: "success",
         confirmButtonText: "OK",
       });

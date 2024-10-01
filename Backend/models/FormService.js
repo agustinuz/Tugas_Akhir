@@ -14,7 +14,7 @@ const Form_Service = db.define(
     },
     birthday_Animal: {
       type: DataTypes.DATE,
-      allowNull: false, // Set to false to disallow null values
+      allowNull: false,
     },
     Jenis: {
       type: DataTypes.STRING,
@@ -28,11 +28,24 @@ const Form_Service = db.define(
     kategori_service: {
       type: DataTypes.INTEGER,
       references: {
-        model: "kategori_service", // Nama tabel kategori di database
-        key: "id", // Kolom id di tabel kategori
+        model: "kategori_service",
+        key: "id",
       },
-      onUpdate: "CASCADE", // Jika ada perubahan pada id_kategori di tabel Kategori, perbarui juga di tabel Product
-      onDelete: "SET NULL", // Jika kategori dihapus, atur nilai kategori_id di produk menjadi NULL
+      onUpdate: "CASCADE",
+      onDelete: "SET NULL",
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "pending", // Status default adalah 'pending'
     },
   },
   {

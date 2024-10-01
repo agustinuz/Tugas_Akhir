@@ -10,6 +10,7 @@ import ProductList from "./ShowProduct";
 // import UserProfile from "./ShoppingCard";
 import Login from "./Auth/Login";
 import ShoppingCartModal from "./ShoppingCard";
+import RegisterModal from "./Auth/Register";
 
 const Navbar = () => {
   const [showModal, setShowModal] = useState(false);
@@ -19,6 +20,10 @@ const Navbar = () => {
   const [showLogin, setShowLogin] = useState(false);
   const CloseLogin = () => setShowLogin(false);
   const ShowModalLogin = () => setShowLogin(true);
+
+  const [showRegis, setShowRegis] = useState(false);
+  const CloseRegis = () => setShowRegis(false);
+  const ShowModalRegis = () => setShowRegis(true);
 
   const [showCartModal, setShowCartModal] = useState(false);
   const handleCartModalClose = () => setShowCartModal(false);
@@ -91,15 +96,22 @@ const Navbar = () => {
                   </a>
                 </li>
                 <li>
-                  <Link class="dropdown-item" to="/register">
+                  <a
+                    className="dropdown-item nav-item nav-link me-1"
+                    href="#"
+                    onClick={ShowModalRegis}
+                  >
                     Register
-                  </Link>
+                  </a>
                 </li>
                 <li>
                   <hr class="dropdown-divider" />
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="/profile">
+                  <Link
+                    className="dropdown-item nav-item nav-link me-1"
+                    to="/profile"
+                  >
                     My Profile
                   </Link>
                 </li>
@@ -119,6 +131,7 @@ const Navbar = () => {
                 </Modal> */}
                 {/* Modal Shopping Cart */}
                 <Login show={showLogin} handleClose={CloseLogin} />
+                <RegisterModal show={showRegis} handleClose={CloseRegis} />
               </ul>
             </li>
           </div>
