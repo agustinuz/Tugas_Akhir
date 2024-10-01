@@ -23,6 +23,13 @@ import {
   updateKategori,
 } from "../controllers/Product.js";
 import {
+  CreateKategoriService,
+  CreateService,
+  deleteKategoriService,
+  getKategoriService,
+  getService,
+} from "../controllers/Service_Controller.js";
+import {
   addCart,
   deleteCartItem,
   deleteCartUser,
@@ -30,12 +37,9 @@ import {
 } from "../controllers/Cart.js";
 import { getImageById, saveImage } from "../controllers/UserImage.js";
 import {
-  CreateKategoriService,
-  CreateService,
-  deleteKategoriService,
-  getKategoriService,
-  getService,
-} from "../controllers/Service_Controller.js";
+  CreateTransaksi,
+  UpdateTransaksi,
+} from "../controllers/Transaction.js";
 
 const router = express.Router();
 
@@ -71,4 +75,6 @@ router.delete("/cart/:userId", deleteCartUser);
 router.delete("/cart/:cartId", deleteCartItem);
 router.get("/profile-image/:userId", getImageById);
 router.post("/upload-profile-image", saveImage);
+router.post("/transaksi", CreateTransaksi);
+router.put("/transaksi/:id", UpdateTransaksi);
 export default router;
