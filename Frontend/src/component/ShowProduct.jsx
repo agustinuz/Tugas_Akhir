@@ -11,6 +11,7 @@ import {
   Form,
 } from "react-bootstrap";
 import { jwtDecode as jwt_decode } from "jwt-decode";
+import Swal from "sweetalert2";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -58,9 +59,13 @@ const ProductList = () => {
   const handleClose = () => setShow(false);
 
   const handleAddToCart = async () => {
-    const userId = getUserData().userId;
-    if (!userId) {
-      setMessage("User ID not found in token.");
+    const userId = getUserData();
+    if (!userId || !userId.userId) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "You need to be logged in to add products to your cart!",
+      });
       return;
     }
     const userData = getUserData();
@@ -79,7 +84,15 @@ const ProductList = () => {
           },
         }
       );
-      setMessage("Product added to cart successfully!", response);
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Product added to cart!",
+      }).then(() => {
+        // Close the modal after success
+        handleClose();
+      });
+      return response;
     } catch (error) {
       setMessage("Failed to add product to cart.");
       console.error(error);
