@@ -208,110 +208,115 @@ const AddProduct = () => {
 
   return (
     <>
-      {/* <Button variant="primary" onClick={handleShow}>
-        Create Product
-      </Button> */}
-      <Modal show={show} onHide={() => setShow(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add Product</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={saveProduct}>
-            <Form.Group className="mb-3" controlId="productName">
-              <Form.Label>Product Name</Form.Label>
-              <Form.Control
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="productCategory">
-              <Form.Label>Category</Form.Label>
-              <Form.Select
-                value={kategoriId}
-                onChange={(e) => setKategoriId(e.target.value)}
-                required
-              >
-                <option value="">Select Category</option>
-                {kategoris.map((list) => (
-                  <option key={list.id} value={list.id}>
-                    {list.nameKategori}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="productPrice">
-              <Form.Label>Price</Form.Label>
-              <Form.Control
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="productStock">
-              <Form.Label>Stock</Form.Label>
-              <Form.Control
-                type="number"
-                value={stock}
-                onChange={(e) => setStock(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="productDescription">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="productImage">
-              <Form.Label>Image</Form.Label>
-              <Form.Control type="file" onChange={loadImage} required />
-              {preview && (
-                <img
-                  src={preview}
-                  alt="preview"
-                  className="img-thumbnail mt-2"
+      <div className="container-fluid px-4">
+        <h2 className="mb-3">
+          <strong>Product</strong>
+        </h2>
+        <figcaption className="blockquote-footer mb-5">
+          All Of <cite title="Source Title">Product</cite>
+        </figcaption>
+        <Modal show={show} onHide={() => setShow(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Add Product</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={saveProduct}>
+              <Form.Group className="mb-3" controlId="productName">
+                <Form.Label>Product Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
                 />
-              )}
-            </Form.Group>
-            <Button
-              variant="primary"
-              type="submit"
-              onClick={() => setShow(false)}
-            >
-              Save Product
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-      <CDBContainer fluid>
-        <CDBCard style={{ borderRadius: "15px" }}>
-          <CDBCardBody>
-            <CDBBtn
-              color="primary"
-              size="large"
-              circle
-              onClick={() => setShow(true)}
-            >
-              Create New Product
-            </CDBBtn>
-            <CDBDataTable
-              responsive
-              striped
-              bordered
-              hover
-              data={data}
-              pagination
-              materialSearch={true}
-            />
-          </CDBCardBody>
-        </CDBCard>
-      </CDBContainer>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="productCategory">
+                <Form.Label>Category</Form.Label>
+                <Form.Select
+                  value={kategoriId}
+                  onChange={(e) => setKategoriId(e.target.value)}
+                  required
+                >
+                  <option value="">Select Category</option>
+                  {kategoris.map((list) => (
+                    <option key={list.id} value={list.id}>
+                      {list.nameKategori}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="productPrice">
+                <Form.Label>Price</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="productStock">
+                <Form.Label>Stock</Form.Label>
+                <Form.Control
+                  type="number"
+                  value={stock}
+                  onChange={(e) => setStock(e.target.value)}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="productDescription">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="productImage">
+                <Form.Label>Image</Form.Label>
+                <Form.Control type="file" onChange={loadImage} required />
+                {preview && (
+                  <img
+                    src={preview}
+                    alt="preview"
+                    className="img-thumbnail mt-2"
+                  />
+                )}
+              </Form.Group>
+              <Button
+                variant="primary"
+                type="submit"
+                onClick={() => setShow(false)}
+              >
+                Save Product
+              </Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
+        <CDBContainer fluid>
+          <CDBCard style={{ borderRadius: "15px" }}>
+            <CDBCardBody>
+              <CDBBtn
+                color="primary"
+                size="large"
+                circle
+                onClick={() => setShow(true)}
+              >
+                Create New Product
+              </CDBBtn>
+              <CDBDataTable
+                responsive
+                striped
+                bordered
+                hover
+                data={data}
+                pagination
+                materialSearch={true}
+              />
+            </CDBCardBody>
+          </CDBCard>
+        </CDBContainer>
+      </div>
     </>
   );
 };

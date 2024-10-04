@@ -151,12 +151,12 @@ const User_Table = () => {
       role: user.role,
       action: (
         <>
-          <button
-            className="btn btn-outline-danger btn-sm text-capitalize"
+          <Button
+            className="btn btn-danger btn-sm text-capitalize"
             onClick={() => handleOpenDeleteModal(user.id)} // Set ID user untuk hapus
           >
             Delete
-          </button>
+          </Button>
         </>
       ),
     })),
@@ -164,102 +164,110 @@ const User_Table = () => {
 
   return (
     <CDBContainer fluid>
-      <CDBCard style={{ borderRadius: "15px" }}>
-        <CDBCardBody>
-          <CDBBtn
-            color="primary"
-            size="large"
-            circle
-            onClick={handleOpenCreateModal}
-          >
-            Create New User
-          </CDBBtn>
-          <CDBDataTable
-            responsive
-            striped
-            bordered
-            hover
-            data={data}
-            pagination
-            materialSearch={true}
-          />
-        </CDBCardBody>
-      </CDBCard>
+      <div className="container-fluid px-4">
+        <h2 className="mb-3">
+          <strong>Users</strong>
+        </h2>
+        <figcaption className="blockquote-footer mb-5">
+          Data <cite title="Source Title">User</cite>
+        </figcaption>
+        <CDBCard style={{ borderRadius: "15px" }}>
+          <CDBCardBody>
+            <CDBBtn
+              color="primary"
+              size="large"
+              circle
+              onClick={handleOpenCreateModal}
+            >
+              Create New User
+            </CDBBtn>
+            <CDBDataTable
+              responsive
+              striped
+              bordered
+              hover
+              data={data}
+              pagination
+              materialSearch={true}
+            />
+          </CDBCardBody>
+        </CDBCard>
 
-      {/* Modal Create User */}
-      <Modal show={showCreateModal} onHide={handleCloseCreateModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create New User</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleCreateUser}>
-            <Form.Group className="mb-3" controlId="formName">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </Form.Group>
+        {/* Modal Create User */}
+        <Modal show={showCreateModal} onHide={handleCloseCreateModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Create New User</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleCreateUser}>
+              <Form.Group className="mb-3" controlId="formName">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formEmail">
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </Form.Group>
+              <Form.Group className="mb-3" controlId="formEmail">
+                <Form.Label>Email address</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formPassword">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </Form.Group>
+              <Form.Group className="mb-3" controlId="formPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formConfPassword">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Confirm Password"
-                value={confPassword}
-                onChange={(e) => setConfpassword(e.target.value)}
-                required
-              />
-            </Form.Group>
+              <Form.Group className="mb-3" controlId="formConfPassword">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confPassword}
+                  onChange={(e) => setConfpassword(e.target.value)}
+                  required
+                />
+              </Form.Group>
 
-            <p className="text-danger">{msg}</p>
+              <p className="text-danger">{msg}</p>
 
-            <Button variant="primary" type="submit">
-              Create User
+              <Button variant="primary" type="submit">
+                Create User
+              </Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
+        {/* Modal Konfirmasi Hapus */}
+        <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Delete User</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to delete this user?</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseDeleteModal}>
+              Cancel
             </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-      {/* Modal Konfirmasi Hapus */}
-      <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete User</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this user?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseDeleteModal}>
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={handleDelete}>
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
+            <Button variant="danger" onClick={handleDelete}>
+              Delete
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
     </CDBContainer>
   );
 };

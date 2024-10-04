@@ -1,106 +1,214 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import {
-  CDBCard,
-  CDBCardBody,
-  CDBDataTable,
-  CDBContainer,
-  CDBBtn,
-} from "cdbreact";
+import React, { useState } from "react";
+import { CDBDataTable, CDBCard } from "cdbreact";
+import { Button, Modal, Image } from "react-bootstrap";
 
-const User_Table = () => {
-  const [users, setUsers] = useState([]);
+const OrderListTable = () => {
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/getUsers");
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+  const handlePaymentModal = (order) => {
+    setSelectedOrder(order);
+    setShowPaymentModal(true);
+  };
 
-    fetchUsers();
-  }, []);
+  const handleDetailModal = (order) => {
+    setSelectedOrder(order);
+    setShowDetailModal(true);
+  };
 
-  // Define the columns for CDBDataTable
-  const columns = [
+  const closeModal = () => {
+    setShowPaymentModal(false);
+    setShowDetailModal(false);
+  };
+
+  const orders = [
     {
-      label: "#",
-      field: "index",
-      sort: "asc",
-      width: 50,
+      id: 1,
+      buyer: "John Doe",
+      date: "2024-10-03",
+      subtotal: "$200",
+      status: "Menunggu Pembayaran",
+      paymentProof: "payment-proof-url.jpg",
+      orderDetails: [
+        {
+          image: "product1.jpg",
+          name: "Product A",
+          price: "$50",
+          qty: 2,
+          totalPrice: "$100",
+        },
+        {
+          image: "product2.jpg",
+          name: "Product B",
+          price: "$50",
+          qty: 2,
+          totalPrice: "$100",
+        },
+      ],
     },
     {
-      label: "Name Users",
-      field: "name",
-      sort: "asc",
-      width: 150,
+      id: 2,
+      buyer: "Jane Smith",
+      date: "2024-10-02",
+      subtotal: "$150",
+      status: "Menunggu Pembayaran",
+      paymentProof: "payment-proof-url2.jpg",
+      orderDetails: [
+        {
+          image: "product3.jpg",
+          name: "Product C",
+          price: "$75",
+          qty: 2,
+          totalPrice: "$150",
+        },
+      ],
     },
-    {
-      label: "Email",
-      field: "email",
-      sort: "asc",
-      width: 270,
-    },
-    {
-      label: "Role",
-      field: "role",
-      sort: "asc",
-      width: 100,
-    },
-    {
-      label: "Action",
-      field: "action",
-      width: 150,
-    },
+    // Tambahkan data lain di sini
   ];
 
-  // Format the user data for the DataTable
   const data = {
-    columns: columns,
-    rows: users.map((user, index) => ({
-      index: index + 1,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      action: (
+    columns: [
+      {
+        label: "Nama Pembeli",
+        field: "buyer",
+        sort: "asc",
+      },
+      {
+        label: "Tanggal Transaksi",
+        field: "date",
+        sort: "asc",
+      },
+      {
+        label: "Subtotal",
+        field: "subtotal",
+        sort: "asc",
+      },
+      {
+        label: "Status",
+        field: "status",
+        sort: "asc",
+      },
+      {
+        label: "Actions",
+        field: "actions",
+        sort: "asc",
+      },
+    ],
+    rows: orders.map((order) => ({
+      buyer: order.buyer,
+      date: order.date,
+      subtotal: order.subtotal,
+      status: order.status,
+      actions: (
         <>
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm me-3 text-capitalize"
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => handlePaymentModal(order)}
           >
-            Edit
-          </button>
-          <button className="btn btn-outline-danger btn-sm text-capitalize">
-            Delete
-          </button>
+            View Payment
+          </Button>{" "}
+          <Button
+            variant="info"
+            size="sm"
+            onClick={() => handleDetailModal(order)}
+          >
+            Detail Pesanan
+          </Button>
         </>
       ),
     })),
   };
 
   return (
-    <CDBContainer fluid>
-      <CDBCard style={{ borderRadius: "15px" }}>
-        <CDBCardBody>
-          <CDBBtn color="primary" size="large" circle>
-            Create Order
-          </CDBBtn>
-          <CDBDataTable
-            responsive
-            striped
-            bordered
-            hover
-            data={data}
-            pagination
-            materialSearch={true}
-          />
-        </CDBCardBody>
-      </CDBCard>
-    </CDBContainer>
+    <div>
+      <div className="container-fluid px-4">
+        <h2 className="mb-3">
+          <strong>Orders</strong>
+        </h2>
+        <figcaption className="blockquote-footer mb-5">
+          List <cite title="Source Title">Order</cite>
+        </figcaption>
+        <CDBCard style={{ borderRadius: "15px" }}>
+          <CDBDataTable striped bordered hover data={data} responsive />
+        </CDBCard>
+        {/* Modal for View Payment */}
+        <Modal show={showPaymentModal} onHide={closeModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Payment Details</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {/* Render payment details for the selected order */}
+            {selectedOrder && (
+              <div>
+                <p>Nama Pembeli: {selectedOrder.buyer}</p>
+                <Image src={selectedOrder.paymentProof} fluid />
+                {/* Tambahkan informasi lainnya di sini */}
+                <p>Total Pembayaran: {selectedOrder.totalPrice}</p>
+                <p>Status: {selectedOrder.status}</p>
+                {/* Contoh tambahan data */}
+              </div>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="danger"
+              // onClick={() => handleReject(selectedOrder.id)}
+            >
+              Tolak
+            </Button>
+            <Button
+              variant="success"
+              // onClick={() => handleConfirm(selectedOrder.id)}
+            >
+              Konfirmasi
+            </Button>
+            <Button variant="secondary" onClick={closeModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Modal for Detail Pesanan */}
+        <Modal show={showDetailModal} onHide={closeModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Order Details</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {/* Render order details for the selected order */}
+            {selectedOrder &&
+            selectedOrder.orderDetails &&
+            selectedOrder.orderDetails.length > 0 ? (
+              <div>
+                {selectedOrder.orderDetails.map((item, index) => (
+                  <div key={index} style={{ marginBottom: "15px" }}>
+                    <Image
+                      src={item.image}
+                      fluid
+                      style={{ width: "100px", marginRight: "10px" }}
+                    />
+                    <p>Nama Product: {item.name}</p>
+                    <p>Harga per Product: {item.price}</p>
+                    <p>Qty: {item.qty}</p>
+                    <p>Total Harga: {item.totalPrice}</p>
+                    <hr />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>Tidak ada detail pesanan tersedia.</p>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={closeModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
+    </div>
   );
 };
 
-export default User_Table;
+export default OrderListTable;

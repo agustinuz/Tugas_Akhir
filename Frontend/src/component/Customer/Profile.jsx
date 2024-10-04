@@ -77,8 +77,8 @@ const ProfilePage = () => {
       });
   };
 
-  const handlePaymentClick = (order) => {
-    setSelectedOrder(order);
+  const handlePaymentClick = (orders) => {
+    setSelectedOrder(orders);
     setShowPaymentModal(true);
   };
 
@@ -91,6 +91,61 @@ const ProfilePage = () => {
     setSelectedAppointment(appointment);
     setShowAppointmentModal(true);
   };
+
+  // Contoh pesanan
+  const orderRows = [
+    {
+      product: "Dog Food",
+      quantity: 2,
+      totalPrice: "Rp 100,000",
+      status: "Menunggu Pembayaran",
+    },
+    {
+      product: "Cat Toy",
+      quantity: 1,
+      totalPrice: "Rp 50,000",
+      status: "Menunggu Pembayaran",
+    },
+    {
+      product: "Bird Cage",
+      quantity: 1,
+      totalPrice: "Rp 150,000",
+      status: "Sudah Dibayar",
+    },
+  ];
+
+  // Filter pesanan yang menunggu pembayaran
+  const pendingOrders = orderRows.filter(
+    (order) => order.status === "Menunggu Pembayaran"
+  );
+
+  // Gabungkan pesanan menunggu pembayaran ke dalam satu baris
+  const consolidatedOrderRow = {
+    product: pendingOrders.map((order) => order.product).join(", "),
+    quantity: pendingOrders.reduce((acc, order) => acc + order.quantity, 0),
+    totalPrice: `Rp ${pendingOrders
+      .reduce(
+        (acc, order) =>
+          acc + parseInt(order.totalPrice.replace("Rp ", "").replace(",", "")),
+        0
+      )
+      .toLocaleString()}`,
+    status: "Menunggu Pembayaran",
+    actions: (
+      <Button
+        variant="success"
+        onClick={() => handlePaymentClick(pendingOrders)}
+      >
+        Payment
+      </Button>
+    ),
+  };
+
+  // Pesanan yang akan ditampilkan dalam tabel
+  const updatedOrderRows = [
+    consolidatedOrderRow,
+    ...orderRows.filter((order) => order.status !== "Menunggu Pembayaran"),
+  ];
 
   const orderColumns = [
     {
@@ -120,63 +175,6 @@ const ProfilePage = () => {
     },
   ];
 
-  const orderRows = [
-    {
-      product: "Dog Food",
-      quantity: 2,
-      totalPrice: "Rp 100,000",
-      status: "Pending",
-      actions: (
-        <>
-          <Button
-            variant="success"
-            onClick={() =>
-              handlePaymentClick({ product: "Dog Food", quantity: 2 })
-            }
-          >
-            Payment
-          </Button>
-          <Button
-            variant="info"
-            onClick={() =>
-              handleViewClick({ product: "Dog Food", status: "Pending" })
-            }
-            className="ml-2"
-          >
-            View
-          </Button>
-        </>
-      ),
-    },
-    {
-      product: "Cat Toy",
-      quantity: 1,
-      totalPrice: "Rp 50,000",
-      status: "Delivered",
-      actions: (
-        <>
-          <Button
-            variant="success"
-            onClick={() =>
-              handlePaymentClick({ product: "Cat Toy", quantity: 1 })
-            }
-          >
-            Payment
-          </Button>
-          <Button
-            variant="info"
-            onClick={() =>
-              handleViewClick({ product: "Cat Toy", status: "Delivered" })
-            }
-            className="ml-2"
-          >
-            View
-          </Button>
-        </>
-      ),
-    },
-  ];
-
   const appointmentColumns = [
     {
       label: "Jasa",
@@ -200,22 +198,26 @@ const ProfilePage = () => {
       service: "Vet Appointment",
       status: "Menunggu Konfirmasi",
       actions: (
-        <>
-          <Button
-            variant="info"
-            onClick={() =>
-              handleViewAppointmentClick({
-                service: "Vet Appointment",
-                status: "Menunggu Konfirmasi",
-              })
-            }
-          >
-            View
-          </Button>
-        </>
+        <Button
+          variant="info"
+          onClick={() =>
+            handleViewAppointmentClick({
+              service: "Vet Appointment",
+              status: "Menunggu Konfirmasi",
+            })
+          }
+        >
+          View
+        </Button>
       ),
     },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken"); // Hapus token dari localStorage
+    navigate("/"); // Redirect ke halaman login setelah logout
+    navigate(0);
+  };
 
   return (
     <Container>
@@ -230,9 +232,21 @@ const ProfilePage = () => {
             <Card.Body>
               <Card.Title>{name}</Card.Title>
               <Card.Text>{email}</Card.Text>
-              <Button variant="primary" onClick={() => setShowModal(true)}>
-                Ubah Foto Profil
-              </Button>
+              <div>
+                <Button variant="primary" onClick={() => setShowModal(true)}>
+                  Ubah Foto Profil
+                </Button>
+              </div>
+              <div className="mt-3">
+                <Button variant="primary" size="sm" onClick={handleLogout}>
+                  <img
+                    src="./Picture/import.gif"
+                    className="avatar img-fluid rounded me-2 p-2"
+                    alt=""
+                  />
+                  Logout
+                </Button>
+              </div>
             </Card.Body>
           </Card>
         </Col>
@@ -244,7 +258,7 @@ const ProfilePage = () => {
                 striped
                 bordered
                 hover
-                data={{ columns: orderColumns, rows: orderRows }}
+                data={{ columns: orderColumns, rows: updatedOrderRows }}
               />
             </Card.Body>
           </Card>
@@ -289,20 +303,34 @@ const ProfilePage = () => {
       {/* Payment Modal */}
       <Modal show={showPaymentModal} onHide={() => setShowPaymentModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Pembayaran untuk {selectedOrder?.product}</Modal.Title>
+          <Modal.Title>Pembayaran untuk Pesanan</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="formAccount">
               <Form.Label>Rekening Pembayaran</Form.Label>
-              <Form.Control type="text" placeholder="1234-5678-9012" readOnly />
+              <Form.Control type="text" placeholder="1234-567" />
             </Form.Group>
+
+            <Form.Group controlId="formAddress">
+              <Form.Label>Alamat Pengiriman</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Masukkan alamat pengiriman"
+              />
+            </Form.Group>
+            <Form.Group controlId="formAddress">
+              <Form.Label>No Handphone</Form.Label>
+              <Form.Control type="number" placeholder="Masukkan no hanphone" />
+            </Form.Group>
+
             <Form.Group controlId="formFile">
               <Form.Label>Unggah Bukti Pembayaran</Form.Label>
               <Form.Control type="file" />
             </Form.Group>
           </Form>
         </Modal.Body>
+
         <Modal.Footer>
           <Button
             variant="secondary"

@@ -110,22 +110,30 @@ const AppointmentTable = () => {
 
   return (
     <CDBContainer fluid>
-      <CDBCard style={{ borderRadius: "15px" }}>
-        <CDBCardBody>
-          <CDBBtn color="primary" size="large" circle>
-            Create New Appointment
-          </CDBBtn>
-          <CDBDataTable
-            responsive
-            striped
-            bordered
-            hover
-            data={data}
-            pagination
-            materialSearch={true}
-          />
-        </CDBCardBody>
-      </CDBCard>
+      <div className="container-fluid px-4">
+        <h2 className="mb-3">
+          <strong>Appoitment</strong>
+        </h2>
+        <figcaption className="blockquote-footer mb-5">
+          List <cite title="Source Title">Appointment</cite>
+        </figcaption>
+        <CDBCard style={{ borderRadius: "15px" }}>
+          <CDBCardBody>
+            <CDBBtn color="primary" size="large" circle>
+              Create New Appointment
+            </CDBBtn>
+            <CDBDataTable
+              responsive
+              striped
+              bordered
+              hover
+              data={data}
+              pagination
+              materialSearch={true}
+            />
+          </CDBCardBody>
+        </CDBCard>
+      </div>
     </CDBContainer>
   );
 };

@@ -5,7 +5,7 @@ import cors from "cors";
 import router from "./routers/index.js";
 import dotenv from "dotenv";
 import fileUpload from "express-fileupload";
-import Form_Service from "./models/FormService.js";
+import { TransactionDetail } from "./models/TransactionModel.js";
 
 dotenv.config();
 
@@ -14,7 +14,7 @@ const app = express();
 try {
   await db.authenticate();
   console.log("Database connected");
-  await Form_Service.sync();
+  await TransactionDetail.sync();
 } catch (error) {
   console.error("Mysql Error Check your XAMPP");
 }

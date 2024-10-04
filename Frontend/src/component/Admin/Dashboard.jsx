@@ -12,11 +12,12 @@ import { useEffect, useState } from "react";
 import UserTable from "./User_Table";
 import { jwtDecode as jwt_decode } from "jwt-decode";
 import AppointmetTable from "./Appointment_Table";
-import Order_Table from "./Order_Table";
+// import Order_Table from "./Order_Table";
 import Product_Table from "./Product_Table";
 import Kategori_Table from "./Kategori_Product";
 import HomePage from "./nav";
 import Kategori_Service from "./Kategori_Service";
+import OrderListTable from "./Order_Table";
 // import HomePage from "./nav";
 
 const Main_Dashboard = () => {
@@ -301,7 +302,7 @@ const Main_Dashboard = () => {
               <Routes>
                 <Route path="/user" element={<UserTable />} />
                 <Route path="/appointment" element={<AppointmetTable />} />
-                <Route path="/order" element={<Order_Table />} />
+                <Route path="/order" element={<OrderListTable />} />
                 <Route path="/product" element={<Product_Table />} />
                 <Route path="/kategori" element={<Kategori_Table />} />
                 <Route path="/kategoriservice" element={<Kategori_Service />} />

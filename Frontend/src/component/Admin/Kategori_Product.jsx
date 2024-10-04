@@ -121,8 +121,8 @@ const Kategori_Table = () => {
       action: (
         <>
           <Button
-            variant="outline-danger"
-            size="sm"
+            className="btn btn-danger btn-sm text-capitalize"
+            variant="danger"
             onClick={() => {
               setShowDeleteModal(true);
               setKategoriNameToDelete(kategori.nameKategori);
@@ -131,9 +131,8 @@ const Kategori_Table = () => {
             Delete
           </Button>
           <Button
-            className="mx-3"
-            variant="outline-primary"
-            size="sm"
+            className="btn btn-primary btn-sm text-capitalize mx-3"
+            variant="primary"
             onClick={() => handleShowUpdateModal(kategori)}
           >
             Update
