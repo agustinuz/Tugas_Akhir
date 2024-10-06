@@ -35,7 +35,10 @@ import {
   deleteCartUser,
   getCart,
 } from "../controllers/Cart.js";
-import { getImageById, saveImage } from "../controllers/UserImage.js";
+import {
+  getProfileImage,
+  uploadProfileImage,
+} from "../controllers/UserImage.js";
 import {
   CreateTransaksi,
   UpdateTransaksi,
@@ -49,7 +52,7 @@ router.get("/getKategori", getKategori);
 router.get("/getUsers", getUsers);
 router.get("/getAppointment", getAppointment);
 router.get("/getSchedule", getSchedule);
-router.get("/getservice", getService);
+router.get("/getservice/:kategoriId", getService);
 router.get("/kategoriService", getKategoriService);
 router.post("/products", saveProduct);
 router.post("/createSchedule", createSchedule);
@@ -73,8 +76,8 @@ router.post("/cart", addCart);
 router.get("/cart/:userId", getCart);
 router.delete("/cart/:userId", deleteCartUser);
 router.delete("/cart/:cartId", deleteCartItem);
-router.get("/profile-image/:userId", getImageById);
-router.post("/upload-profile-image", saveImage);
 router.post("/transaksi", CreateTransaksi);
 router.put("/transaksi/:id", UpdateTransaksi);
+router.post("/profile/upload", uploadProfileImage);
+router.get("/profile/image", getProfileImage);
 export default router;
