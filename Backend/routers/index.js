@@ -41,6 +41,9 @@ import {
 } from "../controllers/UserImage.js";
 import {
   CreateTransaksi,
+  GetPayment,
+  GetTransactionDetail,
+  GetTransactionMaster,
   UpdateTransaksi,
 } from "../controllers/Transaction.js";
 
@@ -78,6 +81,7 @@ router.delete("/cart/:userId", deleteCartUser);
 router.delete("/cart/:cartId", deleteCartItem);
 router.post("/transaksi", CreateTransaksi);
 router.put("/transaksi/:id", UpdateTransaksi);
-router.post("/profile/upload", uploadProfileImage);
-router.get("/profile/image", getProfileImage);
+router.get("/transaksi/:type", GetTransactionMaster);
+router.get("/transaksi-detail/:transaction_id", GetTransactionDetail);
+router.get("/transaksi-payment/:transaction_id", GetPayment);
 export default router;
