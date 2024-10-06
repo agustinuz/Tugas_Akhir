@@ -41,6 +41,43 @@ export const UpdateTransaksi = async (req,res)=>{
     return res.json(response);
 }
 
-export const GetTransactionPending = async (req,res)=>{
-    const transactions = await db.query("select t.id,t.name,p.name as productName,p.price,d.qty,t.status from transaction_master t inner join transaction_detail d on t.id=d.transaction_id left join users u on t.user_id=u.id inner join product p on d.product_id=p.id left join kategori k on p.kategori_id=k.id;")
+export const GetTransactionMaster = async (req,res)=>{
+    const {type} = req.params;
+    const {userId}  = req.query;
+    if (type != 'Admin' && type != 'User')
+        return res.status(200).json([]);
+    let additionalQuery = '';
+    let additionalParam = {type: QueryTypes.SELECT};
+    if (type=='User')
+    {
+        additionalQuery = ' where m.user_id=:userId ';
+        additionalParam = {
+            ...additionalParam,
+            replacements: {userId: userId}
+        }
+    }
+    const queryString = `select m.id as transaction_id,m.user_id,m.name,m.transaction_date,m.status,sum(p.price * d.qty) as subtotal,!isnull(py.id) as paid  from transaction_master m inner join transaction_detail d on m.id=d.transaction_id inner join product p on d.product_id=p.id left join payment py on m.id=py.transaction_id ${additionalQuery} Group by m.id`;
+    const transactions = await db.query(queryString,
+    additionalParam);
+    return res.status(200).json(transactions.length < 1 ? [] : transactions);
 }
+export const GetTransactionDetail = async (req,res)=>{
+    const {transaction_id}  = req.params;
+
+    const queryString = `select d.transaction_id,d.id as transaction_detail_id,p.name as namaProduct,p.price as hargaProduct,d.qty,(p.price * d.qty) as totalHarga,p.image,p.url from transaction_detail d inner join product p on d.product_Id=p.id where d.transaction_id=:transaction_id`;
+    const transactions = await db.query(queryString,{
+        type:QueryTypes.SELECT,
+        replacements: {transaction_id: transaction_id}
+    });
+    return res.status(200).json(transactions.length < 1 ? [] : transactions);
+}
+
+export const GetPayment = async (req,res)=>{
+    const {transaction_id} = req.params;
+    const queryString = `select py.alamat,py.no_hp,py.url,py.image,py.id,py.transaction_id,m.name,m.status,sum(p.price * d.qty) as totalPembayaran from payment py inner join transaction_master m on py.transaction_id=m.id inner join transaction_detail d on m.id=d.transaction_id inner join product p on d.product_id=p.id where py.transaction_id=:transaction_id Group by m.id`;
+    const payments = await db.query(queryString,{
+        type: QueryTypes.SELECT,
+        replacements: {transaction_id: transaction_id}
+    });
+    return res.status(200).json(payments.length < 1 ? [] : payments);
+} 

@@ -38,6 +38,9 @@ import {
 import { getImageById, saveImage } from "../controllers/UserImage.js";
 import {
   CreateTransaksi,
+  GetPayment,
+  GetTransactionDetail,
+  GetTransactionMaster,
   UpdateTransaksi,
 } from "../controllers/Transaction.js";
 
@@ -77,4 +80,7 @@ router.get("/profile-image/:userId", getImageById);
 router.post("/upload-profile-image", saveImage);
 router.post("/transaksi", CreateTransaksi);
 router.put("/transaksi/:id", UpdateTransaksi);
+router.get('/transaksi/:type',GetTransactionMaster);
+router.get('/transaksi-detail/:transaction_id',GetTransactionDetail);
+router.get('/transaksi-payment/:transaction_id',GetPayment);
 export default router;
