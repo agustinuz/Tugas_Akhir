@@ -40,6 +40,7 @@ const RegisterModal = ({ show, handleClose }) => {
         confirmButtonText: "OK",
       }).then(() => {
         handleClose();
+        navigate("/");
       });
     } catch (error) {
       if (error.response) {

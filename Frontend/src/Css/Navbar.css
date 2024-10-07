@@ -113,8 +113,8 @@
 }
 
 .hero-header {
-  background: url("/public/Picture/hero.jpg") top right no-repeat;
-  background-size: auto;
+  background: url("/public/Picture/catbackgroud.jpg") top right no-repeat;
+  background-size: cover;
   padding: 150px;
   border-radius: 40px;
 }

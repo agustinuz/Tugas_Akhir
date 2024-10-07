@@ -7,15 +7,20 @@ import {
   CDBContainer,
   CDBBtn,
 } from "cdbreact";
+import { Button } from "react-bootstrap";
 
 const AppointmentTable = () => {
   const [service, setService] = useState([]);
+  const kategoriId = 1; // Misalkan kita mengambil kategori dengan ID 1
 
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/getservice");
-        setService(response.data);
+        const response = await axios.get(
+          `http://localhost:5000/getservice/${kategoriId}`
+        );
+        console.log(response.data.services);
+        setService(response.data.services); // Ubah untuk mengakses array services
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -70,9 +75,15 @@ const AppointmentTable = () => {
     },
     {
       label: "Kategori",
-      field: "kategori_service",
+      field: "kategori_service", // Ubah ke 'KategoriName'
       sort: "asc",
       width: 100,
+    },
+    {
+      label: "status",
+      field: "status",
+      sort: "asc",
+      width: 80,
     },
     {
       label: "Action",
@@ -87,22 +98,28 @@ const AppointmentTable = () => {
       index: index + 1,
       Name_Owner: serviceitem.Name_Owner,
       Name_Animal: serviceitem.Name_Animal,
-      birthday_Animal: serviceitem.birthday_Animal,
+      birthday_Animal: new Date(serviceitem.birthday_Animal).toLocaleDateString(
+        "en-US"
+      ),
       Jenis: serviceitem.Jenis,
       RAS: serviceitem.RAS,
       Quantity: serviceitem.Quantity,
       kategori_service: serviceitem.kategori_service,
+      status: serviceitem.status,
       action: (
         <>
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm me-3 text-capitalize"
+          <Button
+            className="btn btn-primary btn-sm text-capitalize"
+            variant="primary"
           >
-            Edit
-          </button>
-          <button className="btn btn-outline-danger btn-sm text-capitalize">
-            Delete
-          </button>
+            Confirm
+          </Button>
+          <Button
+            className="btn btn-danger btn-sm text-capitalize mx-3"
+            variant="danger"
+          >
+            Reject
+          </Button>
         </>
       ),
     })),
@@ -112,7 +129,7 @@ const AppointmentTable = () => {
     <CDBContainer fluid>
       <div className="container-fluid px-4">
         <h2 className="mb-3">
-          <strong>Appoitment</strong>
+          <strong>Appointment</strong>
         </h2>
         <figcaption className="blockquote-footer mb-5">
           List <cite title="Source Title">Appointment</cite>

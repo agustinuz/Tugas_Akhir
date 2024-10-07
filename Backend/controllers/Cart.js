@@ -68,34 +68,34 @@ export const getCart = async (req, res) => {
 };
 
 // Controller untuk menghapus item dari keranjang
-export const deleteCartItem = async (req, res) => {
-  try {
-    const deletecart = await ProductCart.findOne({
-      where: {
-        cartId: req.params.cartId,
-      },
-    });
+// export const deleteCartItem = async (req, res) => {
+//   try {
+//     const deletecart = await ProductCart.findOne({
+//       where: {
+//         cartId: req.params.cartId,
+//       },
+//     });
 
-    if (!deletecart) {
-      return res.status(404).json({ msg: "No Data Found" });
-    }
+//     if (!deletecart) {
+//       return res.status(404).json({ msg: "No Data Found" });
+//     }
 
-    const Deleteitem = await ProductCart.destroy({
-      where: {
-        cartId: req.params.cartId,
-      },
-    });
+//     const Deleteitem = await ProductCart.destroy({
+//       where: {
+//         cartId: req.params.cartId,
+//       },
+//     });
 
-    if (Deleteitem) {
-      return res.json({ msg: "Cart deleted successfully" });
-    } else {
-      return res.status(404).json({ msg: "Cart not found" });
-    }
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ msg: "Internal Server Error" });
-  }
-};
+//     if (Deleteitem) {
+//       return res.json({ msg: "Cart deleted successfully" });
+//     } else {
+//       return res.status(404).json({ msg: "Cart not found" });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "Internal Server Error" });
+//   }
+// };
 
 export const deleteCartUser = async (req, res) => {
   const { userId } = req.params;
@@ -115,7 +115,6 @@ export const deleteCartUser = async (req, res) => {
 export const removeCart = async (req, res) => {
   const { cartId } = req.params;
   const { qty } = req.qty;
-
   const cart = await ProductCart.findOne({
     where: {
       cartId: cartId,

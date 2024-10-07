@@ -31,14 +31,14 @@ import {
 } from "../controllers/Service_Controller.js";
 import {
   addCart,
-  deleteCartItem,
   deleteCartUser,
   getCart,
+  removeCart,
 } from "../controllers/Cart.js";
-import {
-  getProfileImage,
-  uploadProfileImage,
-} from "../controllers/UserImage.js";
+// import {
+//   getProfileImage,
+//   uploadProfileImage,
+// } from "../controllers/UserImage.js";
 import {
   CreateTransaksi,
   GetPayment,
@@ -78,7 +78,7 @@ router.patch("/products/:id", updateProduct);
 router.post("/cart", addCart);
 router.get("/cart/:userId", getCart);
 router.delete("/cart/:userId", deleteCartUser);
-router.delete("/cart/:cartId", deleteCartItem);
+router.delete("/cart/:cartId", removeCart);
 router.post("/transaksi", CreateTransaksi);
 router.put("/transaksi/:id", UpdateTransaksi);
 router.get("/transaksi/:type", GetTransactionMaster);

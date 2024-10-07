@@ -61,7 +61,7 @@ const Main_Dashboard = () => {
     // Cek apakah pengguna sudah login sebelumnya
     const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {
-      navigate("/login");
+      navigate("/");
     } else {
       const decodedToken = jwt_decode(accessToken);
       const name = decodedToken.name; // Mengambil nama pengguna dari token
@@ -71,7 +71,7 @@ const Main_Dashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken"); // Hapus token dari localStorage
-    navigate("/login"); // Redirect ke halaman login setelah logout
+    navigate("/"); // Redirect ke halaman login setelah logout
     navigate(0);
   };
 

@@ -1,15 +1,32 @@
 import Form_Service from "../models/FormService.js";
 import Kategori_Service from "../models/KategoriService.js";
+import db from "../config/Database.js";
 
 // Ambil semua form service
+// export const getService = async (req, res) => {
+//   try {
+//     const response = await Form_Service.findAll();
+//     res.json(response);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 export const getService = async (req, res) => {
-  try {
-    const response = await Form_Service.findAll();
-    res.json(response);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
+  const { kategoriId } = req.params;
+
+  const checkKategori = await Kategori_Service.count({
+    where: {
+      id: kategoriId,
+    },
+  });
+  if (checkKategori < 1)
+    return res.status(404).json({ msg: "Kategori Not Found" });
+  const serviceData = await db.query(`
+     select fs.id AS 'ServiceId',fs.Name_Owner,fs.Name_Animal,fs.birthday_Animal,fs.Jenis,fs.RAS,fs.Quantity,k.nameKategori AS 'kategori_service',fs.status from form_service fs inner join kategori_service k ON fs.kategori_service = k.id`);
+  return res.status(200).json({
+    services: serviceData[0],
+  });
 };
 
 // Buat form service baru, userId diambil dari frontend

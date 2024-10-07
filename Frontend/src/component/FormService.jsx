@@ -20,7 +20,7 @@ const CreateServiceModal = ({ show, handleClose }) => {
 
   // Fungsi untuk mendapatkan userId dari token
   const getUserIdFromToken = () => {
-    const token = localStorage.getItem("token"); // Ambil token dari localStorage
+    const token = localStorage.getItem("accessToken"); // Ambil token dari localStorage
     if (token) {
       const decoded = jwt_decode(token); // Decode token untuk mendapatkan userId
       return decoded.userId;

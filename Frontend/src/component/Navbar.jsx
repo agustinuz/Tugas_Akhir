@@ -143,22 +143,24 @@ const Navbar = () => {
         <div class="container py-5">
           <div class="row justify-content-start">
             <div class="col-lg-8 text-center text-lg-start">
-              <h1 class="display-1 text-uppercase text-secondary mb-lg-4">
+              <h1 class="display-1 text-uppercase text-primary mb-lg-5">
                 Pet Shop
               </h1>
-              <h1 class="text-uppercase text-white mb-lg-4">
+              <h1 class="text-uppercase text-white mb-lg-5">
                 Make Your Pets Happy
               </h1>
-              <p class="fs-4 text-white mb-lg-4">
-                Dolore tempor clita lorem rebum kasd eirmod dolore diam eos
-                kasd. Kasd clita ea justo est sed kasd erat clita sea
-              </p>
+              <figcaption className="blockquote-footer mb-5 text-white">
+                <h5>
+                  The best pet{" "}
+                  <cite title="Source Title">Shop & Treatment</cite>
+                </h5>
+              </figcaption>
               <div class="d-flex align-items-center justify-content-center justify-content-lg-start pt-5">
                 <Link
                   to="/login"
                   class="btn btn-outline-light border-2 py-md-3 px-md-5 me-5"
                 >
-                  Shop Now!!
+                  Read me !!
                 </Link>
               </div>
             </div>
@@ -210,8 +212,11 @@ const Navbar = () => {
                 </h1>
               </div>
               <h4 className="text-body mb-4">
-                Diam dolor diam ipsum tempor sit. Clita erat ipsum et lorem stet
-                no labore lorem sit clita duo justo magna dolore
+                fasilitas kesehatan khusus yang menyediakan layanan medis untuk
+                hewan peliharaan, seperti anjing, kucing, dan hewan kecil
+                lainnya. Layanan yang ditawarkan oleh klinik hewan biasanya
+                meliputi pemeriksaan kesehatan rutin, vaksinasi, pengobatan
+                penyakit,
               </h4>
               <div className="bg-light p-4">
                 <ul
@@ -256,14 +261,18 @@ const Navbar = () => {
                     aria-labelledby="pills-1-tab"
                   >
                     <p className="mb-0">
-                      Tempor erat elitr at rebum at at clita aliquyam
-                      consetetur. Diam dolor diam ipsum et, tempor voluptua sit
-                      consetetur sit. Aliquyam diam amet diam et eos sadipscing
-                      labore. Clita erat ipsum et lorem et sit, sed stet no
-                      labore lorem sit. Sanctus clita duo justo et tempor
-                      consetetur takimata eirmod, dolores takimata consetetur
-                      invidunt magna dolores aliquyam dolores dolore. Amet erat
-                      amet et magna
+                      <ol>
+                        <li>
+                          Menjadi klinik hewan terdepan yang menyediakan layanan
+                          kesehatan berkualitas tinggi untuk meningkatkan
+                          kesejahteraan hewan peliharaan dan kepuasan pemilik.
+                        </li>
+                        <li>
+                          Menjadi pusat kesehatan hewan yang diakui atas
+                          dedikasi, profesionalisme, dan kepedulian terhadap
+                          hewan peliharaan.
+                        </li>
+                      </ol>
                     </p>
                   </div>
                   <div
@@ -273,14 +282,18 @@ const Navbar = () => {
                     aria-labelledby="pills-2-tab"
                   >
                     <p className="mb-0">
-                      Tempor erat elitr at rebum at at clita aliquyam
-                      consetetur. Diam dolor diam ipsum et, tempor voluptua sit
-                      consetetur sit. Aliquyam diam amet diam et eos sadipscing
-                      labore. Clita erat ipsum et lorem et sit, sed stet no
-                      labore lorem sit. Sanctus clita duo justo et tempor
-                      consetetur takimata eirmod, dolores takimata consetetur
-                      invidunt magna dolores aliquyam dolores dolore. Amet erat
-                      amet et magna
+                      Memberikan perawatan medis yang komprehensif, berkualitas,
+                      dan berbasis ilmu pengetahuan modern untuk semua jenis
+                      hewan peliharaan. Menjaga dan meningkatkan kesehatan hewan
+                      melalui program preventif seperti vaksinasi, pencegahan
+                      penyakit, dan edukasi kepada pemilik. Memberikan pelayanan
+                      yang ramah, cepat tanggap, dan penuh kasih terhadap hewan
+                      peliharaan dan pemiliknya. Menyediakan lingkungan yang
+                      aman dan nyaman untuk perawatan, pembedahan, serta
+                      penanganan kasus darurat hewan. Melakukan inovasi
+                      terus-menerus dalam teknik dan teknologi perawatan hewan
+                      untuk mendukung kualitas hidup yang lebih baik bagi hewan
+                      peliharaan.
                     </p>
                   </div>
                 </div>
@@ -310,8 +323,10 @@ const Navbar = () => {
                 <div>
                   <h5 class="text-uppercase mb-3">Pet Boarding</h5>
                   <p>
-                    Kasd dolor no lorem sit tempor at justo rebum rebum stet
-                    justo elitr dolor amet sit
+                    Pet boarding adalah layanan penitipan hewan peliharaan,
+                    seperti anjing atau kucing, di tempat khusus saat pemiliknya
+                    tidak dapat merawatnya untuk sementara waktu, misalnya saat
+                    bepergian atau ada keperluan mendesak
                   </p>
                   <Button
                     className="text-white text-uppercase"
@@ -337,8 +352,11 @@ const Navbar = () => {
                 <div>
                   <h5 class="text-uppercase mb-3">Pet Feeding</h5>
                   <p>
-                    Kasd dolor no lorem sit tempor at justo rebum rebum stet
-                    justo elitr dolor amet sit
+                    Pet feeding adalah aktivitas memberikan makanan kepada hewan
+                    peliharaan sesuai dengan jadwal dan kebutuhan nutrisi
+                    mereka. Layanan pet feeding sering kali disediakan oleh pet
+                    sitters, pet boarding, atau fasilitas penitipan hewan
+                    lainnya saat pemiliknya tidak ada.
                   </p>
                   <Button
                     className="text-white text-uppercase"
@@ -364,8 +382,11 @@ const Navbar = () => {
                 <div>
                   <h5 class="text-uppercase mb-3">Pet Grooming</h5>
                   <p>
-                    Kasd dolor no lorem sit tempor at justo rebum rebum stet
-                    justo elitr dolor amet sit
+                    Pet grooming adalah perawatan kebersihan dan penampilan
+                    hewan peliharaan, seperti anjing atau kucing. Layanan pet
+                    grooming mencakup berbagai aktivitas, seperti memandikan,
+                    menyisir bulu, memotong kuku, membersihkan telinga,
+                    merapikan bulu, dan terkadang juga menyikat gigi hewan.
                   </p>
                   <Button
                     className="text-white text-uppercase"
@@ -391,8 +412,13 @@ const Navbar = () => {
                 <div>
                   <h5 class="text-uppercase mb-3">Pet Training</h5>
                   <p>
-                    Kasd dolor no lorem sit tempor at justo rebum rebum stet
-                    justo elitr dolor amet sit
+                    Pet training adalah proses melatih hewan peliharaan, seperti
+                    anjing atau kucing, untuk mempelajari perilaku yang
+                    diinginkan, menaati perintah, dan mengembangkan kebiasaan
+                    yang baik. Pet training melibatkan mengajarkan keterampilan
+                    dasar, seperti duduk, datang saat dipanggil, atau berjalan
+                    dengan tali, hingga perilaku yang lebih kompleks, seperti
+                    mengikuti aturan rumah atau melakukan trik tertentu.
                   </p>
                   <Button
                     className="text-white text-uppercase"
@@ -418,8 +444,15 @@ const Navbar = () => {
                 <div>
                   <h5 class="text-uppercase mb-3">Pet Exercise</h5>
                   <p>
-                    Kasd dolor no lorem sit tempor at justo rebum rebum stet
-                    justo elitr dolor amet sit
+                    Pet exercise adalah aktivitas fisik yang dilakukan oleh
+                    hewan peliharaan, seperti anjing atau kucing, untuk menjaga
+                    kesehatan dan kebugaran mereka. Pet exercise meliputi
+                    berbagai kegiatan, seperti berjalan-jalan, berlari, bermain
+                    lempar tangkap (fetch), melompat, atau menggunakan mainan
+                    interaktif untuk merangsang gerakan dan aktivitas mental
+                    hewan. Latihan ini penting untuk menjaga berat badan yang
+                    sehat, meningkatkan kesehatan jantung, serta mengurangi
+                    stres dan kecemasan pada hewan peliharaan
                   </p>
                   <Button
                     className="text-white text-uppercase"
@@ -445,8 +478,13 @@ const Navbar = () => {
                 <div>
                   <h5 class="text-uppercase mb-3">Pet Treatment</h5>
                   <p>
-                    Kasd dolor no lorem sit tempor at justo rebum rebum stet
-                    justo elitr dolor amet sit
+                    Pet treatment adalah perawatan medis atau non-medis yang
+                    diberikan kepada hewan peliharaan untuk menjaga kesehatannya
+                    atau mengobati penyakit atau kondisi tertentu. Pet treatment
+                    mencakup berbagai layanan, seperti pemeriksaan kesehatan
+                    rutin, vaksinasi, pengobatan penyakit, perawatan gigi,
+                    pemberian obat-obatan, perawatan luka, dan pencegahan
+                    parasit (seperti kutu atau cacing).
                   </p>
                   <Button
                     className="text-white text-uppercase"
@@ -615,14 +653,17 @@ const Navbar = () => {
                 <a class="text-white" href="#">
                   Your Site Name
                 </a>
-                . All Rights Reserved.
+                . Agustinus Sitompul
               </p>
             </div>
             <div class="col-md-6 text-center text-md-end">
               <p class="mb-0">
                 Designed by{" "}
-                <a class="text-white" href="https://htmlcodex.com">
-                  HTML Codex
+                <a
+                  class="text-white"
+                  href="https://react-bootstrap.netlify.app/"
+                >
+                  React-Bootstrap
                 </a>
               </p>
             </div>
