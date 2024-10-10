@@ -1,214 +1,199 @@
-import React, { useState } from "react";
-import { CDBDataTable, CDBCard } from "cdbreact";
-import { Button, Modal, Image } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Modal, Button } from "react-bootstrap";
+import { CDBDataTable } from "cdbreact"; // Import CDBDataTable
 
-const OrderListTable = () => {
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
+const AdminTransactions = () => {
+  const [transactions, setTransactions] = useState([]);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState(null); // State for payment data
+  const [showModal, setShowModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false); // State for payment modal
 
-  const handlePaymentModal = (order) => {
-    setSelectedOrder(order);
-    setShowPaymentModal(true);
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/transaksi/Admin"
+        );
+        setTransactions(response.data);
+      } catch (error) {
+        console.error("Error fetching transactions", error);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+
+  const handleShowDetails = async (transactionId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/transaksi-detail/${transactionId}`
+      );
+      setSelectedTransaction(response.data);
+      setShowModal(true);
+    } catch (error) {
+      console.error("Error fetching transaction details", error);
+    }
   };
 
-  const handleDetailModal = (order) => {
-    setSelectedOrder(order);
-    setShowDetailModal(true);
+  const handleViewPayment = async (transactionId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/transaksi-payment/${transactionId}`
+      );
+      setSelectedPayment(response.data); // Store payment data
+      setShowPaymentModal(true); // Show payment modal
+    } catch (error) {
+      console.error("Error fetching payment details", error);
+    }
   };
 
-  const closeModal = () => {
-    setShowPaymentModal(false);
-    setShowDetailModal(false);
-  };
-
-  const orders = [
+  const columns = [
+    { label: "ID", field: "transaction_id", sort: "asc", width: 150 },
+    { label: "Name", field: "name", sort: "asc", width: 270 },
+    { label: "Date", field: "transaction_date", sort: "asc", width: 200 },
+    { label: "Status", field: "status", sort: "asc", width: 150 },
+    { label: "Subtotal", field: "subtotal", sort: "asc", width: 100 },
+    { label: "Paid", field: "paid", sort: "asc", width: 100 },
     {
-      id: 1,
-      buyer: "John Doe",
-      date: "2024-10-03",
-      subtotal: "$200",
-      status: "Menunggu Pembayaran",
-      paymentProof: "payment-proof-url.jpg",
-      orderDetails: [
-        {
-          image: "product1.jpg",
-          name: "Product A",
-          price: "$50",
-          qty: 2,
-          totalPrice: "$100",
-        },
-        {
-          image: "product2.jpg",
-          name: "Product B",
-          price: "$50",
-          qty: 2,
-          totalPrice: "$100",
-        },
-      ],
+      label: "Actions",
+      field: "actions",
+      sort: "asc",
+      width: 150,
+      default: true,
     },
-    {
-      id: 2,
-      buyer: "Jane Smith",
-      date: "2024-10-02",
-      subtotal: "$150",
-      status: "Menunggu Pembayaran",
-      paymentProof: "payment-proof-url2.jpg",
-      orderDetails: [
-        {
-          image: "product3.jpg",
-          name: "Product C",
-          price: "$75",
-          qty: 2,
-          totalPrice: "$150",
-        },
-      ],
-    },
-    // Tambahkan data lain di sini
   ];
 
-  const data = {
-    columns: [
-      {
-        label: "Nama Pembeli",
-        field: "buyer",
-        sort: "asc",
-      },
-      {
-        label: "Tanggal Transaksi",
-        field: "date",
-        sort: "asc",
-      },
-      {
-        label: "Subtotal",
-        field: "subtotal",
-        sort: "asc",
-      },
-      {
-        label: "Status",
-        field: "status",
-        sort: "asc",
-      },
-      {
-        label: "Actions",
-        field: "actions",
-        sort: "asc",
-      },
-    ],
-    rows: orders.map((order) => ({
-      buyer: order.buyer,
-      date: order.date,
-      subtotal: order.subtotal,
-      status: order.status,
-      actions: (
-        <>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => handlePaymentModal(order)}
-          >
-            View Payment
-          </Button>{" "}
-          <Button
-            variant="info"
-            size="sm"
-            onClick={() => handleDetailModal(order)}
-          >
-            Detail Pesanan
-          </Button>
-        </>
-      ),
-    })),
-  };
+  const data = transactions.map((transaction) => ({
+    transaction_id: transaction.transaction_id,
+    name: transaction.name,
+    transaction_date: transaction.transaction_date,
+    status: transaction.status,
+    subtotal: `$${transaction.subtotal}`,
+    paid: transaction.paid ? "Yes" : "No",
+    actions: (
+      <>
+        <Button
+          onClick={() => handleShowDetails(transaction.transaction_id)}
+          size="sm"
+          className="me-2"
+        >
+          View Details
+        </Button>
+        <Button
+          onClick={() => handleViewPayment(transaction.transaction_id)}
+          size="sm"
+          disabled={!transaction.paid} // Disable if not paid
+        >
+          View Payment
+        </Button>
+      </>
+    ),
+  }));
 
   return (
     <div>
-      <div className="container-fluid px-4">
-        <h2 className="mb-3">
-          <strong>Orders</strong>
-        </h2>
-        <figcaption className="blockquote-footer mb-5">
-          List <cite title="Source Title">Order</cite>
-        </figcaption>
-        <CDBCard style={{ borderRadius: "15px" }}>
-          <CDBDataTable striped bordered hover data={data} responsive />
-        </CDBCard>
-        {/* Modal for View Payment */}
-        <Modal show={showPaymentModal} onHide={closeModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Payment Details</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {/* Render payment details for the selected order */}
-            {selectedOrder && (
-              <div>
-                <p>Nama Pembeli: {selectedOrder.buyer}</p>
-                <Image src={selectedOrder.paymentProof} fluid />
-                {/* Tambahkan informasi lainnya di sini */}
-                <p>Total Pembayaran: {selectedOrder.totalPrice}</p>
-                <p>Status: {selectedOrder.status}</p>
-                {/* Contoh tambahan data */}
-              </div>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              variant="danger"
-              // onClick={() => handleReject(selectedOrder.id)}
-            >
-              Tolak
-            </Button>
-            <Button
-              variant="success"
-              // onClick={() => handleConfirm(selectedOrder.id)}
-            >
-              Konfirmasi
-            </Button>
-            <Button variant="secondary" onClick={closeModal}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
+      <h2>All Transactions (Admin)</h2>
+      <CDBDataTable
+        striped
+        bordered
+        hover
+        data={{
+          columns,
+          rows: data,
+        }}
+        noBottomColumns
+      />
 
-        {/* Modal for Detail Pesanan */}
-        <Modal show={showDetailModal} onHide={closeModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Order Details</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {/* Render order details for the selected order */}
-            {selectedOrder &&
-            selectedOrder.orderDetails &&
-            selectedOrder.orderDetails.length > 0 ? (
-              <div>
-                {selectedOrder.orderDetails.map((item, index) => (
-                  <div key={index} style={{ marginBottom: "15px" }}>
-                    <Image
-                      src={item.image}
-                      fluid
-                      style={{ width: "100px", marginRight: "10px" }}
-                    />
-                    <p>Nama Product: {item.name}</p>
-                    <p>Harga per Product: {item.price}</p>
-                    <p>Qty: {item.qty}</p>
-                    <p>Total Harga: {item.totalPrice}</p>
-                    <hr />
-                  </div>
+      {/* Modal for Transaction Details */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Transaction Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedTransaction ? (
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Product Name</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Total Price</th>
+                  <th>Image</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedTransaction.map((detail) => (
+                  <tr key={detail.transaction_detail_id}>
+                    <td>{detail.namaProduct}</td>
+                    <td>{detail.hargaProduct}</td>
+                    <td>{detail.qty}</td>
+                    <td>{detail.totalHarga}</td>
+                    <td>
+                      <img
+                        src={detail.url}
+                        alt={detail.namaProduct}
+                        width="50"
+                      />
+                    </td>
+                  </tr>
                 ))}
-              </div>
-            ) : (
-              <p>Tidak ada detail pesanan tersedia.</p>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={closeModal}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </div>
+              </tbody>
+            </table>
+          ) : (
+            <p>No details available</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal for Payment Details */}
+      <Modal show={showPaymentModal} onHide={() => setShowPaymentModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Payment Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedPayment ? (
+            <div>
+              <p>
+                <strong>Address:</strong> {selectedPayment[0].alamat}
+              </p>
+              <p>
+                <strong>Phone:</strong> {selectedPayment[0].no_hp}
+              </p>
+              <p>
+                <strong>Total Payment:</strong> $
+                {selectedPayment[0].totalPembayaran}
+              </p>
+              <p>
+                <strong>Payment Proof:</strong>
+              </p>
+              <img
+                src={selectedPayment[0].url}
+                alt="Payment Proof"
+                width="200"
+              />
+            </div>
+          ) : (
+            <p>No payment details available</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowPaymentModal(false)}
+          >
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
-export default OrderListTable;
+export default AdminTransactions;

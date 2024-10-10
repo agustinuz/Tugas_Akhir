@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; // Uncomment this if not already imported
+import axios from "axios";
 import {
   Container,
   Row,
@@ -8,6 +8,8 @@ import {
   Button,
   Image,
   ListGroup,
+  Table,
+  Modal,
 } from "react-bootstrap";
 import { jwtDecode as jwt_decode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
@@ -16,8 +18,10 @@ import Swal from "sweetalert2";
 const ProfilePage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [orders, setOrders] = useState([]); // State for orders
   const [appointments, setAppointments] = useState([]); // State for appointments
+  const [transactions, setTransactions] = useState([]); // State for transactions
+  const [selectedTransaction, setSelectedTransaction] = useState(null); // State for transaction details
+  const [showModal, setShowModal] = useState(false); // Modal for viewing transaction details
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,9 +31,9 @@ const ProfilePage = () => {
       setName(decodedToken.name);
       setEmail(decodedToken.email);
 
-      // Fetch orders and appointments
-      fetchUserOrders(decodedToken.userId); // Pass userId from decoded token
+      // appointments, and transactions
       fetchUserAppointments(decodedToken.userId);
+      fetchUserTransactions(decodedToken.userId); // Fetch transactions based on userId
     } else {
       Swal.fire({
         icon: "warning",
@@ -42,27 +46,41 @@ const ProfilePage = () => {
     }
   }, [navigate]);
 
-  const fetchUserOrders = async (userId) => {
-    try {
-      const response = await axios.get(`/api/orders/${userId}`); // Adjust API endpoint as needed
-      setOrders(response.data);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    }
-  };
-
   const fetchUserAppointments = async (userId) => {
     try {
-      const response = await axios.get(`/api/appointments/${userId}`); // Adjust API endpoint as needed
+      const response = await axios.get(`/api/appointments/${userId}`);
       setAppointments(response.data);
     } catch (error) {
       console.error("Error fetching appointments:", error);
     }
   };
 
+  const fetchUserTransactions = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/transaksi/User`, {
+        params: { userId },
+      });
+      setTransactions(response.data);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    }
+  };
+
+  const handleShowDetails = async (transactionId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/transaksi-detail/${transactionId}`
+      );
+      setSelectedTransaction(response.data);
+      setShowModal(true);
+    } catch (error) {
+      console.error("Error fetching transaction details", error);
+    }
+  };
+
   const handleLogout = () => {
-    localStorage.removeItem("accessToken"); // Hapus token dari localStorage
-    navigate("/"); // Redirect ke halaman login setelah logout
+    localStorage.removeItem("accessToken");
+    navigate("/");
     navigate(0);
   };
 
@@ -83,25 +101,8 @@ const ProfilePage = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={8}>
-          <Card>
-            <Card.Body>
-              <Card.Title>Order List</Card.Title>
-              <ListGroup>
-                {orders.length > 0 ? (
-                  orders.map((order) => (
-                    <ListGroup.Item key={order.id}>
-                      Order ID: {order.id} - Total: ${order.total} - Status:{" "}
-                      {order.status}
-                    </ListGroup.Item>
-                  ))
-                ) : (
-                  <ListGroup.Item>No orders found.</ListGroup.Item>
-                )}
-              </ListGroup>
-            </Card.Body>
-          </Card>
 
+        <Col md={8}>
           <Card className="mt-4">
             <Card.Body>
               <Card.Title>Appointment List</Card.Title>
@@ -119,6 +120,115 @@ const ProfilePage = () => {
               </ListGroup>
             </Card.Body>
           </Card>
+
+          {/* Transaksi Table */}
+          <Card className="mt-4">
+            <Card.Body>
+              <Card.Title>Orders</Card.Title>
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Subtotal</th>
+                    <th>Paid</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions.length > 0 ? (
+                    transactions.map((transaction, index) => (
+                      <tr key={transaction.transaction_id}>
+                        <td>{index + 1}</td>
+                        <td>{transaction.name}</td>
+                        <td>
+                          {new Date(
+                            transaction.transaction_date
+                          ).toLocaleDateString("en-US")}
+                        </td>
+                        <td>{transaction.status}</td>
+                        <td>Rp.{Number(transaction.subtotal).toFixed(0)}</td>
+
+                        <td>{transaction.paid ? "Yes" : "No"}</td>
+                        <td>
+                          <Button
+                            className="btn btn-primary btn-sm text-capitalize"
+                            variant="primary"
+                            onClick={() =>
+                              handleShowDetails(transaction.transaction_id)
+                            }
+                          >
+                            View Details
+                          </Button>
+                          <Button
+                            className="btn btn-primary btn-sm text-capitalize mx-3"
+                            variant="primary"
+                            onClick={() =>
+                              handleShowDetails(transaction.transaction_id)
+                            }
+                          >
+                            Payment
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7">No transactions found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>
+
+          {/* Modal for Transaction Details */}
+          <Modal show={showModal} onHide={() => setShowModal(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>List Shopping</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {selectedTransaction ? (
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>Product Name</th>
+                      <th>Price</th>
+                      <th>Quantity</th>
+                      <th>Total Price</th>
+                      <th>Image</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedTransaction.map((detail) => (
+                      <tr key={detail.transaction_detail_id}>
+                        <td>{detail.namaProduct}</td>
+                        <td>Rp.{Number(detail.hargaProduct).toFixed(0)}</td>
+                        <td>{detail.qty}</td>
+                        <td>Rp.{Number(detail.totalHarga).toFixed(0)}</td>
+                        <td>
+                          <img
+                            src={detail.url}
+                            alt={detail.namaProduct}
+                            width="50"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              ) : (
+                <p>No details available</p>
+              )}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowModal(false)}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </Col>
       </Row>
     </Container>

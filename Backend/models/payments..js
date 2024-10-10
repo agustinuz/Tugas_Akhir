@@ -6,31 +6,31 @@ const { DataTypes } = Sequelize;
 const Payment = db.define(
   "payment",
   {
-    id:{
-        primaryKey:true,
-        type: DataTypes.INTEGER
+    id: {
+      primaryKey: true,
+      type: DataTypes.INTEGER,
     },
-    transaction_id:{
-        type:DataTypes.INTEGER,
-        references: {
-            model: "transaction_master", // Nama tabel kategori di database
-            key: "id", // Kolom id di tabel kategori
-          },
-          onUpdate: "CASCADE", // Jika ada perubahan pada id_kategori di tabel Kategori, perbarui juga di tabel Product
-          onDelete: "CASCADE", 
+    transaction_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "transaction_master", // Nama tabel kategori di database
+        key: "id", // Kolom id di tabel kategori
+      },
+      onUpdate: "CASCADE", // Jika ada perubahan pada id_kategori di tabel Kategori, perbarui juga di tabel Product
+      onDelete: "CASCADE",
     },
-    image:{
-        type: DataTypes.STRING
+    image: {
+      type: DataTypes.STRING,
     },
     url: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
-    alamat:{
-        type:DataTypes.STRING
+    alamat: {
+      type: DataTypes.STRING,
     },
-    no_hp:{
-        type:DataTypes.STRING
-    }
+    no_hp: {
+      type: DataTypes.STRING,
+    },
   },
   {
     freezeTableName: true,
@@ -39,4 +39,4 @@ const Payment = db.define(
   }
 );
 
-export default Merk;
+export default Payment;

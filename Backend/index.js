@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import router from "./routers/index.js";
 import dotenv from "dotenv";
+import Payment from "./models/payments..js";
 // import { TransactionDetail } from "./models/TransactionModel.js";
 
 dotenv.config();
@@ -13,7 +14,7 @@ const app = express();
 try {
   await db.authenticate();
   console.log("Database connected");
-  // await TransactionDetail.sync();
+  await Payment.sync();
 } catch (error) {
   console.error("Mysql Error Check your XAMPP");
 }
