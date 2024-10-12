@@ -3,6 +3,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { jwtDecode as jwt_decode } from "jwt-decode";
+// import "./CreateServiceModal.css"; // Tambahkan CSS eksternal jika diperlukan
 
 const CreateServiceModal = ({ show, handleClose }) => {
   const [formData, setFormData] = useState({
@@ -88,13 +89,17 @@ const CreateServiceModal = ({ show, handleClose }) => {
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} size="md">
+      {" "}
+      {/* Set size to large */}
       <Modal.Header closeButton>
         <Modal.Title>Create New Service</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="modal-body-custom">
+        {" "}
+        {/* Add custom class for padding */}
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formNameOwner">
+          <Form.Group controlId="formNameOwner" className="mb-3">
             <Form.Label>Nama Pemilik</Form.Label>
             <Form.Control
               type="text"
@@ -105,7 +110,7 @@ const CreateServiceModal = ({ show, handleClose }) => {
               required
             />
           </Form.Group>
-          <Form.Group controlId="formNameAnimal">
+          <Form.Group controlId="formNameAnimal" className="mb-3">
             <Form.Label>Nama Hewan</Form.Label>
             <Form.Control
               type="text"
@@ -116,7 +121,7 @@ const CreateServiceModal = ({ show, handleClose }) => {
               required
             />
           </Form.Group>
-          <Form.Group controlId="formBirthdayAnimal">
+          <Form.Group controlId="formBirthdayAnimal" className="mb-3">
             <Form.Label>Tanggal Lahir Hewan</Form.Label>
             <Form.Control
               type="date"
@@ -126,7 +131,7 @@ const CreateServiceModal = ({ show, handleClose }) => {
               required
             />
           </Form.Group>
-          <Form.Group controlId="formJenis">
+          <Form.Group controlId="formJenis" className="mb-3">
             <Form.Label>Jenis</Form.Label>
             <Form.Control
               type="text"
@@ -137,7 +142,7 @@ const CreateServiceModal = ({ show, handleClose }) => {
               required
             />
           </Form.Group>
-          <Form.Group controlId="formRAS">
+          <Form.Group controlId="formRAS" className="mb-3">
             <Form.Label>Ras</Form.Label>
             <Form.Control
               type="text"
@@ -148,7 +153,7 @@ const CreateServiceModal = ({ show, handleClose }) => {
               required
             />
           </Form.Group>
-          <Form.Group controlId="formQuantity">
+          <Form.Group controlId="formQuantity" className="mb-3">
             <Form.Label>Jumlah</Form.Label>
             <Form.Control
               type="number"
@@ -159,7 +164,7 @@ const CreateServiceModal = ({ show, handleClose }) => {
               required
             />
           </Form.Group>
-          <Form.Group controlId="formKategoriService">
+          <Form.Group controlId="formKategoriService" className="mb-3">
             <Form.Label>Kategori Service</Form.Label>
             <Form.Control
               as="select"
@@ -167,6 +172,7 @@ const CreateServiceModal = ({ show, handleClose }) => {
               value={formData.kategori_service}
               onChange={handleChange}
               required
+              style={{ maxHeight: "200px", overflowY: "auto" }} // Membatasi tinggi dropdown
             >
               <option value="">Pilih Kategori</option>
               {categories.map((category) => (

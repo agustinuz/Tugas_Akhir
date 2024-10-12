@@ -137,30 +137,59 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-
       {/* Hero Start */}
-      <div class="container-fluid bg-primary py-5 mb-5 hero-header" id="home">
-        <div class="container py-5">
-          <div class="row justify-content-start">
-            <div class="col-lg-8 text-center text-lg-start">
-              <h1 class="display-1 text-uppercase text-primary mb-lg-5">
-                Pet Shop
+      <div
+        className="container-fluid bg-primary py-5 mb-5 hero-header"
+        id="home"
+      >
+        <div className="container py-5">
+          <div className="row justify-content-start">
+            <div className="col-lg-8 text-center text-lg-start">
+              {/* Hero Title */}
+              <h1
+                className="display-1 text-uppercase text-primary mb-lg-5"
+                style={{
+                  fontWeight: "bold",
+                  textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
+                }}
+              >
+                Welcome to Our Pet Shop
               </h1>
-              <h1 class="text-uppercase text-white mb-lg-5">
-                Make Your Pets Happy
+              {/* Subtitle */}
+              <h1
+                className="text-uppercase text-white mb-lg-5"
+                style={{
+                  fontWeight: "bold",
+                  textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
+                }}
+              >
+                Your Pet's Happiness is Our Priority
               </h1>
-              <figcaption className="blockquote-footer mb-5 text-white">
-                <h5>
-                  The best pet{" "}
-                  <cite title="Source Title">Shop & Treatment</cite>
+              {/* Tagline */}
+              <figcaption
+                className="blockquote-footer mb-5 text-white"
+                style={{
+                  textShadow: "1px 1px 3px rgba(0, 0, 0, 0.5)",
+                }}
+              >
+                <h5
+                  style={{
+                    fontStyle: "italic",
+                    fontWeight: 600,
+                  }}
+                >
+                  Providing the Best{" "}
+                  <cite title="Source Title">Care & Love for Your Pets</cite>
                 </h5>
               </figcaption>
-              <div class="d-flex align-items-center justify-content-center justify-content-lg-start pt-5">
+              {/* Button */}
+              <div className="d-flex align-items-center justify-content-center justify-content-lg-start pt-5">
                 <Link
-                  to="/login"
-                  class="btn btn-outline-light border-2 py-md-3 px-md-5 me-5"
+                  to="/"
+                  className="btn btn-outline-light border-2 py-md-3 px-md-5 me-5"
+                  style={{ fontWeight: "bold" }}
                 >
-                  Read me !!
+                  Learn More
                 </Link>
               </div>
             </div>
@@ -168,7 +197,6 @@ const Navbar = () => {
         </div>
       </div>
       {/* Hero End */}
-
       {/* product list */}
       <div className="container-fluid py-2 " id="listproduct">
         <div className="container">
@@ -184,9 +212,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
       {/* end product */}
-
       {/* About Us */}
       <div className="container-fluid py-5" id="aboutUS">
         <div className="container">
@@ -303,7 +329,6 @@ const Navbar = () => {
         </div>
       </div>
       {/* about us end */}
-
       {/* Service start */}
       <div class="container-fluid py-5" id="service">
         <div class="container">
@@ -507,7 +532,6 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
       {/* <!-- Footer Start --> */}
       <div class="container-fluid bg-light mt-5 py-5">
         <div class="container pt-5">

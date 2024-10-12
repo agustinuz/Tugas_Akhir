@@ -30,10 +30,21 @@ const ProfilePage = () => {
       const decodedToken = jwt_decode(token);
       setName(decodedToken.name);
       setEmail(decodedToken.email);
-
-      // appointments, and transactions
-      fetchUserAppointments(decodedToken.userId);
-      fetchUserTransactions(decodedToken.userId); // Fetch transactions based on userId
+      const userRole = decodedToken.userRole;
+      if (userRole === "admin")
+        Swal.fire({
+          icon: "warning",
+          title: "Access denied",
+          text: "your account is admin you cannot use profile Page ",
+          confirmButtonText: "OK",
+        }).then(() => {
+          navigate("/");
+        });
+      else {
+        // appointments, and transactions
+        fetchUserAppointments(decodedToken.userId);
+        fetchUserTransactions(decodedToken.userId);
+      } // Fetch transactions based on userId
     } else {
       Swal.fire({
         icon: "warning",
