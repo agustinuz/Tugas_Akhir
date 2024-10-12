@@ -45,6 +45,7 @@ import {
   GetPayment,
   GetTransactionDetail,
   GetTransactionMaster,
+  SubmitPayment,
   UpdateTransaksi,
 } from "../controllers/Transaction.js";
 
@@ -86,4 +87,5 @@ router.put("/transaksi/:id", UpdateTransaksi);
 router.get("/transaksi/:type", GetTransactionMaster);
 router.get("/transaksi-detail/:transaction_id", GetTransactionDetail);
 router.get("/transaksi-payment/:transaction_id", GetPayment);
+router.post('/transaksi-payment',SubmitPayment);
 export default router;
