@@ -1,6 +1,7 @@
 import { QueryTypes } from "sequelize";
 import db from "../config/Database.js";
 import { TransactionMaster } from "../models/TransactionModel.js";
+import Payment from "../models/payments.js";
 
 export const CreateTransaksi = async (req, res) => {
   const { userId } = req.body;
@@ -86,3 +87,42 @@ export const GetPayment = async (req, res) => {
   });
   return res.status(200).json(payments.length < 1 ? [] : payments);
 };
+
+
+export const SubmitPayment = async (req,res)=>{
+  const {transaction_id,alamat,no_hp} = req.body;
+  const checkTransactionExist = await TransactionMaster.count({
+    where:{
+      id:  transaction_id
+    }
+  });
+  if (checkTransactionExist < 1)
+    return res.status(404).json({msg:"Transaction not found"});
+  if (req.files == null)
+    return res.status(400).json({msg: "Files not found"});
+    const file = req.files.file;
+    const fileSize = file.data.length;
+    const ext = path.extname(file.name);
+    const fileName = file.md5 + ext;
+    const url = `${req.protocol}://${req.get(
+      "host"
+    )}./static/imagePayment/${fileName}`;
+    const allowedType = [".png", ".jpg", ".jpeg"];
+  
+    if (!allowedType.includes(ext.toLowerCase()))
+      return res.status(422).json({ msg: "Invalid Images" });
+    if (fileSize > 5000000)
+      return res.status(422).json({ msg: "Image must be less than 5 MB" });
+  file.mv(`./static/imagePayment/${fileName}`, async (err)=>{
+    return res.status(500).json({msg:JSON.stringify(err)});
+  });
+  const paymentResult = await Payment.create({
+    transaction_id: transaction_id,
+    image:fileName,
+    url:url,
+    alamat:alamat,
+    no_hp:no_hp
+  });
+  const res = await paymentResult.save();
+  return res.json({data:res});
+}
