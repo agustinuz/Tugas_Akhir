@@ -213,7 +213,7 @@ const Navbar = () => {
               </div>
               <h4 className="text-body mb-4">
                 fasilitas kesehatan khusus yang menyediakan layanan medis untuk
-                hewan peliharaan, seperti anjing, kucing, dan hewan kecil
+                hewan peliharaan, seperti anjing, kucing,kelinci dan hewan kecil
                 lainnya. Layanan yang ditawarkan oleh klinik hewan biasanya
                 meliputi pemeriksaan kesehatan rutin, vaksinasi, pengobatan
                 penyakit,
