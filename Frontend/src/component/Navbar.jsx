@@ -146,18 +146,17 @@ const Navbar = () => {
           <div className="row justify-content-start">
             <div className="col-lg-8 text-center text-lg-start">
               {/* Hero Title */}
-              <h1
-                className="display-1 text-uppercase text-primary mb-lg-5"
+              <h5
+                className="display-1  text-primary mb-lg-5"
                 style={{
                   fontWeight: "bold",
                   textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
                 }}
               >
                 Welcome to Our Pet Shop
-              </h1>
-              {/* Subtitle */}
+              </h5>
               <h1
-                className="text-uppercase text-white mb-lg-5"
+                className=" text-white mb-lg-5"
                 style={{
                   fontWeight: "bold",
                   textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
@@ -330,47 +329,81 @@ const Navbar = () => {
       </div>
       {/* about us end */}
       {/* Service start */}
-      <div class="container-fluid py-5" id="service">
-        <div class="container">
+      <div className="container-fluid py-5" id="service">
+        <div className="container">
           <div
-            class="border-start border-5 border-primary ps-5 mb-5"
-            style={{ maxwidth: "600px" }}
+            className="border-start border-5 border-primary ps-5 mb-5"
+            style={{ maxWidth: "600px" }}
           >
-            <h6 class="text-primary text-uppercase">Services</h6>
-            <h1 class="display-5 text-uppercase mb-0">
+            <h6 className="text-primary text-uppercase">Services</h6>
+            <h1 className="display-5 text-uppercase mb-0">
               Our Excellent Pet Care Services
             </h1>
           </div>
-          <div class="row g-5">
-            <div class="col-md-6">
-              <div class="service-item bg-light d-flex p-4">
-                <i class="fi fi-br-house-chimney-heart display-1 text-primary me-4"></i>
-                <div>
-                  <h5 class="text-uppercase mb-3">Pet Boarding</h5>
-                  <p>
-                    Pet boarding adalah layanan penitipan hewan peliharaan,
-                    seperti anjing atau kucing, di tempat khusus saat pemiliknya
-                    tidak dapat merawatnya untuk sementara waktu, misalnya saat
-                    bepergian atau ada keperluan mendesak
-                  </p>
-                  <Button
-                    className="text-white text-uppercase"
-                    variant="primary"
-                    onClick={handleShow}
-                  >
-                    Click Here
-                    <i>
-                      <FontAwesomeIcon icon={faChevronRight} />
-                    </i>
-                  </Button>
-
-                  <ServiceFormModal
-                    show={showModal}
-                    handleClose={handleClose}
-                  />
+          <div className="row g-5">
+            {[
+              {
+                icon: "fi-br-house-chimney-heart",
+                title: "Pet Boarding",
+                description:
+                  "Pet boarding adalah layanan penitipan hewan peliharaan, seperti anjing atau kucing, di tempat khusus saat pemiliknya tidak dapat merawatnya untuk sementara waktu, misalnya saat bepergian atau ada keperluan mendesak.",
+              },
+              {
+                icon: "fi-sr-truck-utensils",
+                title: "Pet Feeding",
+                description:
+                  "Pet feeding adalah aktivitas memberikan makanan kepada hewan peliharaan sesuai dengan jadwal dan kebutuhan nutrisi mereka. Layanan pet feeding sering kali disediakan oleh pet sitters atau fasilitas penitipan hewan lainnya saat pemiliknya tidak ada.",
+              },
+              {
+                icon: "fi-ss-shower",
+                title: "Pet Grooming",
+                description:
+                  "Pet grooming adalah perawatan kebersihan dan penampilan hewan peliharaan, mencakup berbagai aktivitas seperti memandikan, menyisir bulu, dan merapikan bulu.",
+              },
+              {
+                icon: "fi-tr-cat",
+                title: "Pet Training",
+                description:
+                  "Pet training adalah proses melatih hewan peliharaan untuk mempelajari perilaku yang diinginkan, menaati perintah, dan mengembangkan kebiasaan yang baik.",
+              },
+              {
+                icon: "fi-rr-dog",
+                title: "Pet Exercise",
+                description:
+                  "Pet exercise adalah aktivitas fisik yang dilakukan oleh hewan peliharaan untuk menjaga kesehatan dan kebugaran mereka, seperti berjalan-jalan atau bermain.",
+              },
+              {
+                icon: "fi-ts-hand-holding-medical",
+                title: "Pet Treatment",
+                description:
+                  "Pet treatment adalah perawatan medis atau non-medis yang diberikan kepada hewan peliharaan untuk menjaga kesehatannya atau mengobati penyakit tertentu.",
+              },
+            ].map((service, index) => (
+              <div className="col-md-6" key={index}>
+                <div className="service-item bg-light d-flex p-4">
+                  <i
+                    className={`fi ${service.icon} display-1 text-primary me-4`}
+                  ></i>
+                  <div>
+                    <h5 className="text-uppercase mb-3">{service.title}</h5>
+                    <p>{service.description}</p>
+                    <Button
+                      className="text-white text-uppercase"
+                      variant="primary"
+                      onClick={handleShow}
+                    >
+                      Click Here
+                      <i>
+                        <FontAwesomeIcon icon={faChevronRight} />
+                      </i>
+                    </Button>
+                    <ServiceFormModal
+                      show={showModal}
+                      handleClose={handleClose}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
             <div class="col-md-6">
               <div class="service-item bg-light d-flex p-4">
                 <i class="fi fi-sr-truck-utensils display-1 text-primary me-4"></i>
@@ -532,6 +565,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+
       {/* <!-- Footer Start --> */}
       <div class="container-fluid bg-light mt-5 py-5">
         <div class="container pt-5">
@@ -540,22 +574,26 @@ const Navbar = () => {
               <h5 class="text-uppercase border-start border-5 border-primary ps-3 mb-4">
                 Get In Touch
               </h5>
-              <p class="mb-4">
-                No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita
-                et et dolor sed dolor
-              </p>
+              <p class="mb-4">Click below to find us on Google Maps.</p>
               <p class="mb-2">
-                <i class="bi bi-geo-alt text-primary me-2"></i>123 Street, New
-                York, USA
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.0830798146567!2d104.03094067592389!3d1.0999740988894822!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d98f550077fe3d%3A0x9cbb00b8b3e3ee6a!2sPet%20Sanctuary%20Animal%20Care!5e0!3m2!1sid!2sid!4v1728751235132!5m2!1sid!2sid"
+                  style={{ width: "500", height: "400", border: 0 }}
+                  allowfullscreen
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
               </p>
               <p class="mb-2">
                 <i class="bi bi-envelope-open text-primary me-2"></i>
-                info@example.com
+                petsantuary@gmail.com
               </p>
               <p class="mb-0">
-                <i class="bi bi-telephone text-primary me-2"></i>+012 345 67890
+                <i class="bi bi-telephone text-primary me-2"></i>
+                +62 813-5816-0338
               </p>
             </div>
+
             <div class="col-lg-3 col-md-6">
               <h5 class="text-uppercase border-start border-5 border-primary ps-3 mb-4">
                 Quick Links
@@ -583,6 +621,7 @@ const Navbar = () => {
                 </a>
               </div>
             </div>
+
             <div class="col-lg-3 col-md-6">
               <h5 class="text-uppercase border-start border-5 border-primary ps-3 mb-4">
                 Popular Links
@@ -610,36 +649,36 @@ const Navbar = () => {
                 </a>
               </div>
             </div>
+
             <div class="col-lg-3 col-md-6">
               <h5 class="text-uppercase border-start border-5 border-primary ps-3 mb-4">
-                Newsletter
+                WhatsApp
               </h5>
-              <form action="">
-                <div class="input-group">
-                  <input
-                    type="text"
-                    class="form-control p-3"
-                    placeholder="Your Email"
-                  />
-                  <button class="btn btn-primary">Sign Up</button>
-                </div>
-              </form>
+              <p>Contact us via WhatsApp:</p>
+              <a
+                href="https://api.whatsapp.com/send/?phone=6281358160338&text&type=phone_number&app_absent=0"
+                class="btn btn-primary"
+              >
+                Send Message
+              </a>
+
               <h6 class="text-uppercase mt-4 mb-3">Follow Us</h6>
               <div class="d-flex">
                 <a class="btn btn-outline-primary btn-square me-2" href="#">
-                  <i class="bi bi-twitter"></i>
+                  <i class="fi fi-brands-facebook"></i>
                 </a>
                 <a class="btn btn-outline-primary btn-square me-2" href="#">
-                  <i class="bi bi-facebook"></i>
+                  <i class="fi fi-brands-instagram"></i>
                 </a>
                 <a class="btn btn-outline-primary btn-square me-2" href="#">
-                  <i class="bi bi-linkedin"></i>
+                  <i class="fi fi-brands-youtube"></i>
                 </a>
-                <a class="btn btn-outline-primary btn-square" href="#">
-                  <i class="bi bi-instagram"></i>
+                <a class="btn btn-outline-primary btn-square me-2" href="#">
+                  <i class="fi fi-brands-tik-tok"></i>
                 </a>
               </div>
             </div>
+
             <div class="col-12 text-center text-body">
               <a class="text-body" href="">
                 Terms & Conditions
@@ -668,6 +707,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+
       <div class="container-fluid bg-dark text-white-50 py-4">
         <div class="container">
           <div class="row g-5">

@@ -91,6 +91,7 @@ const AddProduct = () => {
       console.log(error);
     }
   };
+
   const deleteProduct = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/products/${id}`);

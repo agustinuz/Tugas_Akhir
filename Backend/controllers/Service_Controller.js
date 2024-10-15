@@ -29,6 +29,24 @@ export const getService = async (req, res) => {
   });
 };
 
+// Controller to get services by userId
+export const getServiceByUser = async (req, res) => {
+  const { userId } = req.params;
+
+  const checkKategori = await Form_Service.count({
+    where: {
+      id: userId,
+    },
+  });
+  if (checkKategori < 1)
+    return res.status(404).json({ msg: "Kategori Not Found" });
+  const serviceData = await db.query(`
+     select fs.id AS 'ServiceId',fs.Name_Owner,fs.Name_Animal,fs.birthday_Animal,fs.Jenis,fs.RAS,fs.Quantity,k.nameKategori AS 'kategori_service',fs.status from form_service fs inner join kategori_service k ON fs.kategori_service = k.id`);
+  return res.status(200).json({
+    services: serviceData[0],
+  });
+};
+
 // Buat form service baru, userId diambil dari frontend
 export const CreateService = async (req, res) => {
   const {

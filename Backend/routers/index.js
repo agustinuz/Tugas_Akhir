@@ -28,6 +28,7 @@ import {
   deleteKategoriService,
   getKategoriService,
   getService,
+  getServiceByUser,
 } from "../controllers/Service_Controller.js";
 import {
   addCart,
@@ -56,6 +57,7 @@ router.get("/getUsers", getUsers);
 router.get("/getAppointment", getAppointment);
 router.get("/getSchedule", getSchedule);
 router.get("/getservice/:kategoriId", getService);
+router.get("/getservice/:userId", getServiceByUser);
 router.get("/kategoriService", getKategoriService);
 router.post("/products", saveProduct);
 router.post("/createSchedule", createSchedule);

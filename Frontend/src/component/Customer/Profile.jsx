@@ -18,8 +18,8 @@ import Swal from "sweetalert2";
 const ProfilePage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [appointments, setAppointments] = useState([]); // State for appointments
   const [transactions, setTransactions] = useState([]); // State for transactions
+  const [services, setServices] = useState([]); // State for services
   const [selectedTransaction, setSelectedTransaction] = useState(null); // State for transaction details
   const [showModal, setShowModal] = useState(false); // Modal for viewing transaction details
   const navigate = useNavigate();
@@ -35,16 +35,16 @@ const ProfilePage = () => {
         Swal.fire({
           icon: "warning",
           title: "Access denied",
-          text: "your account is admin you cannot use profile Page ",
+          text: "Your account is admin, you cannot use this profile page.",
           confirmButtonText: "OK",
         }).then(() => {
           navigate("/");
         });
       else {
-        // appointments, and transactions
-        fetchUserAppointments(decodedToken.userId);
+        // Fetch appointments, transactions, and services based on userId
         fetchUserTransactions(decodedToken.userId);
-      } // Fetch transactions based on userId
+        fetchUserServices(decodedToken.userId);
+      }
     } else {
       Swal.fire({
         icon: "warning",
@@ -57,15 +57,7 @@ const ProfilePage = () => {
     }
   }, [navigate]);
 
-  const fetchUserAppointments = async (userId) => {
-    try {
-      const response = await axios.get(`/api/appointments/${userId}`);
-      setAppointments(response.data);
-    } catch (error) {
-      console.error("Error fetching appointments:", error);
-    }
-  };
-
+  // Fetch user's transactions
   const fetchUserTransactions = async (userId) => {
     try {
       const response = await axios.get(`http://localhost:5000/transaksi/User`, {
@@ -74,6 +66,18 @@ const ProfilePage = () => {
       setTransactions(response.data);
     } catch (error) {
       console.error("Error fetching transactions:", error);
+    }
+  };
+
+  // Fetch user's services
+  const fetchUserServices = async (userId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/getservice/${userId}`
+      );
+      setServices(response.data);
+    } catch (error) {
+      console.error("Error fetching services:", error);
     }
   };
 
@@ -114,25 +118,50 @@ const ProfilePage = () => {
         </Col>
 
         <Col md={8}>
+          {/* Services List */}
           <Card className="mt-4">
             <Card.Body>
-              <Card.Title>Appointment List</Card.Title>
-              <ListGroup>
-                {appointments.length > 0 ? (
-                  appointments.map((appointment) => (
-                    <ListGroup.Item key={appointment.id}>
-                      Appointment ID: {appointment.id} - Date:{" "}
-                      {appointment.date} - Status: {appointment.status}
-                    </ListGroup.Item>
-                  ))
-                ) : (
-                  <ListGroup.Item>No appointments found.</ListGroup.Item>
-                )}
-              </ListGroup>
+              <Card.Title>Service List</Card.Title>
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>Service ID</th>
+                    <th>Owner Name</th>
+                    <th>Animal Name</th>
+                    <th>Animal Birthday</th>
+                    <th>Type</th>
+                    <th>RAS</th>
+                    <th>Quantity</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {services.length > 0 ? (
+                    services.map((service) => (
+                      <tr key={service.ServiceId}>
+                        <td>{service.ServiceId}</td>
+                        <td>{service.Name_Owner}</td>
+                        <td>{service.Name_Animal}</td>
+                        <td>{service.birthday_Animal}</td>
+                        <td>{service.Jenis}</td>
+                        <td>{service.RAS}</td>
+                        <td>{service.Quantity}</td>
+                        <td>{service.kategori_service}</td>
+                        <td>{service.status}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="9">No services found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
             </Card.Body>
           </Card>
 
-          {/* Transaksi Table */}
+          {/* Transactions List */}
           <Card className="mt-4">
             <Card.Body>
               <Card.Title>Orders</Card.Title>
@@ -161,7 +190,6 @@ const ProfilePage = () => {
                         </td>
                         <td>{transaction.status}</td>
                         <td>Rp.{Number(transaction.subtotal).toFixed(0)}</td>
-
                         <td>{transaction.paid ? "Yes" : "No"}</td>
                         <td>
                           <Button
@@ -231,7 +259,7 @@ const ProfilePage = () => {
                   </tbody>
                 </Table>
               ) : (
-                <p>No details available</p>
+                <p>Loading details...</p>
               )}
             </Modal.Body>
             <Modal.Footer>
