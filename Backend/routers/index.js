@@ -47,7 +47,6 @@ import {
   GetPayment,
   GetTransactionDetail,
   GetTransactionMaster,
-  SubmitPayment,
   UpdateTransaksi,
 } from "../controllers/Transaction.js";
 
