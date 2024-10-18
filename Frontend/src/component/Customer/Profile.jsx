@@ -10,6 +10,7 @@ import {
   ListGroup,
   Table,
   Modal,
+  Form,
 } from "react-bootstrap";
 import { jwtDecode as jwt_decode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
@@ -18,10 +19,17 @@ import Swal from "sweetalert2";
 const ProfilePage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [transactions, setTransactions] = useState([]); // State for transactions
-  const [services, setServices] = useState([]); // State for services
-  const [selectedTransaction, setSelectedTransaction] = useState(null); // State for transaction details
-  const [showModal, setShowModal] = useState(false); // Modal for viewing transaction details
+  const [appointments, setAppointments] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTransactionId, setSelectedTransactionId] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [alamat, setAlamat] = useState("");
+  const [noHp, setNoHp] = useState("");
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [noRekening] = useState("1234567890"); // No rekening statis
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,21 +43,20 @@ const ProfilePage = () => {
         Swal.fire({
           icon: "warning",
           title: "Access denied",
-          text: "Your account is admin, you cannot use this profile page.",
+          text: "Your account is admin. You cannot use this profile page.",
           confirmButtonText: "OK",
         }).then(() => {
           navigate("/");
         });
       else {
-        // Fetch appointments, transactions, and services based on userId
+        fetchUserAppointments(decodedToken.userId);
         fetchUserTransactions(decodedToken.userId);
-        fetchUserServices(decodedToken.userId);
       }
     } else {
       Swal.fire({
         icon: "warning",
         title: "Cannot Access",
-        text: "First login to your account!",
+        text: "Please log in to your account first!",
         confirmButtonText: "OK",
       }).then(() => {
         navigate("/");
@@ -57,7 +64,15 @@ const ProfilePage = () => {
     }
   }, [navigate]);
 
-  // Fetch user's transactions
+  const fetchUserAppointments = async (userId) => {
+    try {
+      const response = await axios.get(`/api/appointments/${userId}`);
+      setAppointments(response.data);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
+
   const fetchUserTransactions = async (userId) => {
     try {
       const response = await axios.get(`http://localhost:5000/transaksi/User`, {
@@ -66,18 +81,6 @@ const ProfilePage = () => {
       setTransactions(response.data);
     } catch (error) {
       console.error("Error fetching transactions:", error);
-    }
-  };
-
-  // Fetch user's services
-  const fetchUserServices = async (userId) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/getservice/${userId}`
-      );
-      setServices(response.data);
-    } catch (error) {
-      console.error("Error fetching services:", error);
     }
   };
 
@@ -90,6 +93,56 @@ const ProfilePage = () => {
       setShowModal(true);
     } catch (error) {
       console.error("Error fetching transaction details", error);
+    }
+  };
+
+  const handlePayment = (transactionId) => {
+    setSelectedTransactionId(transactionId);
+    setShowPaymentModal(true);
+  };
+
+  const loadImage = (e) => {
+    const image = e.target.files[0];
+
+    // Validasi tipe file
+    if (!image.type.startsWith("image/")) {
+      Swal.fire("Error", "Please upload an image file!", "error");
+      return;
+    }
+
+    setFile(image);
+    setPreview(URL.createObjectURL(image)); // Pratinjau gambar
+  };
+
+  const handlePaymentSubmit = async () => {
+    if (!file || !alamat || !noHp) {
+      Swal.fire("Error", "Please fill all fields and upload a file!", "error");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("transaction_id", selectedTransactionId);
+    formData.append("file", file);
+    formData.append("alamat", alamat);
+    formData.append("no_hp", noHp);
+    formData.append("no_rekening", noRekening); // Nomor rekening disertakan dalam form
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/transaksi-payment",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      Swal.fire("Success", "Payment submitted successfully!", "success");
+      setShowPaymentModal(false);
+    } catch (error) {
+      console.error("Error submitting payment", error);
+      Swal.fire("Error", "Failed to submit payment.", "error");
     }
   };
 
@@ -118,50 +171,24 @@ const ProfilePage = () => {
         </Col>
 
         <Col md={8}>
-          {/* Services List */}
           <Card className="mt-4">
             <Card.Body>
-              <Card.Title>Service List</Card.Title>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Service ID</th>
-                    <th>Owner Name</th>
-                    <th>Animal Name</th>
-                    <th>Animal Birthday</th>
-                    <th>Type</th>
-                    <th>RAS</th>
-                    <th>Quantity</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {services.length > 0 ? (
-                    services.map((service) => (
-                      <tr key={service.ServiceId}>
-                        <td>{service.ServiceId}</td>
-                        <td>{service.Name_Owner}</td>
-                        <td>{service.Name_Animal}</td>
-                        <td>{service.birthday_Animal}</td>
-                        <td>{service.Jenis}</td>
-                        <td>{service.RAS}</td>
-                        <td>{service.Quantity}</td>
-                        <td>{service.kategori_service}</td>
-                        <td>{service.status}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="9">No services found.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </Table>
+              <Card.Title>Appointment List</Card.Title>
+              <ListGroup>
+                {appointments.length > 0 ? (
+                  appointments.map((appointment) => (
+                    <ListGroup.Item key={appointment.id}>
+                      Appointment ID: {appointment.id} - Date:{" "}
+                      {appointment.date} - Status: {appointment.status}
+                    </ListGroup.Item>
+                  ))
+                ) : (
+                  <ListGroup.Item>No appointments found.</ListGroup.Item>
+                )}
+              </ListGroup>
             </Card.Body>
           </Card>
 
-          {/* Transactions List */}
           <Card className="mt-4">
             <Card.Body>
               <Card.Title>Orders</Card.Title>
@@ -205,7 +232,7 @@ const ProfilePage = () => {
                             className="btn btn-primary btn-sm text-capitalize mx-3"
                             variant="primary"
                             onClick={() =>
-                              handleShowDetails(transaction.transaction_id)
+                              handlePayment(transaction.transaction_id)
                             }
                           >
                             Payment
@@ -223,7 +250,6 @@ const ProfilePage = () => {
             </Card.Body>
           </Card>
 
-          {/* Modal for Transaction Details */}
           <Modal show={showModal} onHide={() => setShowModal(false)}>
             <Modal.Header closeButton>
               <Modal.Title>List Shopping</Modal.Title>
@@ -259,12 +285,73 @@ const ProfilePage = () => {
                   </tbody>
                 </Table>
               ) : (
-                <p>Loading details...</p>
+                <p>No details found.</p>
               )}
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={() => setShowModal(false)}>
                 Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          <Modal
+            show={showPaymentModal}
+            onHide={() => setShowPaymentModal(false)}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Submit Payment</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group controlId="alamat">
+                  <Form.Label>Alamat</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter your address"
+                    value={alamat}
+                    onChange={(e) => setAlamat(e.target.value)}
+                  />
+                </Form.Group>
+                <Form.Group controlId="noHp">
+                  <Form.Label>No HP</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter your phone number"
+                    value={noHp}
+                    onChange={(e) => setNoHp(e.target.value)}
+                  />
+                </Form.Group>
+                <Form.Group controlId="noRekening">
+                  <Form.Label>No Rekening</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={noRekening} // Nomor rekening statis ditampilkan di sini
+                    readOnly
+                  />
+                </Form.Group>
+                <Form.Group controlId="file">
+                  <Form.Label>Upload Payment Proof</Form.Label>
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    onChange={loadImage}
+                  />
+                  {preview && (
+                    <Image src={preview} className="img-thumbnail mt-3" />
+                  )}
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => setShowPaymentModal(false)}
+              >
+                Close
+              </Button>
+              <Button variant="primary" onClick={handlePaymentSubmit}>
+                Submit
               </Button>
             </Modal.Footer>
           </Modal>

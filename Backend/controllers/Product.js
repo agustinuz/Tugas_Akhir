@@ -29,96 +29,96 @@ export const getProductById = async (req, res) => {
   }
 };
 
-export const saveProduct = (req, res) => {
-  if (req.files === null)
-    return res.status(400).json({ msg: "No File Uploaded" });
+export const saveProduct = async (req, res) => {
   const { name, kategori_id, price, stock, description } = req.body;
-  const file = req.files.file;
-  const fileSize = file.data.length;
-  const ext = path.extname(file.name);
-  const fileName = file.md5 + ext;
+  const file = req.file;
+
+  // Validasi jika file ada
+  if (!file) return res.status(400).json({ msg: "No File Uploaded" });
+
+  const fileSize = file.size;
+  const ext = path.extname(file.originalname);
+  const fileName = file.filename; // Nama file dari multer
   const url = `${req.protocol}://${req.get(
     "host"
-  )}./static/imageProduct/${fileName}`;
+  )}/uploads/imageProduct/${fileName}`;
   const allowedType = [".png", ".jpg", ".jpeg"];
 
+  // Validasi ekstensi file
   if (!allowedType.includes(ext.toLowerCase()))
-    return res.status(422).json({ msg: "Invalid Images" });
+    return res.status(422).json({ msg: "Invalid Image Type" });
+
+  // Validasi ukuran file
   if (fileSize > 5000000)
     return res.status(422).json({ msg: "Image must be less than 5 MB" });
 
-  file.mv(`./static/imageProduct/${fileName}`, async (err) => {
-    if (err) return res.status(500).json({ msg: err.message });
-    try {
-      await Product.create({
-        name: name,
-        kategori_id: kategori_id,
-        price: price,
-        stock: stock,
-        description: description,
-        image: fileName,
-        url: url,
-      });
-      res.status(201).json({ msg: "Product Created Successfuly" });
-    } catch (error) {
-      console.log(error.message);
-    }
-  });
+  try {
+    await Product.create({
+      name,
+      kategori_id,
+      price,
+      stock,
+      description,
+      image: fileName,
+      url,
+    });
+    res.status(201).json({ msg: "Product Created Successfully" });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
 };
 
 export const updateProduct = async (req, res) => {
-  const product = await Product.findOne({
-    where: {
-      id: req.params.id,
-    },
-  });
-  if (!product) return res.status(404).json({ msg: "No Data Found" });
-
-  let fileName = "";
-  if (req.files === null) {
-    fileName = product.image;
-  } else {
-    const file = req.files.file;
-    const fileSize = file.data.length;
-    const ext = path.extname(file.name);
-    fileName = file.md5 + ext;
-    const allowedType = [".png", ".jpg", ".jpeg"];
-
-    if (!allowedType.includes(ext.toLowerCase()))
-      return res.status(422).json({ msg: "Invalid Images" });
-    if (fileSize > 5000000)
-      return res.status(422).json({ msg: "Image must be less than 5 MB" });
-
-    const filepath = `./static/imageProduct/${product.image}`;
-    fs.unlinkSync(filepath);
-
-    file.mv(`./static/imageProduct/${fileName}`, (err) => {
-      if (err) return res.status(500).json({ msg: err.message });
-    });
-  }
-  const { name, kategori_id, price, stock, description } = req.body;
-  const url = `${req.protocol}://${req.get("host")}/images/${fileName}`;
-
   try {
+    const product = await Product.findOne({
+      where: { id: req.params.id },
+    });
+    if (!product) return res.status(404).json({ msg: "No Product Found" });
+
+    let fileName = product.image;
+    if (req.file) {
+      const file = req.file;
+      const fileSize = file.size;
+      const ext = path.extname(file.originalname);
+      fileName = file.filename;
+      const allowedType = [".png", ".jpg", ".jpeg"];
+
+      // Validasi ekstensi file
+      if (!allowedType.includes(ext.toLowerCase()))
+        return res.status(422).json({ msg: "Invalid Image Type" });
+
+      // Validasi ukuran file
+      if (fileSize > 5000000)
+        return res.status(422).json({ msg: "Image must be less than 5 MB" });
+
+      // Hapus file lama
+      const oldFilePath = `./uploads/imageProduct/${product.image}`;
+      if (fs.existsSync(oldFilePath)) {
+        fs.unlinkSync(oldFilePath);
+      }
+    }
+
+    const { name, kategori_id, price, stock, description } = req.body;
+    const url = `${req.protocol}://${req.get(
+      "host"
+    )}/uploads/imageProduct/${fileName}`;
+
     await Product.update(
       {
-        name: name,
-        kategori_id: kategori_id,
-        price: price,
-        stock: stock,
-        description: description,
+        name,
+        kategori_id,
+        price,
+        stock,
+        description,
         image: fileName,
-        url: url,
+        url,
       },
-      {
-        where: {
-          id: req.params.id,
-        },
-      }
+      { where: { id: req.params.id } }
     );
-    res.status(200).json({ msg: "Product Updated Successfuly" });
+
+    res.status(200).json({ msg: "Product Updated Successfully" });
   } catch (error) {
-    console.log(error.message);
+    res.status(500).json({ msg: error.message });
   }
 };
 
@@ -131,7 +131,7 @@ export const deleteProduct = async (req, res) => {
   if (!product) return res.status(404).json({ msg: "No Data Found" });
 
   try {
-    const filepath = `./static/imageProduct/${product.image}`;
+    const filepath = `./uploads/imageProduct/${product.image}`;
     fs.unlinkSync(filepath);
     await Product.destroy({
       where: {

@@ -8,11 +8,10 @@ import {
   CDBContainer,
   CDBBtn,
 } from "cdbreact";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const AddProduct = () => {
-  const [product, setProduct] = useState([]);
+  const [products, setProducts] = useState([]);
   const [name, setName] = useState("");
   const [kategoriId, setKategoriId] = useState("");
   const [kategoris, setKategoris] = useState([]);
@@ -22,8 +21,7 @@ const AddProduct = () => {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [show, setShow] = useState(false);
-  const navigate = useNavigate();
-  const [showdelete, setShowdelete] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
   const [selectProductId, setSelectedProductId] = useState(null);
 
   useEffect(() => {
@@ -35,20 +33,19 @@ const AddProduct = () => {
         console.error("Error fetching categories:", error);
       }
     };
-    if (show) {
-      fetchKategori();
-    }
-    fetchProducts();
-  }, [show]);
 
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/getproducts");
-      setProduct(response.data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
-  };
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/getproducts");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchKategori();
+    fetchProducts();
+  }, []);
 
   const loadImage = (e) => {
     const image = e.target.files[0];
@@ -66,7 +63,7 @@ const AddProduct = () => {
     formData.append("stock", stock);
     formData.append("description", description);
     try {
-      await axios.postForm("http://localhost:5000/products", formData, {
+      await axios.post("http://localhost:5000/products", formData, {
         headers: {
           "Content-type": "multipart/form-data",
         },
@@ -77,38 +74,71 @@ const AddProduct = () => {
         icon: "success",
         confirmButtonText: "OK",
       });
-      // Reset form state
-      setName("");
-      setKategoriId("");
-      setPrice("");
-      setStock("");
-      setDescription("");
-      setFile(null);
-      setPreview(null);
-      navigate("/Dashboard/product");
-      fetchProducts();
+      resetForm();
     } catch (error) {
-      console.log(error);
+      console.error("Error saving product:", error);
+    }
+  };
+
+  const updateProduct = async (id) => {
+    const formData = new FormData();
+    if (file) {
+      formData.append("file", file);
+    }
+    formData.append("name", name);
+    formData.append("kategori_id", kategoriId);
+    formData.append("price", price);
+    formData.append("stock", stock);
+    formData.append("description", description);
+
+    console.log("Updating product with ID:", id); // Debugging
+    console.log("Form data:", Object.fromEntries(formData)); // Debugging
+
+    try {
+      await axios.put(`http://localhost:5000/products/${id}`, formData, {
+        headers: {
+          "Content-type": "multipart/form-data",
+        },
+      });
+      Swal.fire({
+        title: "Update Product successful!",
+        text: "Status: Updated.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      resetForm();
+    } catch (error) {
+      console.error("Error updating product:", error);
     }
   };
 
   const deleteProduct = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/products/${id}`);
-      fetchProducts();
-      setShowdelete(false); // Tutup modal setelah menghapus
+      setProducts(products.filter((product) => product.id !== id));
+      setShowDelete(false);
       Swal.fire({
         title: "Delete Product successful!",
         icon: "success",
         confirmButtonText: "OK",
       });
-      navigate("/Dashboard/product");
     } catch (error) {
-      console.log(error);
+      console.error("Error deleting product:", error);
     }
   };
 
-  // Data for CDBDataTable
+  const resetForm = () => {
+    setName("");
+    setKategoriId("");
+    setPrice("");
+    setStock("");
+    setDescription("");
+    setFile(null);
+    setPreview(null);
+    setShow(false);
+    setSelectedProductId(null);
+  };
+
   const data = {
     columns: [
       {
@@ -122,8 +152,8 @@ const AddProduct = () => {
         sort: "asc",
       },
       {
-        label: "Kategori", // Kolom kategori
-        field: "kategori_id", // Ubah dari kategori_id menjadi kategori
+        label: "Kategori",
+        field: "kategori_id",
         sort: "asc",
       },
       {
@@ -142,7 +172,7 @@ const AddProduct = () => {
         sort: "asc",
       },
       {
-        label: "image",
+        label: "Image",
         field: "image",
         sort: "asc",
       },
@@ -151,17 +181,17 @@ const AddProduct = () => {
         field: "action",
       },
     ],
-    rows: product.map((products, index) => ({
+    rows: products.map((product, index) => ({
       index: index + 1,
-      name: products.name,
-      kategori_id: products.kategori_id,
-      price: products.price,
-      stock: products.stock,
-      description: products.description,
+      name: product.name,
+      kategori_id: product.kategori_id,
+      price: product.price,
+      stock: product.stock,
+      description: product.description,
       image: (
         <img
-          src={`http://localhost:5000/imageProduct/${products.image}`}
-          alt={products.name}
+          src={`http://localhost:5000/uploads/imageProduct/${product.image}`}
+          alt={product.name}
           style={{ width: "100px" }}
         />
       ),
@@ -170,6 +200,18 @@ const AddProduct = () => {
           <button
             type="button"
             className="btn btn-secondary btn-sm me-3 text-capitalize"
+            onClick={() => {
+              setSelectedProductId(product.id);
+              setName(product.name);
+              setKategoriId(product.kategori_id);
+              setPrice(product.price);
+              setStock(product.stock);
+              setDescription(product.description);
+              setPreview(
+                `http://localhost:5000/uploads/imageProduct/${product.image}`
+              );
+              setShow(true);
+            }}
           >
             Edit
           </button>
@@ -177,21 +219,21 @@ const AddProduct = () => {
             className="btn btn-danger btn-sm text-capitalize"
             variant="danger"
             onClick={() => {
-              setShowdelete(true);
-              setSelectedProductId(products.id);
+              setShowDelete(true);
+              setSelectedProductId(product.id);
             }}
           >
             Delete
           </Button>
-          <Modal show={showdelete} onHide={() => setShowdelete(false)}>
+          <Modal show={showDelete} onHide={() => setShowDelete(false)}>
             <Modal.Header closeButton>
               <Modal.Title>Confirm Delete</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              Are you sure you want to delete the kategori?
+              Are you sure you want to delete this product?
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={() => setShowdelete(false)}>
+              <Button variant="secondary" onClick={() => setShowDelete(false)}>
                 Cancel
               </Button>
               <Button
@@ -218,10 +260,21 @@ const AddProduct = () => {
         </figcaption>
         <Modal show={show} onHide={() => setShow(false)}>
           <Modal.Header closeButton>
-            <Modal.Title>Add Product</Modal.Title>
+            <Modal.Title>
+              {selectProductId ? "Update Product" : "Add Product"}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form onSubmit={saveProduct}>
+            <Form
+              onSubmit={
+                selectProductId
+                  ? (e) => {
+                      e.preventDefault();
+                      updateProduct(selectProductId);
+                    }
+                  : saveProduct
+              }
+            >
               <Form.Group className="mb-3" controlId="productName">
                 <Form.Label>Product Name</Form.Label>
                 <Form.Control
@@ -268,51 +321,50 @@ const AddProduct = () => {
                 <Form.Label>Description</Form.Label>
                 <Form.Control
                   as="textarea"
+                  rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   required
                 />
               </Form.Group>
-              <Form.Group className="mb-3" controlId="productImage">
-                <Form.Label>Image</Form.Label>
+              <Form.Group className="mb-3">
+                <Form.Label>Upload Image</Form.Label>
                 <Form.Control type="file" onChange={loadImage} required />
                 {preview && (
                   <img
                     src={preview}
-                    alt="preview"
-                    className="img-thumbnail mt-2"
+                    alt="Preview"
+                    style={{ width: "100px", marginTop: "10px" }}
                   />
                 )}
               </Form.Group>
-              <Button
-                variant="primary"
-                type="submit"
-                onClick={() => setShow(false)}
-              >
-                Save Product
+              <Button variant="primary" type="submit">
+                {selectProductId ? "Update" : "Add"}
               </Button>
             </Form>
           </Modal.Body>
         </Modal>
-        <CDBContainer fluid>
-          <CDBCard style={{ borderRadius: "15px" }}>
+        <Button
+          variant="primary"
+          className="mb-3"
+          onClick={() => setShow(true)}
+        >
+          Add New Product
+        </Button>
+        <CDBContainer>
+          <CDBCard>
             <CDBCardBody>
-              <CDBBtn
-                color="primary"
-                size="large"
-                circle
-                onClick={() => setShow(true)}
-              >
-                Create New Product
-              </CDBBtn>
               <CDBDataTable
-                responsive
-                striped
                 bordered
+                striped
                 hover
                 data={data}
-                pagination
-                materialSearch={true}
+                entriesLabel="Show entries"
+                pagesAmount={4}
+                pageButtonLabel="Go to"
+                noRecordsFoundLabel="No records found"
+                searchLabel="Search"
+                paginationLabel={["Previous", "Next"]}
               />
             </CDBCardBody>
           </CDBCard>

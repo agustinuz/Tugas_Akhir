@@ -1,5 +1,7 @@
 import express from "express";
 import { getUsers, Register, Login, DeleteUser } from "../controllers/User.js";
+import multer from "multer";
+import path from "path";
 // import { verifyToken } from "../middleware/VerifyToken.js";
 import {
   createSchedule,
@@ -49,6 +51,17 @@ import {
   UpdateTransaksi,
 } from "../controllers/Transaction.js";
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/imageProduct"); // Direktori penyimpanan file
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); // Nama unik file
+  },
+});
+
+const upload = multer({ storage: storage });
+
 const router = express.Router();
 
 router.get("/getproducts", getProduct);
@@ -60,7 +73,7 @@ router.get("/getSchedule", getSchedule);
 router.get("/getservice/:kategoriId", getService);
 router.get("/getservice/:userId", getServiceByUser);
 router.get("/kategoriService", getKategoriService);
-router.post("/products", saveProduct);
+router.post("/products", upload.single("file"), saveProduct); // Rute produk dengan upload fil
 router.post("/createSchedule", createSchedule);
 router.post("/createService", CreateService);
 router.post("/createKategori", createKategori);
@@ -77,7 +90,7 @@ router.delete("/kategoriService/:id", deleteKategoriService);
 router.put("/updateKategori/:id", updateKategori);
 router.put("/updateAppointment", updateAppointment);
 router.put("/updateSchedule", updateSchedule);
-router.patch("/products/:id", updateProduct);
+router.put("/products/:id", upload.single("file"), updateProduct);
 router.post("/cart", addCart);
 router.get("/cart/:userId", getCart);
 router.delete("/cart/:userId", deleteCartUser);
@@ -87,5 +100,5 @@ router.put("/transaksi/:id", UpdateTransaksi);
 router.get("/transaksi/:type", GetTransactionMaster);
 router.get("/transaksi-detail/:transaction_id", GetTransactionDetail);
 router.get("/transaksi-payment/:transaction_id", GetPayment);
-router.post('/transaksi-payment',SubmitPayment);
+router.post("/transaksi-payment", SubmitPayment);
 export default router;
