@@ -105,7 +105,7 @@ const ProfilePage = () => {
     const image = e.target.files[0];
 
     // Validasi tipe file
-    if (!image.type.startsWith("image/")) {
+      if (!image.type.startsWith("image/")) {
       Swal.fire("Error", "Please upload an image file!", "error");
       return;
     }
