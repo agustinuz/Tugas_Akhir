@@ -71,7 +71,7 @@ const AdminTransactions = () => {
     transaction_date: transaction.transaction_date,
     status: transaction.status,
     subtotal: `$${transaction.subtotal}`,
-    paid: transaction.paid ? "Yes" : "No",
+    paid: transaction.paid ? "Success" : "No",
     actions: (
       <>
         <Button
@@ -190,6 +190,7 @@ const AdminTransactions = () => {
           >
             Close
           </Button>
+          <Button variant="primary">Confirm</Button>
         </Modal.Footer>
       </Modal>
     </div>

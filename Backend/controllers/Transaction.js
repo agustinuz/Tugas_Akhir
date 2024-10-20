@@ -97,11 +97,10 @@ export const SubmitPayment = async (req, res) => {
   });
   if (checkTransactionExist < 1)
     return res.status(404).json({ msg: "Transaction not found" });
-  if (req.file == null)
-    return res.status(400).json({ msg: "Files not found" });
+  if (req.file == null) return res.status(400).json({ msg: "Files not found" });
   const file = req.file;
   const fileSize = 1;
-  const ext = `.${file.mimetype.split('/')[1]}`;
+  const ext = `.${file.mimetype.split("/")[1]}`;
   const fileName = file.filename;
   const url = `${req.protocol}://${req.get(
     "host"
@@ -112,21 +111,18 @@ export const SubmitPayment = async (req, res) => {
     return res.status(422).json({ msg: "Invalid Images" });
   if (fileSize > 5000000)
     return res.status(422).json({ msg: "Image must be less than 5 MB" });
-  try
-  {
-  const paymentResult = await Payment.create({
-    transaction_id: transaction_id,
-    image: fileName,
-    url: url,
-    alamat: alamat,
-    no_hp: no_hp,
-  });
-  const res1 = await paymentResult.save();
-  return res.json({ data: res1 });
-  }
-  catch (err)
-  {
+  try {
+    const paymentResult = await Payment.create({
+      transaction_id: transaction_id,
+      image: fileName,
+      url: url,
+      alamat: alamat,
+      no_hp: no_hp,
+    });
+    const res1 = await paymentResult.save();
+    return res.json({ data: res1 });
+  } catch (err) {
     console.log(err);
-    return res.status(500).json({msg:err.message || err});
+    return res.status(500).json({ msg: err.message || err });
   }
 };

@@ -14,6 +14,9 @@ const Schedule = db.define(
       type: DataTypes.TIME,
       allowNull: false,
     },
+    Antiran: {
+      type: DataTypes.STRING,
+    },
   },
   {
     freezeTableName: true,

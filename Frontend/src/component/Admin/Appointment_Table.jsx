@@ -7,11 +7,19 @@ import {
   CDBContainer,
   CDBBtn,
 } from "cdbreact";
-import { Button } from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
 
 const AppointmentTable = () => {
   const [service, setService] = useState([]);
-  const kategoriId = 1; // Misalkan kita mengambil kategori dengan ID 1
+  const [showModal, setShowModal] = useState(false); // State for modal visibility
+  const [schedule, setSchedule] = useState({
+    date: "",
+    time: "",
+    queue: "",
+  }); // State for schedule form inputs
+  const [selectedService, setSelectedService] = useState(null); // State to hold selected service for the schedule
+
+  const kategoriId = 1;
 
   useEffect(() => {
     const fetchService = async () => {
@@ -19,8 +27,7 @@ const AppointmentTable = () => {
         const response = await axios.get(
           `http://localhost:5000/getservice/${kategoriId}`
         );
-        console.log(response.data.services);
-        setService(response.data.services); // Ubah untuk mengakses array services
+        setService(response.data.services);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -29,7 +36,31 @@ const AppointmentTable = () => {
     fetchService();
   }, []);
 
-  // Define the columns for CDBDataTable
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSchedule({
+      ...schedule,
+      [name]: value,
+    });
+  };
+
+  // Handle confirm button click, opening modal
+  const handleConfirmClick = (serviceItem) => {
+    setSelectedService(serviceItem); // Set the selected service for which schedule is being confirmed
+    setShowModal(true); // Show modal
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle schedule submission logic here (e.g., send data to the backend)
+    console.log("Schedule submitted for service:", selectedService);
+    console.log("Schedule details:", schedule);
+    // Close modal after submission
+    setShowModal(false);
+  };
+
   const columns = [
     {
       label: "#",
@@ -75,7 +106,7 @@ const AppointmentTable = () => {
     },
     {
       label: "Kategori",
-      field: "kategori_service", // Ubah ke 'KategoriName'
+      field: "kategori_service",
       sort: "asc",
       width: 100,
     },
@@ -111,6 +142,7 @@ const AppointmentTable = () => {
           <Button
             className="btn btn-primary btn-sm text-capitalize"
             variant="primary"
+            onClick={() => handleConfirmClick(serviceitem)} // Open modal on click
           >
             Confirm
           </Button>
@@ -151,6 +183,53 @@ const AppointmentTable = () => {
           </CDBCardBody>
         </CDBCard>
       </div>
+
+      {/* Modal for schedule confirmation */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Schedule</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formDate">
+              <Form.Label>Date</Form.Label>
+              <Form.Control
+                type="date"
+                name="date"
+                value={schedule.date}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formTime" className="mt-3">
+              <Form.Label>Time</Form.Label>
+              <Form.Control
+                type="time"
+                name="time"
+                value={schedule.time}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formQueue" className="mt-3">
+              <Form.Label>Queue</Form.Label>
+              <Form.Control
+                type="number"
+                name="queue"
+                value={schedule.queue}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Button variant="primary" type="submit" className="mt-4">
+              Confirm
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </CDBContainer>
   );
 };
