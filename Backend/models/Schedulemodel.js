@@ -12,14 +12,25 @@ const Schedule = db.define(
     },
     time: {
       type: DataTypes.TIME,
-      allowNull: false,
+      allowNull: false, 
     },
-    Antiran: {
+    antrian: {
       type: DataTypes.STRING,
     },
+    service_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "form_service", // Nama tabel kategori di database
+        key: "id", // Kolom id di tabel kategori
+      },
+      onUpdate: "CASCADE", // Jika ada perubahan pada id_kategori di tabel Kategori, perbarui juga di tabel Product
+      onDelete: "CASCADE", 
+    }
   },
   {
     freezeTableName: true,
+    createdAt:false,
+    updatedAt:false,
   }
 );
 

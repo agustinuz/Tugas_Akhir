@@ -1,6 +1,7 @@
 import Form_Service from "../models/FormService.js";
 import Kategori_Service from "../models/KategoriService.js";
 import db from "../config/Database.js";
+import Schedule from "../models/Schedulemodel.js";
 
 // Ambil semua form service
 // export const getService = async (req, res) => {
@@ -175,3 +176,39 @@ export const updateServiceStatus = async (req, res) => {
     res.status(500).json({ msg: "Internal Server Error" });
   }
 };
+
+export const ConfirmService = async (req,res)=>{
+  const { id, status} = req.body; 
+
+  const serviceForm = await  Form_Service.findOne({
+    where:{
+      id: id
+    }
+  });
+
+  if (!serviceForm)
+    return res.status(404).json({msg: "Service Tidak Ditemukan"});
+  if (status=='Reject')
+  {
+      serviceForm.status = 'Reject';
+      await serviceForm.save();
+      return res.json({msg:"Form Service Rejected"});
+  }
+  else if (status=='Confirm')
+  {    
+      serviceForm.status = 'Confirm';
+      await serviceForm.save();
+      const {schedule} = req.body;
+      try
+      {
+        const scheduleCreated = await Schedule.create({...schedule});
+        const scheduleData = await scheduleCreated.save();
+        return res.json({msg:"Form Service Confirmed",data: scheduleData});
+      }
+      catch (error)
+      {
+        return res.status(500).json({...error});
+      }
+  }
+  return res.status(403).json({msg:"Status Invalid"});
+}

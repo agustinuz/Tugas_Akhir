@@ -15,23 +15,23 @@ const AppointmentTable = () => {
   const [schedule, setSchedule] = useState({
     date: "",
     time: "",
-    queue: "",
+    antrian: "",
   }); // State for schedule form inputs
   const [selectedService, setSelectedService] = useState(null); // State to hold selected service for the schedule
 
   const kategoriId = 1;
+  const fetchService = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/getservice/${kategoriId}`
+      );
+      setService(response.data.services);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchService = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/getservice/${kategoriId}`
-        );
-        setService(response.data.services);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
 
     fetchService();
   }, []);
@@ -50,16 +50,35 @@ const AppointmentTable = () => {
     setSelectedService(serviceItem); // Set the selected service for which schedule is being confirmed
     setShowModal(true); // Show modal
   };
-
+  const sendConfirmService =async (serviceId,status,_schedule) =>{
+    const payload = {
+      id: serviceId,
+      status:status
+    }
+    if (_schedule != null)
+      payload.schedule = _schedule;
+    const res = await axios.post(`http://localhost:5000/form-service`,payload);
+    await fetchService();
+  };
+  
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle schedule submission logic here (e.g., send data to the backend)
     console.log("Schedule submitted for service:", selectedService);
     console.log("Schedule details:", schedule);
+
+    const _schedule = {
+      ...schedule,
+      service_id: selectedService.ServiceId,
+    };
+    await sendConfirmService(selectedService.ServiceId,"Confirm",_schedule);
     // Close modal after submission
     setShowModal(false);
   };
+  const handleReject = async (serviceId)=>{
+    await sendConfirmService(serviceId,'Reject',null);
+}
 
   const columns = [
     {
@@ -147,6 +166,7 @@ const AppointmentTable = () => {
             Confirm
           </Button>
           <Button
+          onClick={()=> handleReject(serviceitem.ServiceId)}
             className="btn btn-danger btn-sm text-capitalize mx-3"
             variant="danger"
           >
@@ -156,6 +176,7 @@ const AppointmentTable = () => {
       ),
     })),
   };
+
 
   return (
     <CDBContainer fluid>
@@ -217,8 +238,8 @@ const AppointmentTable = () => {
               <Form.Label>Queue</Form.Label>
               <Form.Control
                 type="number"
-                name="queue"
-                value={schedule.queue}
+                name="antrian"
+                value={schedule.antrian}
                 onChange={handleInputChange}
                 required
               />

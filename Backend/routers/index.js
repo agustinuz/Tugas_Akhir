@@ -25,6 +25,7 @@ import {
   updateKategori,
 } from "../controllers/Product.js";
 import {
+  ConfirmService,
   CreateKategoriService,
   CreateService,
   deleteKategoriService,
@@ -110,4 +111,5 @@ router.get("/transaksi/:type", GetTransactionMaster);
 router.get("/transaksi-detail/:transaction_id", GetTransactionDetail);
 router.get("/transaksi-payment/:transaction_id", GetPayment);
 router.post("/transaksi-payment",uploadPayment.single('file'), SubmitPayment);
+router.post('/form-service',ConfirmService);
 export default router;
