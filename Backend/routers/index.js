@@ -47,20 +47,30 @@ import {
   GetPayment,
   GetTransactionDetail,
   GetTransactionMaster,
+  SubmitPayment,
   UpdateTransaksi,
 } from "../controllers/Transaction.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/imageProduct"); // Direktori penyimpanan file
+    
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname)); // Nama unik file
   },
 });
+const storagePayment = multer.diskStorage({
+  destination: (req,file,cb)=>{
+    cb(null,'uploads/imagePayment');
+  },
+  filename:  (req,file,cb)=>{
+    cb(null,Date.now()+path.extname(file.originalname));
+  }
+})
 
 const upload = multer({ storage: storage });
-
+const uploadPayment = multer({storage: storagePayment});
 const router = express.Router();
 
 router.get("/getproducts", getProduct);
@@ -99,5 +109,5 @@ router.put("/transaksi/:id", UpdateTransaksi);
 router.get("/transaksi/:type", GetTransactionMaster);
 router.get("/transaksi-detail/:transaction_id", GetTransactionDetail);
 router.get("/transaksi-payment/:transaction_id", GetPayment);
-router.post("/transaksi-payment", SubmitPayment);
+router.post("/transaksi-payment",uploadPayment.single('file'), SubmitPayment);
 export default router;

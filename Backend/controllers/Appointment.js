@@ -192,3 +192,8 @@ export const updateSchedule = async (req, res) => {
     res.status(500).json({ msg: "Internal Server Error" });
   }
 };
+
+
+export const UpdateStatus = (req,res)=>{
+  
+}
