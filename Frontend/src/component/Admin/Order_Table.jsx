@@ -9,21 +9,20 @@ const AdminTransactions = () => {
   const [selectedPayment, setSelectedPayment] = useState(null); // State for payment data
   const [showModal, setShowModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false); // State for payment modal
+  const [status, setStatus] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5000/transaksi/Admin"
-        );
-        setTransactions(response.data);
-      } catch (error) {
-        console.error("Error fetching transactions", error);
-      }
-    };
-
     fetchTransactions();
   }, []);
+  const fetchTransactions = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/transaksi/Admin");
+      setTransactions(response.data);
+    } catch (error) {
+      console.error("Error fetching transactions", error);
+    }
+  };
 
   const handleShowDetails = async (transactionId) => {
     try {
@@ -32,6 +31,7 @@ const AdminTransactions = () => {
       );
       setSelectedTransaction(response.data);
       setShowModal(true);
+      fetchTransactions();
     } catch (error) {
       console.error("Error fetching transaction details", error);
     }
@@ -43,9 +43,29 @@ const AdminTransactions = () => {
         `http://localhost:5000/transaksi-payment/${transactionId}`
       );
       setSelectedPayment(response.data); // Store payment data
-      setShowPaymentModal(true); // Show payment modal
+      setShowPaymentModal(true);
+      fetchTransactions();
     } catch (error) {
       console.error("Error fetching payment details", error);
+    }
+  };
+
+  const handleConfirmPayment = async () => {
+    try {
+      const transactionId = selectedPayment[0].transaction_id;
+      const response = await axios.put(
+        `http://localhost:5000/transaksi/${transactionId}`,
+        {
+          status: "Terkirim",
+        }
+      );
+      setMessage("Payment confirmed successfully!", response);
+      setShowPaymentModal(false);
+      fetchTransactions(); // Refresh transactions after confirmation
+    } catch (error) {
+      console.error("Error confirming payment:", error);
+      setMessage("Failed to confirm payment");
+      setStatus("FAILED");
     }
   };
 
@@ -68,7 +88,9 @@ const AdminTransactions = () => {
   const data = transactions.map((transaction) => ({
     transaction_id: transaction.transaction_id,
     name: transaction.name,
-    transaction_date: transaction.transaction_date,
+    transaction_date: new Date(transaction.transaction_date)
+      .toISOString()
+      .split("T")[0],
     status: transaction.status,
     subtotal: `$${transaction.subtotal}`,
     paid: transaction.paid ? "Success" : "No",
@@ -190,9 +212,12 @@ const AdminTransactions = () => {
           >
             Close
           </Button>
-          <Button variant="primary">Confirm</Button>
+          <Button variant="primary" onClick={handleConfirmPayment}>
+            Confirm
+          </Button>
         </Modal.Footer>
       </Modal>
+      {message && <p>{message}</p>}
     </div>
   );
 };

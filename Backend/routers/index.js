@@ -5,7 +5,6 @@ import path from "path";
 // import { verifyToken } from "../middleware/VerifyToken.js";
 import {
   createSchedule,
-  getSchedule,
   deleteSchedule,
   updateSchedule,
   getAppointment,
@@ -30,6 +29,7 @@ import {
   CreateService,
   deleteKategoriService,
   getKategoriService,
+  getSchedule,
   getService,
   getServiceByUser,
 } from "../controllers/Service_Controller.js";
@@ -55,23 +55,22 @@ import {
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/imageProduct"); // Direktori penyimpanan file
-    
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname)); // Nama unik file
   },
 });
 const storagePayment = multer.diskStorage({
-  destination: (req,file,cb)=>{
-    cb(null,'uploads/imagePayment');
+  destination: (req, file, cb) => {
+    cb(null, "uploads/imagePayment");
   },
-  filename:  (req,file,cb)=>{
-    cb(null,Date.now()+path.extname(file.originalname));
-  }
-})
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
 
 const upload = multer({ storage: storage });
-const uploadPayment = multer({storage: storagePayment});
+const uploadPayment = multer({ storage: storagePayment });
 const router = express.Router();
 
 router.get("/getproducts", getProduct);
@@ -79,7 +78,7 @@ router.get("/getproducts/:id", getProductById);
 router.get("/getKategori", getKategori);
 router.get("/getUsers", getUsers);
 router.get("/getAppointment", getAppointment);
-router.get("/getSchedule", getSchedule);
+router.get("/Schedule/:serviceId", getSchedule);
 router.get("/getservice/:kategoriId", getService);
 router.get("/getservice/:userId", getServiceByUser);
 router.get("/kategoriService", getKategoriService);
@@ -110,6 +109,6 @@ router.put("/transaksi/:id", UpdateTransaksi);
 router.get("/transaksi/:type", GetTransactionMaster);
 router.get("/transaksi-detail/:transaction_id", GetTransactionDetail);
 router.get("/transaksi-payment/:transaction_id", GetPayment);
-router.post("/transaksi-payment",uploadPayment.single('file'), SubmitPayment);
-router.post('/form-service',ConfirmService);
+router.post("/transaksi-payment", uploadPayment.single("file"), SubmitPayment);
+router.post("/form-service", ConfirmService);
 export default router;

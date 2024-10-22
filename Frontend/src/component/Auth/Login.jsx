@@ -35,6 +35,7 @@ const Login = ({ show, handleClose }) => {
         } else if (userRole === "customer") {
           navigate("/");
         }
+        window.location.reload(); //refresh halaman ketika user telah login
       });
     } catch (error) {
       console.error(error);

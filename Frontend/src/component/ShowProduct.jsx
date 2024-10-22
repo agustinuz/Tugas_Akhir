@@ -138,7 +138,7 @@ const ProductList = () => {
                   >
                     <Card.Img
                       variant="top"
-                      src={`http://localhost:5000/imageProduct/${product.image}`}
+                      src={`http://localhost:5000/uploads/imageProduct/${product.image}`}
                       alt={product.name}
                       className="img-fluid"
                       style={{ height: "15rem", objectFit: "cover" }}

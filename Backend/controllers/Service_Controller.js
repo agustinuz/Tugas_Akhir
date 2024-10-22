@@ -48,6 +48,32 @@ export const getServiceByUser = async (req, res) => {
   });
 };
 
+export const getSchedule = async (req, res) => {
+  const { service_id } = req.params; // Mendapatkan serviceId dari parameter
+
+  try {
+    const response = await Schedule.findAll({
+      where: {
+        ServiceId: service_id, // Pastikan menggunakan field yang tepat di database
+      },
+    });
+
+    // Mengecek jika tidak ada jadwal ditemukan
+    if (response.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No schedules found for this serviceId." });
+    }
+
+    res.json(response);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while fetching schedules." });
+  }
+};
+
 // Buat form service baru, userId diambil dari frontend
 export const CreateService = async (req, res) => {
   const {
@@ -177,38 +203,42 @@ export const updateServiceStatus = async (req, res) => {
   }
 };
 
-export const ConfirmService = async (req,res)=>{
-  const { id, status} = req.body; 
+export const ConfirmService = async (req, res) => {
+  const { id, status } = req.body;
 
-  const serviceForm = await  Form_Service.findOne({
-    where:{
-      id: id
-    }
+  const serviceForm = await Form_Service.findOne({
+    where: {
+      id: id,
+    },
   });
 
   if (!serviceForm)
-    return res.status(404).json({msg: "Service Tidak Ditemukan"});
-  if (status=='Reject')
-  {
-      serviceForm.status = 'Reject';
-      await serviceForm.save();
-      return res.json({msg:"Form Service Rejected"});
+    return res.status(404).json({ msg: "Service Tidak Ditemukan" });
+  if (status == "Reject") {
+    serviceForm.status = "Reject";
+    await serviceForm.save();
+    return res.json({ msg: "Form Service Rejected" });
+  } else if (status == "Confirm") {
+    serviceForm.status = "Confirm";
+    await serviceForm.save();
+    const { schedule } = req.body;
+    try {
+      const scheduleCreated = await Schedule.create({ ...schedule });
+      const scheduleData = await scheduleCreated.save();
+
+      const schedules = await Schedule.findAll({
+        where: {
+          service_id: id, // Pastikan ini sesuai dengan foreign key
+        },
+      });
+      return res.json({
+        msg: "Form Service Confirmed",
+        data: scheduleData,
+        schedules,
+      });
+    } catch (error) {
+      return res.status(500).json({ ...error });
+    }
   }
-  else if (status=='Confirm')
-  {    
-      serviceForm.status = 'Confirm';
-      await serviceForm.save();
-      const {schedule} = req.body;
-      try
-      {
-        const scheduleCreated = await Schedule.create({...schedule});
-        const scheduleData = await scheduleCreated.save();
-        return res.json({msg:"Form Service Confirmed",data: scheduleData});
-      }
-      catch (error)
-      {
-        return res.status(500).json({...error});
-      }
-  }
-  return res.status(403).json({msg:"Status Invalid"});
-}
+  return res.status(403).json({ msg: "Status Invalid" });
+};

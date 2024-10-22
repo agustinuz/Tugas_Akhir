@@ -8,6 +8,7 @@ import {
   CDBBtn,
 } from "cdbreact";
 import { Button, Modal, Form } from "react-bootstrap";
+import Swal from "sweetalert2"; // Import SweetAlert
 
 const AppointmentTable = () => {
   const [service, setService] = useState([]);
@@ -32,7 +33,6 @@ const AppointmentTable = () => {
   };
 
   useEffect(() => {
-
     fetchService();
   }, []);
 
@@ -50,35 +50,40 @@ const AppointmentTable = () => {
     setSelectedService(serviceItem); // Set the selected service for which schedule is being confirmed
     setShowModal(true); // Show modal
   };
-  const sendConfirmService =async (serviceId,status,_schedule) =>{
+
+  const sendConfirmService = async (serviceId, status, _schedule) => {
     const payload = {
       id: serviceId,
-      status:status
-    }
-    if (_schedule != null)
-      payload.schedule = _schedule;
-    const res = await axios.post(`http://localhost:5000/form-service`,payload);
-    await fetchService();
+      status: status,
+    };
+    if (_schedule != null) payload.schedule = _schedule;
+    const res = await axios.post(`http://localhost:5000/form-service`, payload);
+    await fetchService(res.data);
   };
-  
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle schedule submission logic here (e.g., send data to the backend)
-    console.log("Schedule submitted for service:", selectedService);
-    console.log("Schedule details:", schedule);
-
     const _schedule = {
       ...schedule,
       service_id: selectedService.ServiceId,
     };
-    await sendConfirmService(selectedService.ServiceId,"Confirm",_schedule);
+    await sendConfirmService(selectedService.ServiceId, "Confirm", _schedule);
+
+    // Show SweetAlert success message
+    Swal.fire({
+      icon: "success",
+      title: "Appointment Confirmed",
+      text: "Your appointment has been successfully scheduled.",
+    });
+
     // Close modal after submission
     setShowModal(false);
   };
-  const handleReject = async (serviceId)=>{
-    await sendConfirmService(serviceId,'Reject',null);
-}
+
+  const handleReject = async (serviceId) => {
+    await sendConfirmService(serviceId, "Reject", null);
+  };
 
   const columns = [
     {
@@ -161,12 +166,13 @@ const AppointmentTable = () => {
           <Button
             className="btn btn-primary btn-sm text-capitalize"
             variant="primary"
-            onClick={() => handleConfirmClick(serviceitem)} // Open modal on click
+            onClick={() => handleConfirmClick(serviceitem)}
+            disabled={serviceitem.status === "Confirm"} // Disable button if status is 'Confirm'
           >
             Confirm
           </Button>
           <Button
-          onClick={()=> handleReject(serviceitem.ServiceId)}
+            onClick={() => handleReject(serviceitem.ServiceId)}
             className="btn btn-danger btn-sm text-capitalize mx-3"
             variant="danger"
           >
@@ -176,7 +182,6 @@ const AppointmentTable = () => {
       ),
     })),
   };
-
 
   return (
     <CDBContainer fluid>

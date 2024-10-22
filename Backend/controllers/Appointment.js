@@ -117,15 +117,15 @@ export const updateAppointment = async (req, res) => {
 
 // SCHEDULE
 
-export const getSchedule = async (req, res) => {
-  try {
-    const scheduled = await Schedule.findAll();
-    res.json(scheduled);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ msg: "Internal Server Error" });
-  }
-};
+// export const getSchedule = async (req, res) => {
+//   try {
+//     const scheduled = await Schedule.findAll();
+//     res.json(scheduled);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ msg: "Internal Server Error" });
+//   }
+// };
 
 export const createSchedule = async (req, res) => {
   const { date, time } = req.body;
@@ -193,7 +193,4 @@ export const updateSchedule = async (req, res) => {
   }
 };
 
-
-export const UpdateStatus = (req,res)=>{
-  
-}
+export const UpdateStatus = (req, res) => {};

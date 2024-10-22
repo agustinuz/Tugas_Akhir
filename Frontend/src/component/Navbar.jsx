@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../Css/Navbar.css";
 import { Button, Modal } from "react-bootstrap";
@@ -20,6 +20,7 @@ const Navbar = () => {
   const [showLogin, setShowLogin] = useState(false);
   const CloseLogin = () => setShowLogin(false);
   const ShowModalLogin = () => setShowLogin(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [showRegis, setShowRegis] = useState(false);
   const CloseRegis = () => setShowRegis(false);
@@ -28,6 +29,14 @@ const Navbar = () => {
   const [showCartModal, setShowCartModal] = useState(false);
   const handleCartModalClose = () => setShowCartModal(false);
   const handleCartModalShow = () => setShowCartModal(true);
+
+  useEffect(() => {
+    // Cek jika token ada di localStorage
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setIsLoggedIn(true); // Set status login ke true jika token ada
+    }
+  }, []);
 
   // // const [showProfile, setShowProfile] = useState(false);
   // const handleShowProfile = () => setShowProfile(true);
@@ -86,24 +95,30 @@ const Navbar = () => {
                 <FontAwesomeIcon icon={faAddressBook} />
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                  <a
-                    className="dropdown-item nav-item nav-link me-1"
-                    href="#"
-                    onClick={ShowModalLogin}
-                  >
-                    Login
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="dropdown-item nav-item nav-link me-1"
-                    href="#"
-                    onClick={ShowModalRegis}
-                  >
-                    Register
-                  </a>
-                </li>
+                {/* Hanya tampilkan tombol Login jika pengguna belum login */}
+                {!isLoggedIn && (
+                  <li>
+                    <a
+                      className="dropdown-item nav-item nav-link me-1"
+                      href="#"
+                      onClick={ShowModalLogin}
+                    >
+                      Login
+                    </a>
+                  </li>
+                )}
+                {!isLoggedIn && (
+                  <li>
+                    <a
+                      className="dropdown-item nav-item nav-link me-1"
+                      href="#"
+                      onClick={ShowModalRegis}
+                    >
+                      Register
+                    </a>
+                  </li>
+                )}
+
                 <li>
                   <hr class="dropdown-divider" />
                 </li>

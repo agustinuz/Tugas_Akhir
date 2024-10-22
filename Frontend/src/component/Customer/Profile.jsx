@@ -19,17 +19,19 @@ import Swal from "sweetalert2";
 const ProfilePage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [appointments, setAppointments] = useState([]);
+  const [services, setServices] = useState([]);
+  const [schedules, setSchedules] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showSchedules, setShowSchedules] = useState(false);
   const [selectedTransactionId, setSelectedTransactionId] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [alamat, setAlamat] = useState("");
   const [noHp, setNoHp] = useState("");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [noRekening] = useState("1234567890"); // No rekening statis
+  const [noRekening] = useState("1119923041 - BCA"); // No rekening statis
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,7 +51,7 @@ const ProfilePage = () => {
           navigate("/");
         });
       else {
-        fetchUserAppointments(decodedToken.userId);
+        fetchUserServices(decodedToken.userId);
         fetchUserTransactions(decodedToken.userId);
       }
     } else {
@@ -64,12 +66,26 @@ const ProfilePage = () => {
     }
   }, [navigate]);
 
-  const fetchUserAppointments = async (userId) => {
+  const fetchUserServices = async (userId) => {
     try {
-      const response = await axios.get(`/api/appointments/${userId}`);
-      setAppointments(response.data);
+      const response = await axios.get(
+        `http://localhost:5000/getservice/${userId}`
+      );
+      setServices(response.data.services); // Simpan data services ke state
     } catch (error) {
-      console.error("Error fetching appointments:", error);
+      console.error("Error fetching services:", error);
+    }
+  };
+
+  const handleViewSchedule = async (ServiceId) => {
+    try {
+      const serviceSchedules = await axios.get(
+        `http://localhost:5000/Schedule/${ServiceId}`
+      );
+      setSchedules(serviceSchedules.data); // Perbarui status jadwal
+      setShowSchedules(true);
+    } catch (error) {
+      console.error("Error fetching services:", error);
     }
   };
 
@@ -139,6 +155,7 @@ const ProfilePage = () => {
       );
 
       Swal.fire("Success", "Payment submitted successfully!", "success");
+      window.location.reload();
       setShowPaymentModal(false);
     } catch (error) {
       console.error("Error submitting payment", error);
@@ -171,21 +188,67 @@ const ProfilePage = () => {
         </Col>
 
         <Col md={8}>
+          {/* Section untuk Services */}
           <Card className="mt-4">
             <Card.Body>
-              <Card.Title>Appointment List</Card.Title>
-              <ListGroup>
-                {appointments.length > 0 ? (
-                  appointments.map((appointment) => (
-                    <ListGroup.Item key={appointment.id}>
-                      Appointment ID: {appointment.id} - Date:{" "}
-                      {appointment.date} - Status: {appointment.status}
-                    </ListGroup.Item>
-                  ))
-                ) : (
-                  <ListGroup.Item>No appointments found.</ListGroup.Item>
-                )}
-              </ListGroup>
+              <Card.Title>Service List</Card.Title>
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name Owner</th>
+                    <th>Name Animal</th>
+                    <th>Birthday Animal</th>
+                    <th>Jenis</th>
+                    <th>RAS</th>
+                    <th>Quantity</th>
+                    <th>Kategori Service</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {services.length > 0 ? (
+                    services.map((service, index) => (
+                      <tr key={service.ServiceId}>
+                        <td>{index + 1}</td>
+                        <td>{service.Name_Owner}</td>
+                        <td>{service.Name_Animal}</td>
+
+                        <td>
+                          {new Date(service.birthday_Animal).toLocaleDateString(
+                            "en-US"
+                          )}
+                        </td>
+                        <td>{service.Jenis}</td>
+                        <td>{service.RAS}</td>
+                        <td>{service.Quantity}</td>
+                        <td>{service.kategori_service}</td>
+                        <td>{service.status}</td>
+                        <td>
+                          <Button
+                            className="btn btn-primary btn-sm text-capitalize mx-3"
+                            variant="primary"
+                            onClick={() =>
+                              handleViewSchedule(service.ServiceId)
+                            }
+                            // disabled={
+                            //   !service.Schedules ||
+                            //   service.Schedules.length === 0
+                            // }
+                          >
+                            View Schedule
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="10">No services found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
             </Card.Body>
           </Card>
 
@@ -234,6 +297,7 @@ const ProfilePage = () => {
                             onClick={() =>
                               handlePayment(transaction.transaction_id)
                             }
+                            disabled={transaction.paid}
                           >
                             Payment
                           </Button>
@@ -249,6 +313,34 @@ const ProfilePage = () => {
               </Table>
             </Card.Body>
           </Card>
+
+          <Modal show={showSchedules} onHide={() => setShowSchedules(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Schedule List</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {schedules.length > 0 ? (
+                <ul>
+                  {schedules.map((schedule) => (
+                    <li key={schedule.ServiceId}>
+                      Date: {schedule.ScheduleDate}, Time:{" "}
+                      {schedule.ScheduleTime}, Queue: {schedule.Antrian}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No schedules available for this service.</p>
+              )}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => setShowSchedules(false)}
+              >
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
 
           <Modal show={showModal} onHide={() => setShowModal(false)}>
             <Modal.Header closeButton>
