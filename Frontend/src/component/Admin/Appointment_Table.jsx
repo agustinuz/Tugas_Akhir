@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  CDBCard,
-  CDBCardBody,
-  CDBDataTable,
-  CDBContainer,
-  CDBBtn,
-} from "cdbreact";
+import { CDBCard, CDBCardBody, CDBDataTable, CDBContainer } from "cdbreact";
 import { Button, Modal, Form } from "react-bootstrap";
 import Swal from "sweetalert2"; // Import SweetAlert
 
@@ -194,9 +188,9 @@ const AppointmentTable = () => {
         </figcaption>
         <CDBCard style={{ borderRadius: "15px" }}>
           <CDBCardBody>
-            <CDBBtn color="primary" size="large" circle>
+            {/* <CDBBtn color="primary" size="large" circle>
               Create New Appointment
-            </CDBBtn>
+            </CDBBtn> */}
             <CDBDataTable
               responsive
               striped

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal, Button } from "react-bootstrap";
-import { CDBDataTable } from "cdbreact"; // Import CDBDataTable
+import { CDBCard, CDBCardBody, CDBDataTable, CDBContainer } from "cdbreact"; // Import CDBDataTable
 
 const AdminTransactions = () => {
   const [transactions, setTransactions] = useState([]);
@@ -115,18 +115,29 @@ const AdminTransactions = () => {
   }));
 
   return (
-    <div>
-      <h2>All Transactions (Admin)</h2>
-      <CDBDataTable
-        striped
-        bordered
-        hover
-        data={{
-          columns,
-          rows: data,
-        }}
-        noBottomColumns
-      />
+    <CDBContainer fluid>
+      <div className="container-fluid px-4">
+        <h2 className="mb-3">
+          <strong>Appointment</strong>
+        </h2>
+        <figcaption className="blockquote-footer mb-5">
+          List <cite title="Source Title">Appointment</cite>
+        </figcaption>
+        <CDBCard style={{ borderRadius: "15px" }}>
+          <CDBCardBody>
+            <CDBDataTable
+              striped
+              bordered
+              hover
+              data={{
+                columns,
+                rows: data,
+              }}
+              noBottomColumns
+            />
+          </CDBCardBody>
+        </CDBCard>
+      </div>
 
       {/* Modal for Transaction Details */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -218,7 +229,7 @@ const AdminTransactions = () => {
         </Modal.Footer>
       </Modal>
       {message && <p>{message}</p>}
-    </div>
+    </CDBContainer>
   );
 };
 

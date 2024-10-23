@@ -344,16 +344,17 @@ const AddProduct = () => {
             </Form>
           </Modal.Body>
         </Modal>
-        <Button
-          variant="primary"
-          className="mb-3"
-          onClick={() => setShow(true)}
-        >
-          Add New Product
-        </Button>
-        <CDBContainer>
-          <CDBCard>
+        <CDBContainer fluid>
+          <CDBCard style={{ borderRadius: "15px" }}>
             <CDBCardBody>
+              <CDBBtn
+                color="primary"
+                size="large"
+                circle
+                onClick={() => setShow(true)}
+              >
+                Add New Product
+              </CDBBtn>
               <CDBDataTable
                 bordered
                 striped

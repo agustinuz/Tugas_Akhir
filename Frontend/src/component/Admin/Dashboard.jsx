@@ -164,84 +164,7 @@ const Main_Dashboard = () => {
                   </li>
                 </ul>
               </li>
-              {/* <li className="sidebar-item">
-                <a
-                  href="#"
-                  className="sidebar-link collapsed"
-                  data-bs-target="#auth"
-                  data-bs-toggle="collapse"
-                  aria-expanded="false"
-                >
-                  <i className="fa-regular fa-user pe-2"></i>
-                  Auth
-                </a>
-                <ul
-                  id="auth"
-                  className="sidebar-dropdown list-unstyled collapse"
-                  data-bs-parent="#sidebar"
-                >
-                  <li className="sidebar-item">
-                    <a href="#" className="sidebar-link">
-                      Login
-                    </a>
-                  </li>
-                  <li className="sidebar-item">
-                    <a href="#" className="sidebar-link">
-                      Register
-                    </a>
-                  </li>
-                  <li className="sidebar-item">
-                    <a href="#" className="sidebar-link">
-                      Forgot Password
-                    </a>
-                  </li>
-                </ul>
-              </li> */}
               <li className="sidebar-header">More</li>
-              {/* <li className="sidebar-item">
-                <a
-                  href="#"
-                  className="sidebar-link collapsed"
-                  data-bs-target="#multi"
-                  data-bs-toggle="collapse"
-                  aria-expanded="false"
-                >
-                  <i className="fa-solid fa-share-nodes pe-2"></i>
-                  Multi Dropdown
-                </a>
-                <ul
-                  id="multi"
-                  className="sidebar-dropdown list-unstyled collapse"
-                  data-bs-parent="#sidebar"
-                >
-                  <li className="sidebar-item">
-                    <a
-                      href="#"
-                      className="sidebar-link collapsed"
-                      data-bs-target="#level-1"
-                      data-bs-toggle="collapse"
-                      aria-expanded="false"
-                    >
-                      Level 1
-                    </a>
-                    <ul
-                      id="level-1"
-                      className="sidebar-dropdown list-unstyled collapse"
-                    >
-                      <li className="sidebar-item">
-                        <a href="#" className="sidebar-link">
-                          Level 1.1
-                        </a>
-                      </li>
-                      <li className="sidebar-item">
-                        <a href="#" className="sidebar-link">
-                          Level 1.2
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </li> */}
             </ul>
             <li className="sidebar-item">
               <Link className="sidebar-link" onClick={handleLogout}>
@@ -319,7 +242,7 @@ const Main_Dashboard = () => {
                 <div className="col-6 text-start">
                   <p className="mb-0">
                     <a href="#" className="text-muted">
-                      <strong>CodzSwod</strong>
+                      <strong>Pet Santuary</strong>
                     </a>
                   </p>
                 </div>
