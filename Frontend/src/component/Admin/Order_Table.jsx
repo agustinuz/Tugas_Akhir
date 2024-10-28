@@ -59,12 +59,17 @@ const AdminTransactions = () => {
           status: "Terkirim",
         }
       );
-      setMessage("Payment confirmed successfully!", response);
+      setMessage("Payment confirmed successfully!");
       setShowPaymentModal(false);
       fetchTransactions(); // Refresh transactions after confirmation
     } catch (error) {
       console.error("Error confirming payment:", error);
-      setMessage("Failed to confirm payment");
+      // Jika error response dari backend, tampilkan pesan error dari response
+      if (error.response && error.response.data && error.response.data.msg) {
+        setMessage(error.response.data.msg); // Pesan error spesifik dari backend
+      } else {
+        setMessage("Failed to confirm payment");
+      }
       setStatus("FAILED");
     }
   };
@@ -92,7 +97,11 @@ const AdminTransactions = () => {
       .toISOString()
       .split("T")[0],
     status: transaction.status,
-    subtotal: `$${transaction.subtotal}`,
+    subtotal: new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(transaction.subtotal),
     paid: transaction.paid ? "Success" : "No",
     actions: (
       <>
@@ -118,10 +127,10 @@ const AdminTransactions = () => {
     <CDBContainer fluid>
       <div className="container-fluid px-4">
         <h2 className="mb-3">
-          <strong>Appointment</strong>
+          <strong>Orders</strong>
         </h2>
         <figcaption className="blockquote-footer mb-5">
-          List <cite title="Source Title">Appointment</cite>
+          List <cite title="Source Title">Order</cite>
         </figcaption>
         <CDBCard style={{ borderRadius: "15px" }}>
           <CDBCardBody>
@@ -160,9 +169,21 @@ const AdminTransactions = () => {
                 {selectedTransaction.map((detail) => (
                   <tr key={detail.transaction_detail_id}>
                     <td>{detail.namaProduct}</td>
-                    <td>{detail.hargaProduct}</td>
+                    <td>
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                      }).format(detail.hargaProduct)}
+                    </td>
                     <td>{detail.qty}</td>
-                    <td>{detail.totalHarga}</td>
+                    <td>
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                      }).format(detail.totalHarga)}
+                    </td>
                     <td>
                       <img
                         src={detail.url}
@@ -200,8 +221,12 @@ const AdminTransactions = () => {
                 <strong>Phone:</strong> {selectedPayment[0].no_hp}
               </p>
               <p>
-                <strong>Total Payment:</strong> $
-                {selectedPayment[0].totalPembayaran}
+                <strong>Total Payment:</strong>
+                {new Intl.NumberFormat("id-ID", {
+                  style: "currency",
+                  currency: "IDR",
+                  minimumFractionDigits: 0,
+                }).format(selectedPayment[0].totalPembayaran)}
               </p>
               <p>
                 <strong>Payment Proof:</strong>

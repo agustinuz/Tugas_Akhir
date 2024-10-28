@@ -9,6 +9,7 @@ import ServiceFormModal from "./FormService";
 import ProductList from "./ShowProduct";
 // import UserProfile from "./ShoppingCard";
 import Login from "./Auth/Login";
+import ForgotPassword from "./Auth/forgotPassword";
 import ShoppingCartModal from "./ShoppingCard";
 import RegisterModal from "./Auth/Register";
 
@@ -25,6 +26,10 @@ const Navbar = () => {
   const [showRegis, setShowRegis] = useState(false);
   const CloseRegis = () => setShowRegis(false);
   const ShowModalRegis = () => setShowRegis(true);
+
+  const [showForgot, setShowForgot] = useState(false);
+  const CloseForgot = () => setShowForgot(false);
+  const ShowModalForgot = () => setShowForgot(true);
 
   const [showCartModal, setShowCartModal] = useState(false);
   const handleCartModalClose = () => setShowCartModal(false);
@@ -118,6 +123,17 @@ const Navbar = () => {
                     </a>
                   </li>
                 )}
+                {!isLoggedIn && (
+                  <li>
+                    <a
+                      className="dropdown-item nav-item nav-link me-1"
+                      href="#"
+                      onClick={ShowModalForgot}
+                    >
+                      Forgot
+                    </a>
+                  </li>
+                )}
 
                 <li>
                   <hr class="dropdown-divider" />
@@ -147,6 +163,7 @@ const Navbar = () => {
                 {/* Modal Shopping Cart */}
                 <Login show={showLogin} handleClose={CloseLogin} />
                 <RegisterModal show={showRegis} handleClose={CloseRegis} />
+                <ForgotPassword show={showForgot} handleClose={CloseForgot} />
               </ul>
             </li>
           </div>

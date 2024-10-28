@@ -1,31 +1,25 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const HomePage = () => {
-  const [totalSoldProducts, setTotalSoldProducts] = useState(0);
-  const [totalAppointments, setTotalAppointments] = useState(0);
+const HomePage = ({ id }) => {
+  const [transactionCount, setTransactionCount] = useState(0);
 
   useEffect(() => {
-    // Fetch data for total sold products
-    axios
-      .get("/api/products/sold")
-      .then((response) => {
-        setTotalSoldProducts(response.data.totalSoldProducts);
-      })
-      .catch((error) => {
-        console.error("Error fetching sold products data:", error);
-      });
+    const fetchTransactionCount = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/transaksi/${id}`
+        );
+        if (response.data.success) {
+          setTransactionCount(response.data.count);
+        }
+      } catch (error) {
+        console.error("Error fetching transaction count:", error);
+      }
+    };
 
-    // Fetch data for total appointments
-    axios
-      .get("/api/appointments/count")
-      .then((response) => {
-        setTotalAppointments(response.data.totalAppointments);
-      })
-      .catch((error) => {
-        console.error("Error fetching appointments data:", error);
-      });
-  }, []);
+    fetchTransactionCount();
+  }, [id]);
 
   return (
     <div>
@@ -68,12 +62,12 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* Card: Total Products Sold */}
+        {/* Card: Unique Products Sold */}
         <div className="col-12 col-md-4 d-flex">
           <div className="card flex-fill border-0 shadow hover-card">
             <div className="card-body py-4">
-              <h5 className="mb-3">Total Products Sold</h5>
-              <h2>{totalSoldProducts}</h2>
+              <h5 className="mb-3">Unique Transactions</h5>
+              <h2>{transactionCount}</h2>
             </div>
           </div>
         </div>
@@ -83,7 +77,7 @@ const HomePage = () => {
           <div className="card flex-fill border-0 shadow hover-card">
             <div className="card-body py-4">
               <h5 className="mb-3">Total Appointments Registered</h5>
-              <h2>{totalAppointments}</h2>
+              <h2>{transactionCount}</h2>
             </div>
           </div>
         </div>

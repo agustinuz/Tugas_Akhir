@@ -102,7 +102,7 @@ const Login = ({ show, handleClose }) => {
                         </label>
                       </div>
                       <div className="d-flex align-items-center justify-content-between mt-4 mb-0">
-                        <Link className="small" to="/Dashboard">
+                        <Link className="small" to="/forgot-password">
                           Forgot Password?
                         </Link>
                         <button type="submit" className="btn btn-primary">

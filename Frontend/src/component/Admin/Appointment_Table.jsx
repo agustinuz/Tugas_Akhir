@@ -77,6 +77,11 @@ const AppointmentTable = () => {
 
   const handleReject = async (serviceId) => {
     await sendConfirmService(serviceId, "Reject", null);
+    Swal.fire({
+      icon: "success",
+      title: "Appointment Reject",
+      text: "Your appointment has been successfully Reject.",
+    });
   };
 
   const columns = [

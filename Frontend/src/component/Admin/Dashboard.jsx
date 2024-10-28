@@ -202,12 +202,12 @@ const Main_Dashboard = () => {
                     />
                   </a>
                   <div className="dropdown-menu dropdown-menu-end">
-                    <a href="#" className="dropdown-item">
+                    {/* <a href="#" className="dropdown-item">
                       Profile
                     </a>
                     <a href="#" className="dropdown-item">
                       Setting
-                    </a>
+                    </a> */}
                     <Link className="dropdown-item" onClick={handleLogout}>
                       Logout
                     </Link>

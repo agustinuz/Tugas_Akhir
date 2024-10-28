@@ -8,7 +8,7 @@ const TransactionMaster = db.define(
   {
     id: {
       type: DataTypes.INTEGER,
-      primaryKey: true 
+      primaryKey: true,
     },
     // Foreign key for Kategori
     user_id: {
@@ -16,47 +16,53 @@ const TransactionMaster = db.define(
       references: {
         model: "users", // Nama tabel kategori di database
         key: "id", // Kolom id di tabel kategori
-      }
+      },
     },
-    name:{
-        type: DataTypes.STRING
+    name: {
+      type: DataTypes.STRING,
     },
-    transaction_date:{
-        type: DataTypes.DATE
+    transaction_date: {
+      type: DataTypes.DATE,
     },
-    status:{
-        type: DataTypes.STRING
-    }
+    status: {
+      type: DataTypes.STRING,
+    },
   },
   {
     freezeTableName: true,
     updatedAt: false,
-    createdAt: false
+    createdAt: false,
   }
 );
 
-const TransactionDetail = db.define("transaction_detail",{
-    id:{
-        type: DataTypes.INTEGER,
-        primaryKey: true,
+const TransactionDetail = db.define(
+  "transaction_detail",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
     },
-    transaction_id:{
-        type: DataTypes.INTEGER,
-        references:{
-            model: 'transaction_master',
-            key: "id"
-        },
+    transaction_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "transaction_master",
+        key: "id",
+      },
     },
-    product_id:{
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'product',
-            key: 'id'
-        },
+    product_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "product",
+        key: "id",
+      },
     },
-    qty:{
-        type: DataTypes.DECIMAL(18,2),
-        defaultValue: 0
-    }
-})
-export {TransactionMaster,TransactionDetail};
+    qty: {
+      type: DataTypes.DECIMAL(18, 2),
+      defaultValue: 0,
+    },
+  },
+  {
+    freezeTableName: true,
+  }
+);
+export { TransactionMaster, TransactionDetail };

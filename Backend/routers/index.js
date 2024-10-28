@@ -1,5 +1,11 @@
 import express from "express";
-import { getUsers, Register, Login, DeleteUser } from "../controllers/User.js";
+import {
+  getUsers,
+  Register,
+  Login,
+  DeleteUser,
+  ForgotPassword,
+} from "../controllers/User.js";
 import multer from "multer";
 import path from "path";
 // import { verifyToken } from "../middleware/VerifyToken.js";
@@ -44,6 +50,7 @@ import {
 //   uploadProfileImage,
 // } from "../controllers/UserImage.js";
 import {
+  countUserTransactions,
   CreateTransaksi,
   GetPayment,
   GetTransactionDetail,
@@ -78,7 +85,7 @@ router.get("/getproducts/:id", getProductById);
 router.get("/getKategori", getKategori);
 router.get("/getUsers", getUsers);
 router.get("/getAppointment", getAppointment);
-router.get("/Schedule/:serviceId", getSchedule);
+router.get("/Schedule/:service_id", getSchedule);
 router.get("/getservice/:kategoriId", getService);
 router.get("/getservice/:userId", getServiceByUser);
 router.get("/kategoriService", getKategoriService);
@@ -111,4 +118,6 @@ router.get("/transaksi-detail/:transaction_id", GetTransactionDetail);
 router.get("/transaksi-payment/:transaction_id", GetPayment);
 router.post("/transaksi-payment", uploadPayment.single("file"), SubmitPayment);
 router.post("/form-service", ConfirmService);
+router.get("/transaksi/:id", countUserTransactions);
+router.post("/forgot-password", ForgotPassword);
 export default router;

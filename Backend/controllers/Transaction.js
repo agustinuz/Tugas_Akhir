@@ -1,7 +1,11 @@
 import { QueryTypes } from "sequelize";
 import db from "../config/Database.js";
-import { TransactionMaster } from "../models/TransactionModel.js";
+import {
+  TransactionMaster,
+  TransactionDetail,
+} from "../models/TransactionModel.js";
 import Payment from "../models/payments.js";
+import Product from "../models/productModel.js";
 
 export const CreateTransaksi = async (req, res) => {
   const { userId } = req.body;
@@ -37,17 +41,63 @@ export const UpdateTransaksi = async (req, res) => {
   const { status } = req.body;
   const { id } = req.params;
 
-  const transactionMaster = await TransactionMaster.findOne({
-    where: {
-      id: id,
-      status: "PENDING",
-    },
-  });
-  if (!transactionMaster)
-    return res.status(404).json({ msg: "Transaksi tidak ditemukan" });
-  transactionMaster.setDataValue("status", status);
-  const response = await transactionMaster.save();
-  return res.json(response);
+  try {
+    // Temukan transaksi master dengan ID yang diberikan dan status "PENDING"
+    const transactionMaster = await TransactionMaster.findOne({
+      where: {
+        id: id,
+        status: "PENDING",
+      },
+    });
+    if (!transactionMaster) {
+      return res.status(404).json({ msg: "Transaksi tidak ditemukan" });
+    }
+
+    // Update status transaksi master
+    transactionMaster.setDataValue("status", status);
+    await transactionMaster.save();
+
+    // Hanya jika statusnya "TERKIRIM", lakukan pengurangan stok
+    if (status === "Terkirim") {
+      // Ambil semua transaksi detail berdasarkan transactionMasterId
+      const transactionDetails = await TransactionDetail.findAll({
+        where: { transaction_id: id }, // Pastikan ini sesuai dengan nama kolom yang benar
+      });
+
+      // Loop melalui setiap transaksi detail untuk mengurangi stok produk
+      for (const detail of transactionDetails) {
+        // Temukan produk berdasarkan product_id di transaction detail
+        const product = await Product.findOne({
+          where: { id: detail.product_id },
+        });
+
+        if (product) {
+          // Kurangi stok berdasarkan qty
+          product.stock = product.stock - detail.qty;
+
+          // Pastikan stok tidak negatif
+          if (product.stock < 0) {
+            return res
+              .status(400)
+              .json({ msg: `Stok produk ${product.name} tidak cukup` });
+          }
+
+          // Simpan perubahan stok
+          await product.save();
+        }
+      }
+    }
+
+    // Kembalikan response sukses
+    return res
+      .status(200)
+      .json({ msg: "Status transaksi berhasil diperbarui" });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ msg: "Terjadi kesalahan saat memperbarui transaksi" });
+  }
 };
 
 export const GetTransactionMaster = async (req, res) => {
@@ -124,5 +174,31 @@ export const SubmitPayment = async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(500).json({ msg: err.message || err });
+  }
+};
+
+export const countUserTransactions = async (req, res) => {
+  try {
+    const { id } = req.params; // Get userId from request parameters
+
+    // Count the number of transactions for the given user ID
+    const count = await TransactionMaster.count({
+      where: {
+        id: id,
+      },
+    });
+
+    // Return the count as a response
+    res.status(200).json({
+      success: true,
+      count: count,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Error retrieving transaction count",
+      error: error.message,
+    });
   }
 };

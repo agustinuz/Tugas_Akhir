@@ -54,7 +54,7 @@ export const getSchedule = async (req, res) => {
   try {
     const response = await Schedule.findAll({
       where: {
-        ServiceId: service_id, // Pastikan menggunakan field yang tepat di database
+        service_id: service_id, // Pastikan menggunakan field yang tepat di database
       },
     });
 

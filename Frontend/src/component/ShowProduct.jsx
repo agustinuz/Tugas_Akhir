@@ -134,14 +134,14 @@ const ProductList = () => {
                 <Col md={3} key={product.id}>
                   <Card
                     className="shadow-sm h-100 mx-auto"
-                    style={{ width: "18rem" }}
+                    style={{ width: "20em" }}
                   >
                     <Card.Img
                       variant="top"
                       src={`http://localhost:5000/uploads/imageProduct/${product.image}`}
                       alt={product.name}
                       className="img-fluid"
-                      style={{ height: "15rem", objectFit: "cover" }}
+                      style={{ height: "18rem", objectFit: "cover" }}
                     />
                     <Card.Body>
                       <Card.Title
@@ -153,7 +153,14 @@ const ProductList = () => {
                       <Card.Text>{product.description}</Card.Text>
                       <strong>Stock : {product.stock}</strong> Pcs
                       <Card.Text>
-                        <strong>Price: Rp. {product.price}</strong>
+                        <strong>
+                          Price:{" "}
+                          {new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(product.price)}
+                        </strong>
                       </Card.Text>
                       <Button
                         variant="primary"
@@ -179,7 +186,7 @@ const ProductList = () => {
           </Modal.Header>
           <Modal.Body>
             <img
-              src={`http://localhost:5000/imageProduct/${selectedProduct.image}`}
+              src={`http://localhost:5000/uploads/imageProduct/${selectedProduct.image}`}
               alt={selectedProduct.name}
               className="img-fluid mb-3"
             />

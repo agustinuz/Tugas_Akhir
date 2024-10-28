@@ -232,10 +232,7 @@ const ProfilePage = () => {
                             onClick={() =>
                               handleViewSchedule(service.ServiceId)
                             }
-                            // disabled={
-                            //   !service.Schedules ||
-                            //   service.Schedules.length === 0
-                            // }
+                            disabled={service.status === "Reject"}
                           >
                             View Schedule
                           </Button>
@@ -320,18 +317,29 @@ const ProfilePage = () => {
             </Modal.Header>
             <Modal.Body>
               {schedules.length > 0 ? (
-                <ul>
-                  {schedules.map((schedule) => (
-                    <li key={schedule.ServiceId}>
-                      Date: {schedule.ScheduleDate}, Time:{" "}
-                      {schedule.ScheduleTime}, Queue: {schedule.Antrian}
-                    </li>
-                  ))}
-                </ul>
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Time</th>
+                      <th>Antrian Number</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {schedules.map((schedule) => (
+                      <tr key={schedule.service_id}>
+                        <td>{schedule.date}</td>
+                        <td>{schedule.time}</td>
+                        <td>{schedule.antrian}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               ) : (
                 <p>No schedules available for this service.</p>
               )}
             </Modal.Body>
+
             <Modal.Footer>
               <Button
                 variant="secondary"

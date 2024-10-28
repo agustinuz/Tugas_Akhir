@@ -1,6 +1,10 @@
 import Users from "../models/userModels.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const getUsers = async (req, res) => {
   try {
@@ -96,6 +100,50 @@ export const DeleteUser = async (req, res) => {
     } else {
       res.status(404).json({ msg: "User not found" });
     }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
+
+export const ForgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await Users.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ msg: "Email tidak ditemukan" });
+    }
+
+    // Generate a password reset token
+    const token = jwt.sign(
+      { email: user.email },
+      process.env.RESET_TOKEN_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    // Create a reset link (you should replace 'yourfrontendurl.com' with your actual frontend URL)
+    const resetLink = `http://yourfrontendurl.com/reset-password?token=${token}`;
+
+    // Setup email transport
+    const transporter = nodemailer.createTransport({
+      service: "gmail", // Replace with your email service provider
+      auth: {
+        user: process.env.EMAIL_USER, // Your email
+        pass: process.env.EMAIL_PASS, // Your email password
+      },
+    });
+
+    // Send email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Reset Password",
+      text: `Click this link to reset your password: ${resetLink}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ msg: "Link reset password telah dikirim ke email Anda." });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Internal Server Error" });

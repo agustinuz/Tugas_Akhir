@@ -25,27 +25,27 @@ const AddProduct = () => {
   const [selectProductId, setSelectedProductId] = useState(null);
 
   useEffect(() => {
-    const fetchKategori = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/getKategori");
-        setKategoris(response.data);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/getproducts");
-        setProducts(response.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-
     fetchKategori();
     fetchProducts();
   }, []);
+
+  const fetchKategori = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/getKategori");
+      setKategoris(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/getproducts");
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
   const loadImage = (e) => {
     const image = e.target.files[0];
@@ -75,6 +75,8 @@ const AddProduct = () => {
         confirmButtonText: "OK",
       });
       resetForm();
+      fetchKategori();
+      fetchProducts();
     } catch (error) {
       console.error("Error saving product:", error);
     }
@@ -107,6 +109,8 @@ const AddProduct = () => {
         confirmButtonText: "OK",
       });
       resetForm();
+      fetchKategori();
+      fetchProducts();
     } catch (error) {
       console.error("Error updating product:", error);
     }

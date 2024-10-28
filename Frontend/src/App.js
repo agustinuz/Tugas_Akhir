@@ -10,6 +10,7 @@ import Register from "./component/Auth/Register";
 import Main_Dashboard from "./component/Admin/Dashboard";
 import Dashboard_2 from "./component/Customer/Dashboard2";
 import ProfilePage from "./component/Customer/Profile";
+import ForgotPassword from "./component/Auth/forgotPassword";
 // import UserProfile from "./component/ShoppingCard";
 // import ProductList from "./component/ShowProduct";
 // import ProductList2 from "./component/Product_List";
@@ -21,7 +22,7 @@ function App() {
         <Routes>
           <Route exact path="/*" element={<Navbar />} />
           <Route path="/profile" element={<ProfilePage />} />
-          {/* <Route path="/listproduct" element={<ProductList2 />} /> */}
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="Dashboard/*" element={<Main_Dashboard />} />
