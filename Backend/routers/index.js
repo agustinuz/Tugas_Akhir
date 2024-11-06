@@ -54,6 +54,7 @@ import {
   CreateTransaksi,
   deleteTransaksi,
   GetPayment,
+  GetReportTransaction,
   GetTransactionDetail,
   GetTransactionMaster,
   SubmitPayment,
@@ -130,4 +131,5 @@ router.post("/forgot-password", ForgotPassword);
 router.get("/report/transactions", getTransactionReport);
 router.get("/report/appointments", getAppointmentReport);
 router.get("/appointments/count/:id", getAppointmentCount);
+router.get('/data/:type',GetReportTransaction);
 export default router;
