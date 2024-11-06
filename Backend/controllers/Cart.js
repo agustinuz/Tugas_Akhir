@@ -5,13 +5,20 @@ import Users from "../models/userModels.js";
 
 export const addCart = async (req, res) => {
   const { userId, productId, qty } = req.body;
-  const checkProduct = await Product.count({
-    where: {
-      id: productId,
-    },
+  const checkProduct = await Product.findOne({
+    where: { id: productId },
+    attributes: ["stock"],
   });
-  if (checkProduct < 1)
-    return res.status(404).json({ msg: "Product Not Found" });
+  if (!checkProduct) return res.status(404).json({ msg: "Product Not Found" });
+
+  if (checkProduct.stock === 0)
+    return res.status(404).json({ msg: "Product is out of stock" });
+
+  if (qty > checkProduct.stock)
+    return res
+      .status(404)
+      .json({ msg: "Requested quantity exceeds available stock" });
+
   const checkUser = await Users.count({
     where: {
       id: userId,
@@ -30,11 +37,6 @@ export const addCart = async (req, res) => {
       parseFloat(checkCart.dataValues.qty) + parseFloat(qty)
     );
     await checkCart.save();
-    // checkCart.setDataValue(
-    //   "qty",
-    //   parseFloat(checkCart.dataValues.qty) + parseFloat(qty)
-    // );
-    // await checkCart.save();
   } else {
     const newCartProduct = {
       userId: userId,
@@ -67,37 +69,56 @@ export const getCart = async (req, res) => {
   });
 };
 
-// Controller untuk menghapus item dari keranjang
-// export const deleteCartItem = async (req, res) => {
-//   try {
-//     const deletecart = await ProductCart.findOne({
-//       where: {
-//         cartId: req.params.cartId,
-//       },
-//     });
+export const removeCart = async (req, res) => {
+  const { cartId } = req.params;
+  try {
+    const deletecart = await ProductCart.findOne({
+      where: {
+        userId: req.params.userId,
+      },
+    });
 
-//     if (!deletecart) {
-//       return res.status(404).json({ msg: "No Data Found" });
-//     }
+    if (!deletecart) {
+      return res.status(404).json({ msg: "No Data Found" });
+    }
 
-//     const Deleteitem = await ProductCart.destroy({
-//       where: {
-//         cartId: req.params.cartId,
-//       },
-//     });
+    const Deleteitem = await ProductCart.destroy({
+      where: {
+        cartId: cartId,
+      },
+    });
 
-//     if (Deleteitem) {
-//       return res.json({ msg: "Cart deleted successfully" });
-//     } else {
-//       return res.status(404).json({ msg: "Cart not found" });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ msg: "Internal Server Error" });
-//   }
-// };
+    if (Deleteitem) {
+      return res.json({ msg: "Cart deleted successfully" });
+    } else {
+      return res.status(404).json({ msg: "Cart not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
 
-export const deleteCartUser = async (req, res) => {
+export const deleteCart = async (req, res) => {
+  const { cartId } = req.params;
+  try {
+    const deletedCart = await ProductCart.destroy({
+      where: {
+        cartId: cartId,
+      },
+    });
+    if (deletedCart > 0) {
+      res.json({ msg: "Cart deleted successfully" });
+    } else {
+      res.status(404).json({ msg: "Cart not found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Internal Server Error" });
+  }
+};
+
+export const removeCart2 = async (req, res) => {
   const { userId } = req.params;
 
   try {
@@ -110,26 +131,4 @@ export const deleteCartUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: "Failed to delete cart items" });
   }
-};
-
-export const removeCart = async (req, res) => {
-  const { cartId } = req.params;
-  const { qty } = req.qty;
-  const cart = await ProductCart.findOne({
-    where: {
-      cartId: cartId,
-    },
-  });
-  if (!cart) return res.status(404).json({ msg: "Cart Not Found" });
-  if (cart.dataValues.qty - qty < 1) {
-    await ProductCart.destroy({
-      where: {
-        cartId: cartId,
-      },
-    });
-  } else {
-    cart.setDataValue("qty", cart.dataValues.qty - qty);
-    await cart.save();
-  }
-  return res.status(200).json({ msg: "OK" });
 };

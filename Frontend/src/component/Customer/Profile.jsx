@@ -163,6 +163,28 @@ const ProfilePage = () => {
     }
   };
 
+  const cancelOrder = async (transaction_id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/transaksi/${transaction_id}`
+      );
+
+      if (response.status === 200) {
+        Swal.fire("Success", "Order item has been canceled.", "success");
+
+        // Panggil ulang fungsi untuk memperbarui data transaksi setelah penghapusan
+        fetchUserTransactions(
+          jwt_decode(localStorage.getItem("accessToken")).userId
+        );
+      } else {
+        Swal.fire("Error", "Order item not found.", "error");
+      }
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
+      Swal.fire("Error", "Failed to delete order item.", "error");
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     navigate("/");
@@ -297,6 +319,16 @@ const ProfilePage = () => {
                             disabled={transaction.paid}
                           >
                             Payment
+                          </Button>
+                          <Button
+                            className="btn btn-primary btn-sm text-capitalize mx-3"
+                            variant="primary"
+                            onClick={() =>
+                              cancelOrder(transaction.transaction_id)
+                            }
+                            disabled={transaction.paid}
+                          >
+                            Cancel Order
                           </Button>
                         </td>
                       </tr>

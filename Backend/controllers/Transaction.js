@@ -202,3 +202,30 @@ export const countUserTransactions = async (req, res) => {
     });
   }
 };
+
+export const deleteTransaksi = async (req, res) => {
+  const { transaction_id } = req.params; // Memastikan transactionId berasal dari parameter request
+  try {
+    const deletedTransaction = await TransactionMaster.findOne({
+      where: {
+        id: transaction_id,
+      },
+    });
+
+    if (!deletedTransaction) {
+      return res.status(404).json({ msg: "No Data Found" });
+    }
+
+    // Menghapus transaksi jika ditemukan
+    await TransactionMaster.destroy({
+      where: {
+        id: transaction_id,
+      },
+    });
+
+    return res.json({ msg: "Transaksi deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal Server Error" });
+  }
+};

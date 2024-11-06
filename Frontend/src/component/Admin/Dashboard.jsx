@@ -18,6 +18,7 @@ import Kategori_Table from "./Kategori_Product";
 import HomePage from "./nav";
 import Kategori_Service from "./Kategori_Service";
 import OrderListTable from "./Order_Table";
+import ReportTable from "./Report";
 // import HomePage from "./nav";
 
 const Main_Dashboard = () => {
@@ -162,6 +163,11 @@ const Main_Dashboard = () => {
                       List User
                     </Link>
                   </li>
+                  <li className="sidebar-item">
+                    <Link to="report" className="sidebar-link">
+                      Report
+                    </Link>
+                  </li>
                 </ul>
               </li>
               <li className="sidebar-header">More</li>
@@ -229,6 +235,7 @@ const Main_Dashboard = () => {
                 <Route path="/product" element={<Product_Table />} />
                 <Route path="/kategori" element={<Kategori_Table />} />
                 <Route path="/kategoriservice" element={<Kategori_Service />} />
+                <Route path="/report" element={<ReportTable />} />
               </Routes>
             </div>
           </main>

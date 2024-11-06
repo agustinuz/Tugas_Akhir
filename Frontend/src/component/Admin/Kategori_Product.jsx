@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Button, Modal, Form } from "react-bootstrap";
 import {
-  CDBCard,
-  CDBCardBody,
-  CDBDataTable,
-  CDBContainer,
-  CDBBtn,
-} from "cdbreact";
+  Button,
+  Modal,
+  Table,
+  Form,
+  InputGroup,
+  Row,
+  Col,
+  Container,
+} from "react-bootstrap";
+import { CDBBtn } from "cdbreact";
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -14,6 +17,7 @@ const Kategori_Table = () => {
   const [kategoris, setKategoris] = useState([]);
   const [newKategori, setNewKategori] = useState("");
   const [newDescription, setNewDescription] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -23,6 +27,8 @@ const Kategori_Table = () => {
     nameKategori: "",
     Description: "",
   });
+  const [entriesPerPage, setEntriesPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchKategoris();
@@ -107,161 +113,214 @@ const Kategori_Table = () => {
     }
   };
 
-  const data = {
-    columns: [
-      { label: "#", field: "index", sort: "asc" },
-      { label: "Kategori", field: "nameKategori", sort: "asc" },
-      { label: "Description", field: "Description", sort: "asc" },
-      { label: "Action", field: "action" },
-    ],
-    rows: kategoris.map((kategori, index) => ({
-      index: index + 1,
-      nameKategori: kategori.nameKategori,
-      Description: kategori.Description,
-      action: (
-        <>
-          <Button
-            className="btn btn-danger btn-sm text-capitalize"
-            variant="danger"
-            onClick={() => {
-              setShowDeleteModal(true);
-              setKategoriNameToDelete(kategori.nameKategori);
-            }}
-          >
-            Delete
-          </Button>
-          <Button
-            className="btn btn-primary btn-sm text-capitalize mx-3"
-            variant="primary"
-            onClick={() => handleShowUpdateModal(kategori)}
-          >
-            Update
-          </Button>
-        </>
-      ),
-    })),
+  const filteredKategoris = kategoris.filter((kategori) =>
+    kategori.nameKategori.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalEntries = filteredKategoris.length;
+  const totalPages = Math.ceil(totalEntries / entriesPerPage);
+
+  const handlePagination = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
+  const displayedKategoris = filteredKategoris.slice(
+    (currentPage - 1) * entriesPerPage,
+    currentPage * entriesPerPage
+  );
+
   return (
-    <div>
-      <div className="container-fluid px-4">
-        <h2 className="mb-3">
-          <strong>Kategori</strong>
-        </h2>
-        <figcaption className="blockquote-footer mb-5">
-          Kategori for <cite title="Source Title">Product</cite>
-        </figcaption>
+    <Container fluid className="px-3">
+      <h2 className="mb-3">
+        <strong>Kategori</strong>
+      </h2>
+      <figcaption className="blockquote-footer mb-5">
+        Kategori for <cite title="Source Title">Product</cite>
+      </figcaption>
 
-        {/* Modal for Create Kategori */}
-        <Modal show={showModal} onHide={() => setShowModal(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Tambah Kategori</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <input
+      {/* Modal for Create Kategori */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Tambah Kategori</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <input
+            type="text"
+            value={newKategori}
+            onChange={(e) => setNewKategori(e.target.value)}
+            placeholder="Enter new kategori name"
+            className="form-control mb-3"
+          />
+          <input
+            type="text"
+            value={newDescription}
+            onChange={(e) => setNewDescription(e.target.value)}
+            placeholder="Enter Description"
+            className="form-control"
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleCreateKategori}>
+            Create Kategori
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal for Update Kategori */}
+      <Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Update Kategori</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group controlId="formMerkNameToUpdate">
+            <Form.Label>Kategori Name</Form.Label>
+            <Form.Control
               type="text"
-              value={newKategori}
-              onChange={(e) => setNewKategori(e.target.value)}
-              placeholder="Enter new kategori name"
-              className="form-control mb-3"
+              name="nameKategori"
+              value={currentKategori.nameKategori}
+              onChange={handleInputChange}
             />
-            <input
+          </Form.Group>
+          <Form.Group controlId="formNewDescription">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
               type="text"
-              value={newDescription}
-              onChange={(e) => setNewDescription(e.target.value)}
-              placeholder="Enter Description"
-              className="form-control"
+              name="Description"
+              value={currentKategori.Description}
+              onChange={handleInputChange}
             />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModal(false)}>
-              Close
-            </Button>
-            <Button variant="primary" onClick={handleCreateKategori}>
-              Create Kategori
-            </Button>
-          </Modal.Footer>
-        </Modal>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseUpdateModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleUpdate}>
+            Update
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
-        {/* Modal for Update Kategori */}
-        <Modal show={showUpdateModal} onHide={handleCloseUpdateModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Update Kategori</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form.Group controlId="formMerkNameToUpdate">
-              <Form.Label>Kategori Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="nameKategori"
-                value={currentKategori.nameKategori}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-            <Form.Group controlId="formNewDescription">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                type="text"
-                name="Description"
-                value={currentKategori.Description}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseUpdateModal}>
-              Cancel
-            </Button>
-            <Button variant="primary" onClick={handleUpdate}>
-              Update
-            </Button>
-          </Modal.Footer>
-        </Modal>
+      {/* Modal for Delete Confirmation */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete the kategori?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
-        {/* Modal for Delete Confirmation */}
-        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Confirm Delete</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>Are you sure you want to delete the kategori?</Modal.Body>
-          <Modal.Footer>
-            <Button
-              variant="secondary"
-              onClick={() => setShowDeleteModal(false)}
+      <div className="bg-white rounded p-5 shadow-sm">
+        <Row className="align-items-center">
+          <Col md={6} className=" align-items-center gap-3">
+            {/* <Button className="mb-2" onClick={() => setShowModal(true)}>
+              Create New Service
+            </Button> */}
+            <CDBBtn
+              className="mb-2"
+              color="primary"
+              size="large"
+              circle
+              onClick={() => setShowModal(true)}
             >
-              Cancel
-            </Button>
-            <Button variant="danger" onClick={handleDelete}>
-              Delete
-            </Button>
-          </Modal.Footer>
-        </Modal>
-
-        <CDBContainer fluid>
-          <CDBCard style={{ borderRadius: "15px" }}>
-            <CDBCardBody>
-              <CDBBtn
-                color="primary"
-                size="large"
-                circle
-                onClick={() => setShowModal(true)}
+              Create New Kategori
+            </CDBBtn>
+            Show entries
+            <Form.Group controlId="entriesPerPage" className="col-3 ms-4 mb-1">
+              <Form.Control
+                as="select"
+                value={entriesPerPage}
+                onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+                Show
+                entries
               >
-                Create New Kategori
-              </CDBBtn>
-              <CDBDataTable
-                responsive
-                striped
-                bordered
-                hover
-                data={data}
-                pagination
-                materialSearch={true}
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+              </Form.Control>
+            </Form.Group>
+          </Col>
+
+          <Col md={{ span: 2, offset: 10 }} className="text-md-end">
+            <InputGroup className="mb-2">
+              <Form.Control
+                type="text"
+                placeholder="Search Kategori"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
-            </CDBCardBody>
-          </CDBCard>
-        </CDBContainer>
+            </InputGroup>
+          </Col>
+        </Row>
+        <Table striped bordered hover responsive className="mb-4">
+          <thead>
+            <tr>
+              <th className="fw-bold fs-4">##</th>
+              <th className="fw-bold fs-5">Kategori</th>
+              <th className="fw-bold fs-5">Description</th>
+              <th className="fw-bold fs-5">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedKategoris.map((kategori, index) => (
+              <tr key={kategori.id}>
+                <td>{(currentPage - 1) * entriesPerPage + index + 1}</td>
+                <td>{kategori.nameKategori}</td>
+                <td>{kategori.Description}</td>
+                <td>
+                  <div className="d-flex gap-2">
+                    <Button
+                      className="btn btn-primary btn-md text-capitalize ms-6 "
+                      variant="primary"
+                      onClick={() => handleShowUpdateModal(kategori)}
+                    >
+                      Update
+                    </Button>
+                    <Button
+                      className="btn btn-danger btn-md text-capitalize ms-2"
+                      variant="danger"
+                      onClick={() => {
+                        setShowDeleteModal(true);
+                        setKategoriNameToDelete(kategori.nameKategori);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+        <div className="d-flex justify-content-between align-items-center mt-2">
+          <Button
+            disabled={currentPage === 1}
+            onClick={() => handlePagination(currentPage - 1)}
+          >
+            Previous
+          </Button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            disabled={currentPage === totalPages}
+            onClick={() => handlePagination(currentPage + 1)}
+          >
+            Next
+          </Button>
+        </div>
       </div>
-    </div>
+    </Container>
   );
 };
 

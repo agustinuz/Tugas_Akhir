@@ -50,85 +50,112 @@ const ShoppingCartModal = () => {
     }
   };
 
-  const removeCartItem = async (cartId, qty) => {
+  const deleteCartItem = async (cartId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/cart/${cartId}`,
-        {
-          data: { qty: qty }, // Sending qty in the request body
-        }
+        `http://localhost:5000/cart/${cartId}`
       );
 
       if (response.status === 200) {
-        Swal.fire(
-          "Removed!",
-          "The product has been removed from your cart.",
-          "success"
-        );
-        fetchCart(jwt_decode(localStorage.getItem("accessToken")).userId); // Refresh the cart
+        Swal.fire("Success", "Cart item has been deleted.", "success");
+        // Fetch updated cart items
+        fetchCart(jwt_decode(localStorage.getItem("accessToken")).userId);
+      } else {
+        Swal.fire("Error", "Cart item not found.", "error");
       }
     } catch (error) {
       console.error("Error deleting cart item:", error);
-      Swal.fire(
-        "Error",
-        "An error occurred while removing the product.",
-        "error"
-      );
+      Swal.fire("Error", "Failed to delete cart item.", "error");
     }
   };
 
-  // Confirmation handler before removing an item
-  const handleRemoveConfirmation = (cartId, qty) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to remove this product from the cart?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, remove it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        removeCartItem(cartId, qty); // Call the remove function with cartId and qty
-      }
-    });
-  };
+  // const removeCartItem = async (cartId, qty) => {
+  //   try {
+  //     const response = await axios.delete(
+  //       `http://localhost:5000/cart/${cartId}`,
+  //       {
+  //         data: { qty: qty }, // Sending qty in the request body
+  //       }
+  //     );
 
-  const handleOrderNow = async () => {
+  //     if (response.status === 200) {
+  //       Swal.fire(
+  //         "Removed!",
+  //         "The product has been removed from your cart.",
+  //         "success"
+  //       );
+  //       fetchCart(jwt_decode(localStorage.getItem("accessToken")).userId); // Refresh the cart
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting cart item:", error);
+  //     Swal.fire(
+  //       "Error",
+  //       "An error occurred while removing the product.",
+  //       "error"
+  //     );
+  //   }
+  // };
+
+  // Confirmation handler before removing an item
+  // const handleRemoveConfirmation = (cartId, qty) => {
+  //   Swal.fire({
+  //     title: "Are you sure?",
+  //     text: "Do you want to remove this product from the cart?",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, remove it!",
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       deleteCartItem(cartId, qty); // Call the remove function with cartId and qty
+  //     }
+  //   });
+  // };
+
+  const handleOrderNow = async (cartId) => {
     const token = localStorage.getItem("accessToken");
     if (token) {
       const userId = jwt_decode(token).userId;
 
       try {
-        //step 1 create transaction
+        // Step 1: Create transaction
         const response = await axios.post("http://localhost:5000/transaksi", {
           userId: userId,
         });
-        console.log(response.data);
+        console.log("Transaction created:", response.data);
         setError(null);
 
-        // Step 2: Clear the cart after successful transaction
-        await axios.delete(`http://localhost:5000/cart/${userId}`);
+        // Step 2: Clear the cart after a successful transaction
+        const deleteResponse = await axios.delete(
+          `http://localhost:5000/cart/${cartId}`
+        );
 
-        // Optionally: Clear the cart from the frontend as well
-        setCartItems([]);
-        setTotalHarga(0);
+        if (deleteResponse.status === 200) {
+          // Check if the deletion is successful
+          console.log("Cart cleared successfully");
+          setCartItems([]);
+          setTotalHarga(0);
 
-        Swal.fire({
-          title: "Pesanan berhasil!",
-          text: "Anda dapat melihat pesanan di profil Anda.",
-          icon: "success",
-          showCancelButton: true,
-          confirmButtonText: "Check Pesanan",
-          cancelButtonText: "OK",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate("/profile"); // Arahkan ke halaman profil
-          }
-        });
+          Swal.fire({
+            title: "Pesanan berhasil!",
+            text: "Anda dapat melihat pesanan di profil Anda.",
+            icon: "success",
+            showCancelButton: true,
+            confirmButtonText: "Check Pesanan",
+            cancelButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              navigate("/profile");
+            }
+          });
+        } else {
+          throw new Error("Failed to clear cart");
+        }
+
         handleClose(); // Close the modal after successful order
       } catch (error) {
-        console.error("Error creating transaction:", error);
+        console.error("Error creating transaction or clearing cart:", error);
         setError(
           error.response?.data?.msg ||
             "An error occurred while creating the transaction"
@@ -189,9 +216,7 @@ const ShoppingCartModal = () => {
                         <Button
                           variant="outline-danger"
                           size="sm"
-                          onClick={() =>
-                            handleRemoveConfirmation(item.cartId, item.qty)
-                          } // Updated button to call confirmation handler
+                          onClick={() => deleteCartItem(item.cartId)}
                         >
                           Cancel
                         </Button>

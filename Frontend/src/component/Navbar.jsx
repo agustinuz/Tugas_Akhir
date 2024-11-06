@@ -208,10 +208,7 @@ const Navbar = () => {
                     fontStyle: "italic",
                     fontWeight: 600,
                   }}
-                >
-                  Providing the Best{" "}
-                  <cite title="Source Title">Care & Love for Your Pets</cite>
-                </h5>
+                ></h5>
               </figcaption>
               {/* Button */}
               <div className="d-flex align-items-center justify-content-center justify-content-lg-start pt-5">

@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { CDBCard, CDBCardBody, CDBDataTable, CDBContainer } from "cdbreact";
-import { Button, Modal, Form } from "react-bootstrap";
+import { CDBBtn } from "cdbreact";
+import {
+  Button,
+  Modal,
+  Table,
+  Form,
+  InputGroup,
+  Row,
+  Col,
+  Container,
+} from "react-bootstrap";
 import Swal from "sweetalert2"; // Import SweetAlert
 
 const AppointmentTable = () => {
   const [service, setService] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [entriesPerPage, setEntriesPerPage] = useState(5);
+  const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false); // State for modal visibility
   const [schedule, setSchedule] = useState({
     date: "",
@@ -84,178 +96,180 @@ const AppointmentTable = () => {
     });
   };
 
-  const columns = [
-    {
-      label: "#",
-      field: "index",
-      sort: "asc",
-      width: 50,
-    },
-    {
-      label: "Name Owner",
-      field: "Name_Owner",
-      sort: "asc",
-      width: 150,
-    },
-    {
-      label: "Animal",
-      field: "Name_Animal",
-      sort: "asc",
-      width: 270,
-    },
-    {
-      label: "Birthday Animal",
-      field: "birthday_Animal",
-      sort: "asc",
-      width: 100,
-    },
-    {
-      label: "Jenis",
-      field: "Jenis",
-      sort: "asc",
-      width: 100,
-    },
-    {
-      label: "RAS",
-      field: "RAS",
-      sort: "asc",
-      width: 100,
-    },
-    {
-      label: "Quantity",
-      field: "Quantity",
-      sort: "asc",
-      width: 100,
-    },
-    {
-      label: "Kategori",
-      field: "kategori_service",
-      sort: "asc",
-      width: 100,
-    },
-    {
-      label: "status",
-      field: "status",
-      sort: "asc",
-      width: 80,
-    },
-    {
-      label: "Action",
-      field: "action",
-      width: 150,
-    },
-  ];
+  const filteredKategoris = service.filter((serviceitem) =>
+    serviceitem.Name_Owner.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const data = {
-    columns: columns,
-    rows: service.map((serviceitem, index) => ({
-      index: index + 1,
-      Name_Owner: serviceitem.Name_Owner,
-      Name_Animal: serviceitem.Name_Animal,
-      birthday_Animal: new Date(serviceitem.birthday_Animal).toLocaleDateString(
-        "en-US"
-      ),
-      Jenis: serviceitem.Jenis,
-      RAS: serviceitem.RAS,
-      Quantity: serviceitem.Quantity,
-      kategori_service: serviceitem.kategori_service,
-      status: serviceitem.status,
-      action: (
-        <>
-          <Button
-            className="btn btn-primary btn-sm text-capitalize"
-            variant="primary"
-            onClick={() => handleConfirmClick(serviceitem)}
-            disabled={serviceitem.status === "Confirm"} // Disable button if status is 'Confirm'
-          >
-            Confirm
-          </Button>
-          <Button
-            onClick={() => handleReject(serviceitem.ServiceId)}
-            className="btn btn-danger btn-sm text-capitalize mx-3"
-            variant="danger"
-          >
-            Reject
-          </Button>
-        </>
-      ),
-    })),
+  const totalEntries = filteredKategoris.length;
+  const totalPages = Math.ceil(totalEntries / entriesPerPage);
+
+  const handlePagination = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
+  const displayedService = filteredKategoris.slice(
+    (currentPage - 1) * entriesPerPage,
+    currentPage * entriesPerPage
+  );
+
   return (
-    <CDBContainer fluid>
-      <div className="container-fluid px-4">
-        <h2 className="mb-3">
-          <strong>Appointment</strong>
-        </h2>
-        <figcaption className="blockquote-footer mb-5">
-          List <cite title="Source Title">Appointment</cite>
-        </figcaption>
-        <CDBCard style={{ borderRadius: "15px" }}>
-          <CDBCardBody>
-            {/* <CDBBtn color="primary" size="large" circle>
-              Create New Appointment
-            </CDBBtn> */}
-            <CDBDataTable
-              responsive
-              striped
-              bordered
-              hover
-              data={data}
-              pagination
-              materialSearch={true}
-            />
-          </CDBCardBody>
-        </CDBCard>
+    <Container fluid className="px-3">
+      <h2 className="mb-3">
+        <strong>Appoitment</strong>
+      </h2>
+      <figcaption className="blockquote-footer mb-5">
+        List <cite title="Source Title">Appoitment</cite>
+      </figcaption>
+
+      <div className="bg-white rounded p-5 shadow-sm">
+        <Row className="align-items-center">
+          {/* <Button className="mb-2" onClick={() => setShowModal(true)}>
+              Create New Service
+            </Button> */}
+
+          <Col md={{ span: 2, offset: 10 }} className="text-md-end">
+            <InputGroup className="mb-2">
+              <Form.Control
+                type="text"
+                placeholder="Search Kategori"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </InputGroup>
+          </Col>
+        </Row>
+        <Form.Group controlId="entriesPerPage" className="col-1 mb-2">
+          <Form.Control
+            as="select"
+            value={entriesPerPage}
+            onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </Form.Control>
+        </Form.Group>
+
+        {/* Data Table */}
+        <Table striped bordered hover className="mb-0">
+          <thead>
+            <tr>
+              <th className="fw-bold fs-4">#</th>
+              <th className="fw-bold fs-5">Name Owner</th>
+              <th className="fw-bold fs-5">Animal</th>
+              <th className="fw-bold fs-5">Birthday Animal</th>
+              <th className="fw-bold fs-5">Jenis</th>
+              <th className="fw-bold fs-5">Ras</th>
+              <th className="fw-bold fs-5">Quantity</th>
+              <th className="fw-bold fs-5">Kategori</th>
+              <th className="fw-bold fs-5">Status</th>
+              <th className="fw-bold fs-5">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedService.map((serviceitem, index) => (
+              <tr key={serviceitem.id}>
+                <td>{(currentPage - 1) * entriesPerPage + index + 1}</td>
+                <td>{serviceitem.Name_Owner}</td>
+                <td>{serviceitem.Name_Animal}</td>
+                <td>
+                  {new Date(serviceitem.birthday_Animal).toLocaleDateString(
+                    "en-US"
+                  )}
+                </td>
+                <td>{serviceitem.Jenis}</td>
+                <td>{serviceitem.RAS}</td>
+                <td>{serviceitem.Quantity}</td>
+                <td>{serviceitem.kategori_service}</td>
+                <td>{serviceitem.status}</td>
+                <td>
+                  <Button
+                    className="btn btn-primary btn-sm text-capitalize"
+                    variant="primary"
+                    onClick={() => handleConfirmClick(serviceitem)}
+                    disabled={serviceitem.status === "Confirm"} // Disable button if status is 'Confirm'
+                  >
+                    Confirm
+                  </Button>
+                  <Button
+                    onClick={() => handleReject(serviceitem.ServiceId)}
+                    className="btn btn-danger btn-sm text-capitalize mx-3"
+                    variant="danger"
+                  >
+                    Reject
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+
+        {/* Modal for schedule confirmation */}
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Schedule</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group controlId="formDate">
+                <Form.Label>Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  name="date"
+                  value={schedule.date}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Form.Group>
+
+              <Form.Group controlId="formTime" className="mt-3">
+                <Form.Label>Time</Form.Label>
+                <Form.Control
+                  type="time"
+                  name="time"
+                  value={schedule.time}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Form.Group>
+
+              <Form.Group controlId="formQueue" className="mt-3">
+                <Form.Label>Queue</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="antrian"
+                  value={schedule.antrian}
+                  onChange={handleInputChange}
+                  required
+                />
+              </Form.Group>
+
+              <Button variant="primary" type="submit" className="mt-4">
+                Confirm
+              </Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
+        {/* Pagination Controls */}
+        <div className="d-flex justify-content-between align-items-center mt-2">
+          <Button
+            disabled={currentPage === 1}
+            onClick={() => handlePagination(currentPage - 1)}
+          >
+            Previous
+          </Button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            disabled={currentPage === totalPages}
+            onClick={() => handlePagination(currentPage + 1)}
+          >
+            Next
+          </Button>
+        </div>
       </div>
-
-      {/* Modal for schedule confirmation */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirm Schedule</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formDate">
-              <Form.Label>Date</Form.Label>
-              <Form.Control
-                type="date"
-                name="date"
-                value={schedule.date}
-                onChange={handleInputChange}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formTime" className="mt-3">
-              <Form.Label>Time</Form.Label>
-              <Form.Control
-                type="time"
-                name="time"
-                value={schedule.time}
-                onChange={handleInputChange}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formQueue" className="mt-3">
-              <Form.Label>Queue</Form.Label>
-              <Form.Control
-                type="number"
-                name="antrian"
-                value={schedule.antrian}
-                onChange={handleInputChange}
-                required
-              />
-            </Form.Group>
-
-            <Button variant="primary" type="submit" className="mt-4">
-              Confirm
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-    </CDBContainer>
+    </Container>
   );
 };
 

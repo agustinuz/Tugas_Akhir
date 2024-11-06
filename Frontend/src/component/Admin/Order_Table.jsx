@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Modal, Button } from "react-bootstrap";
-import { CDBCard, CDBCardBody, CDBDataTable, CDBContainer } from "cdbreact"; // Import CDBDataTable
+import { Modal, Button, FormControl } from "react-bootstrap";
+import { CDBCard, CDBCardBody, CDBContainer, CDBDataTable } from "cdbreact";
 
 const AdminTransactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
-  const [selectedPayment, setSelectedPayment] = useState(null); // State for payment data
+  const [selectedPayment, setSelectedPayment] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false); // State for payment modal
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     fetchTransactions();
   }, []);
+
   const fetchTransactions = async () => {
     try {
       const response = await axios.get("http://localhost:5000/transaksi/Admin");
@@ -31,7 +33,6 @@ const AdminTransactions = () => {
       );
       setSelectedTransaction(response.data);
       setShowModal(true);
-      fetchTransactions();
     } catch (error) {
       console.error("Error fetching transaction details", error);
     }
@@ -42,9 +43,8 @@ const AdminTransactions = () => {
       const response = await axios.get(
         `http://localhost:5000/transaksi-payment/${transactionId}`
       );
-      setSelectedPayment(response.data); // Store payment data
+      setSelectedPayment(response.data);
       setShowPaymentModal(true);
-      fetchTransactions();
     } catch (error) {
       console.error("Error fetching payment details", error);
     }
@@ -61,67 +61,59 @@ const AdminTransactions = () => {
       );
       setMessage("Payment confirmed successfully!");
       setShowPaymentModal(false);
-      fetchTransactions(); // Refresh transactions after confirmation
+      fetchTransactions();
     } catch (error) {
       console.error("Error confirming payment:", error);
-      // Jika error response dari backend, tampilkan pesan error dari response
-      if (error.response && error.response.data && error.response.data.msg) {
-        setMessage(error.response.data.msg); // Pesan error spesifik dari backend
-      } else {
-        setMessage("Failed to confirm payment");
-      }
-      setStatus("FAILED");
+      setMessage("Failed to confirm payment");
     }
   };
 
-  const columns = [
-    { label: "ID", field: "transaction_id", sort: "asc", width: 150 },
-    { label: "Name", field: "name", sort: "asc", width: 270 },
-    { label: "Date", field: "transaction_date", sort: "asc", width: 200 },
-    { label: "Status", field: "status", sort: "asc", width: 150 },
-    { label: "Subtotal", field: "subtotal", sort: "asc", width: 100 },
-    { label: "Paid", field: "paid", sort: "asc", width: 100 },
-    {
-      label: "Actions",
-      field: "actions",
-      sort: "asc",
-      width: 150,
-      default: true,
-    },
-  ];
+  const filteredTransactions = transactions.filter((transaction) => {
+    const name = transaction.name || "";
+    return name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
-  const data = transactions.map((transaction) => ({
-    transaction_id: transaction.transaction_id,
-    name: transaction.name,
-    transaction_date: new Date(transaction.transaction_date)
-      .toISOString()
-      .split("T")[0],
-    status: transaction.status,
-    subtotal: new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    }).format(transaction.subtotal),
-    paid: transaction.paid ? "Success" : "No",
-    actions: (
-      <>
-        <Button
-          onClick={() => handleShowDetails(transaction.transaction_id)}
-          size="sm"
-          className="me-2"
-        >
-          View Details
-        </Button>
-        <Button
-          onClick={() => handleViewPayment(transaction.transaction_id)}
-          size="sm"
-          disabled={!transaction.paid} // Disable if not paid
-        >
-          View Payment
-        </Button>
-      </>
-    ),
-  }));
+  const data = {
+    columns: [
+      { label: "#", field: "index", width: 50 },
+      { label: "Name", field: "name", width: 150 },
+      { label: "Date", field: "date", width: 150 },
+      { label: "Status", field: "status", width: 100 },
+      { label: "Subtotal", field: "subtotal", width: 100 },
+      { label: "Paid", field: "paid", width: 50 },
+      { label: "Actions", field: "actions", width: 200 },
+    ],
+    rows: filteredTransactions.map((transaction, index) => ({
+      index: index + 1,
+      name: transaction.name,
+      date: new Date(transaction.transaction_date).toISOString().split("T")[0],
+      status: transaction.status,
+      subtotal: new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
+      }).format(transaction.subtotal),
+      paid: transaction.paid ? "Success" : "No",
+      actions: (
+        <>
+          <Button
+            onClick={() => handleShowDetails(transaction.transaction_id)}
+            size="sm"
+            className="me-2"
+          >
+            View Details
+          </Button>
+          <Button
+            onClick={() => handleViewPayment(transaction.transaction_id)}
+            size="sm"
+            disabled={!transaction.paid}
+          >
+            View Payment
+          </Button>
+        </>
+      ),
+    })),
+  };
 
   return (
     <CDBContainer fluid>
@@ -129,20 +121,25 @@ const AdminTransactions = () => {
         <h2 className="mb-3">
           <strong>Orders</strong>
         </h2>
-        <figcaption className="blockquote-footer mb-5">
-          List <cite title="Source Title">Order</cite>
-        </figcaption>
+
         <CDBCard style={{ borderRadius: "15px" }}>
           <CDBCardBody>
             <CDBDataTable
               striped
               bordered
               hover
-              data={{
-                columns,
-                rows: data,
-              }}
-              noBottomColumns
+              entries={5}
+              data={data}
+              search={
+                <FormControl
+                  type="text"
+                  placeholder="Search by Name"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="mb-3"
+                />
+              }
+              pagination
             />
           </CDBCardBody>
         </CDBCard>
@@ -221,7 +218,7 @@ const AdminTransactions = () => {
                 <strong>Phone:</strong> {selectedPayment[0].no_hp}
               </p>
               <p>
-                <strong>Total Payment:</strong>
+                <strong>Total Payment:</strong>{" "}
                 {new Intl.NumberFormat("id-ID", {
                   style: "currency",
                   currency: "IDR",

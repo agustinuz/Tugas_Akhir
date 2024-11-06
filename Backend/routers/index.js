@@ -41,7 +41,7 @@ import {
 } from "../controllers/Service_Controller.js";
 import {
   addCart,
-  deleteCartUser,
+  deleteCart,
   getCart,
   removeCart,
 } from "../controllers/Cart.js";
@@ -52,12 +52,18 @@ import {
 import {
   countUserTransactions,
   CreateTransaksi,
+  deleteTransaksi,
   GetPayment,
   GetTransactionDetail,
   GetTransactionMaster,
   SubmitPayment,
   UpdateTransaksi,
 } from "../controllers/Transaction.js";
+import {
+  getAppointmentCount,
+  getAppointmentReport,
+  getTransactionReport,
+} from "../controllers/Report.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -109,10 +115,11 @@ router.put("/updateSchedule", updateSchedule);
 router.put("/products/:id", upload.single("file"), updateProduct);
 router.post("/cart", addCart);
 router.get("/cart/:userId", getCart);
-router.delete("/cart/:userId", deleteCartUser);
-router.delete("/cart/:cartId", removeCart);
+router.delete("/cart/:cartId", deleteCart);
+router.delete("/cart/:userId", removeCart);
 router.post("/transaksi", CreateTransaksi);
 router.put("/transaksi/:id", UpdateTransaksi);
+router.delete("/transaksi/:transaction_id", deleteTransaksi);
 router.get("/transaksi/:type", GetTransactionMaster);
 router.get("/transaksi-detail/:transaction_id", GetTransactionDetail);
 router.get("/transaksi-payment/:transaction_id", GetPayment);
@@ -120,4 +127,7 @@ router.post("/transaksi-payment", uploadPayment.single("file"), SubmitPayment);
 router.post("/form-service", ConfirmService);
 router.get("/transaksi/:id", countUserTransactions);
 router.post("/forgot-password", ForgotPassword);
+router.get("/report/transactions", getTransactionReport);
+router.get("/report/appointments", getAppointmentReport);
+router.get("/appointments/count/:id", getAppointmentCount);
 export default router;

@@ -68,6 +68,25 @@ const ProductList = () => {
       });
       return;
     }
+
+    if (qty <= 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Invalid Quantity",
+        text: "Please enter a quantity greater than 0.",
+      });
+      return;
+    }
+
+    if (qty > selectedProduct.stock) {
+      Swal.fire({
+        icon: "warning",
+        title: "Quantity Exceeds Stock",
+        text: "The quantity entered exceeds the available stock.",
+      });
+      return;
+    }
+
     const userData = getUserData();
     console.log(userData);
     try {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Modal, Button } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Modal } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { jwtDecode as jwt_decode } from "jwt-decode";
 import Swal from "sweetalert2";
 
@@ -102,9 +102,9 @@ const Login = ({ show, handleClose }) => {
                         </label>
                       </div>
                       <div className="d-flex align-items-center justify-content-between mt-4 mb-0">
-                        <Link className="small" to="/forgot-password">
+                        {/* <Link className="small" to="/forgot-password">
                           Forgot Password?
-                        </Link>
+                        </Link> */}
                         <button type="submit" className="btn btn-primary">
                           Login
                         </button>
