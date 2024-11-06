@@ -39,9 +39,13 @@ const ShoppingCartModal = () => {
 
   const updateCart = async (productId, newQty) => {
     try {
+      const current_qty = cartItems.filter((x) => x.productId == productId)[0]
+        .qty;
+      Swal.fire("Error", "stock not available.", "error");
       await axios.post("http://localhost:5000/cart", {
         userId: jwt_decode(localStorage.getItem("accessToken")).userId,
         productId,
+        total_qty: parseInt(current_qty) + newQty,
         qty: newQty,
       });
       fetchCart(jwt_decode(localStorage.getItem("accessToken")).userId);
@@ -236,7 +240,11 @@ const ShoppingCartModal = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleOrderNow}>
+          <Button
+            variant="primary"
+            disabled={!cartItems[0]}
+            onClick={() => handleOrderNow(cartItems[0]?.cartId ?? null)}
+          >
             Order Now
           </Button>
         </Modal.Footer>

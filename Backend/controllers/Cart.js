@@ -4,7 +4,7 @@ import Product from "../models/productModel.js";
 import Users from "../models/userModels.js";
 
 export const addCart = async (req, res) => {
-  const { userId, productId, qty } = req.body;
+  const { userId, productId, qty, total_qty } = req.body;
   const checkProduct = await Product.findOne({
     where: { id: productId },
     attributes: ["stock"],
@@ -19,6 +19,12 @@ export const addCart = async (req, res) => {
       .status(404)
       .json({ msg: "Requested quantity exceeds available stock" });
 
+  if (total_qty != undefined && total_qty != null) {
+    if (total_qty > checkProduct.stock)
+      return res
+        .status(404)
+        .json({ msg: "Requested quantity exceeds available stock" });
+  }
   const checkUser = await Users.count({
     where: {
       id: userId,
