@@ -13,7 +13,7 @@ import {
   Form,
 } from "react-bootstrap";
 import { jwtDecode as jwt_decode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const ProfilePage = () => {
@@ -164,25 +164,38 @@ const ProfilePage = () => {
   };
 
   const cancelOrder = async (transaction_id) => {
-    try {
-      const response = await axios.delete(
-        `http://localhost:5000/transaksi/${transaction_id}`
-      );
+    Swal.fire({
+      title: "Apakah Anda ingin menghapus?",
+      text: "Order yang dihapus tidak dapat dikembalikan.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Tidak",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(
+            `http://localhost:5000/transaksi/${transaction_id}`
+          );
 
-      if (response.status === 200) {
-        Swal.fire("Success", "Order item has been canceled.", "success");
+          if (response.status === 200) {
+            Swal.fire("Success", "Order item has been canceled.", "success");
 
-        // Panggil ulang fungsi untuk memperbarui data transaksi setelah penghapusan
-        fetchUserTransactions(
-          jwt_decode(localStorage.getItem("accessToken")).userId
-        );
-      } else {
-        Swal.fire("Error", "Order item not found.", "error");
+            // Panggil ulang fungsi untuk memperbarui data transaksi setelah penghapusan
+            fetchUserTransactions(
+              jwt_decode(localStorage.getItem("accessToken")).userId
+            );
+          } else {
+            Swal.fire("Error", "Order item not found.", "error");
+          }
+        } catch (error) {
+          console.error("Error deleting transaction:", error);
+          Swal.fire("Error", "Failed to delete order item.", "error");
+        }
       }
-    } catch (error) {
-      console.error("Error deleting transaction:", error);
-      Swal.fire("Error", "Failed to delete order item.", "error");
-    }
+    });
   };
 
   const handleLogout = () => {
@@ -321,14 +334,14 @@ const ProfilePage = () => {
                             Payment
                           </Button>
                           <Button
-                            className="btn btn-primary btn-sm text-capitalize mx-3"
-                            variant="primary"
+                            // className="btn btn-primary btn-sm text-capitalize mx-3"
+                            // variant="primary"
                             onClick={() =>
                               cancelOrder(transaction.transaction_id)
                             }
                             disabled={transaction.paid}
                           >
-                            Cancel Order
+                            <i className="fi fi-br-square-x"></i>
                           </Button>
                         </td>
                       </tr>
