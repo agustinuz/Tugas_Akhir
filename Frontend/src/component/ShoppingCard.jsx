@@ -41,7 +41,6 @@ const ShoppingCartModal = () => {
     try {
       const current_qty = cartItems.filter((x) => x.productId == productId)[0]
         .qty;
-      Swal.fire("Error", "stock not available.", "error");
       await axios.post("http://localhost:5000/cart", {
         userId: jwt_decode(localStorage.getItem("accessToken")).userId,
         productId,
@@ -51,6 +50,7 @@ const ShoppingCartModal = () => {
       fetchCart(jwt_decode(localStorage.getItem("accessToken")).userId);
     } catch (error) {
       console.error("Error updating cart:", error);
+      Swal.fire("Error", "stock not available.", "error");
     }
   };
 
@@ -189,9 +189,27 @@ const ShoppingCartModal = () => {
                         <div>
                           <strong>{item.ProductName}</strong>
                         </div>
-                        <div>Price: {Number(item.price).toFixed(0)}</div>
+                        <div>
+                          <strong>
+                            Price:{" "}
+                            {new Intl.NumberFormat("id-ID", {
+                              style: "currency",
+                              currency: "IDR",
+                              minimumFractionDigits: 0,
+                            }).format(item.price)}
+                          </strong>
+                        </div>
+                        {/* <div>Price: {Number(item.price).toFixed(0)}</div> */}
                         <div>Quantity: {Number(item.qty).toFixed(0)}</div>
-                        <div>Total: {Number(item.Total_Harga).toFixed(0)}</div>
+                        <div>
+                          TOTAL:{" "}
+                          {new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(item.Total_Harga)}
+                        </div>
+                        {/* <div>Total: {Number(item.Total_Harga).toFixed(0)}</div> */}
                       </Col>
                       <Col
                         xs={4}
@@ -229,7 +247,16 @@ const ShoppingCartModal = () => {
                   </ListGroup.Item>
                 ))}
               </ListGroup>
-              <h4 className="mt-3">Total Price: {totalHarga}</h4>
+              <h4 className="mt-3">
+                <strong>
+                  Price:{" "}
+                  {new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(totalHarga)}
+                </strong>
+              </h4>
               {error && <p style={{ color: "red" }}>{error}</p>}
             </>
           ) : (

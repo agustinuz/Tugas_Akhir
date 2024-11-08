@@ -335,7 +335,14 @@ const AddProduct = () => {
                 <td>{(currentPage - 1) * entriesPerPage + index + 1}</td>
                 <td>{product.name}</td>
                 <td>{product.kategori_id}</td>
-                <td>{product.price}</td>
+                <td>
+                  {new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(product.price)}
+                </td>
+                {/* <td>{product.price}</td> */}
                 <td>{product.stock}</td>
                 <td>{product.description}</td>
                 <td>

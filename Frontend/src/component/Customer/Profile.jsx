@@ -135,6 +135,15 @@ const ProfilePage = () => {
       Swal.fire("Error", "Please fill all fields and upload a file!", "error");
       return;
     }
+    const phoneRegex = /^0\d{8,14}$/;
+    if (!phoneRegex.test(noHp)) {
+      Swal.fire({
+        title: "Phone Number tidak Valid",
+        text: "Masukan Phone number yang benar.",
+        icon: "warning",
+      });
+      return;
+    }
 
     const formData = new FormData();
     formData.append("transaction_id", selectedTransactionId);
@@ -461,12 +470,18 @@ const ProfilePage = () => {
                 <Form.Group controlId="noHp">
                   <Form.Label>No HP</Form.Label>
                   <Form.Control
-                    type="text"
+                    type="tel"
                     placeholder="Enter your phone number"
                     value={noHp}
-                    onChange={(e) => setNoHp(e.target.value)}
+                    onChange={(e) => {
+                      const input = e.target.value;
+                      // Menghapus karakter non-digit agar hanya angka yang diizinkan
+                      const numericInput = input.replace(/[^0-9]/g, "");
+                      setNoHp(numericInput);
+                    }}
                   />
                 </Form.Group>
+
                 <Form.Group controlId="noRekening">
                   <Form.Label>No Rekening</Form.Label>
                   <Form.Control

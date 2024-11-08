@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import { CDBBtn } from "cdbreact";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const KategoriService = () => {
   const [kategoris, setKategoris] = useState([]);
@@ -43,6 +44,11 @@ const KategoriService = () => {
       fetchKategoris();
       setNewKategori("");
       setShowModal(false);
+      Swal.fire({
+        icon: "success",
+        title: "Kategori Created",
+        text: "Kategori service success created.",
+      });
     } catch (error) {
       console.error("Error creating kategori:", error);
     }
@@ -53,6 +59,11 @@ const KategoriService = () => {
       await axios.delete(`http://localhost:5000/kategoriService/${id}`);
       fetchKategoris();
       setShowDeleteModal(false);
+      Swal.fire({
+        icon: "success",
+        title: "kategori deleted",
+        text: "Your kategori has deleted.",
+      });
     } catch (error) {
       console.error("Error deleting kategori:", error);
     }

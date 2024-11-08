@@ -210,7 +210,15 @@ const ProductList = () => {
               className="img-fluid mb-3"
             />
             <p>
-              <strong>Price: Rp. {selectedProduct.price}</strong>
+              <strong>
+                Price:{" "}
+                {new Intl.NumberFormat("id-ID", {
+                  style: "currency",
+                  currency: "IDR",
+                  minimumFractionDigits: 0,
+                }).format(selectedProduct.price)}
+              </strong>
+              {/* <strong>Price: Rp. {selectedProduct.price}</strong> */}
             </p>
             <p>
               <strong>Description : </strong>

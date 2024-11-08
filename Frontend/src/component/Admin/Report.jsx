@@ -1,123 +1,150 @@
-import React, { useEffect, useState } from "react";
-import { CDBDataTable } from "cdbreact";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  Table,
+  DropdownButton,
+  Dropdown,
+  Button,
+  Spinner,
+} from "react-bootstrap";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const ReportTable = () => {
-  const [filter, setFilter] = useState("Transaksi");
-  const [transactionData, setTransactionData] = useState([]);
-  const [appointmentData, setAppointmentData] = useState([]);
+  const [reportData, setReportData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [reportType, setReportType] = useState(`product`); // Default to 'product'
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch data transaksi dan appointment dari backend
-    const fetchData = async () => {
-      try {
-        const transactionResponse = await axios.get("/api/transactions"); // Endpoint untuk transaksi
-        const appointmentResponse = await axios.get("/api/appointments"); // Endpoint untuk appointment
-        setTransactionData(transactionResponse.data);
-        setAppointmentData(appointmentResponse.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+    fetchReportData(reportType);
+  }, [reportType]);
 
-    fetchData();
-  }, []);
-
-  const handleFilterChange = (event) => {
-    setFilter(event.target.value);
+  const fetchReportData = async (type) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`http://localhost:5000/data/${type}`);
+      setReportData(response.data.data);
+    } catch (err) {
+      setError("Error fetching report data");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Kolom untuk tabel Transaksi
-  const transactionColumns = [
-    { label: "No", field: "no", sort: "asc", width: 50 },
-    { label: "Nama Pemilik", field: "name_owner", sort: "asc", width: 150 },
-    {
-      label: "Tanggal Transaksi",
-      field: "transaction_date",
-      sort: "asc",
-      width: 150,
-    },
-    {
-      label: "Status Pembayaran",
-      field: "status_payment",
-      sort: "asc",
-      width: 150,
-    },
-    { label: "Total Harga", field: "total_price", sort: "asc", width: 100 },
-    { label: "Bukti Pembayaran", field: "payment_proof", width: 100 },
-  ];
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text(
+      `${reportType === "product" ? "Product" : "Service"} Report`,
+      20,
+      10
+    );
 
-  // Kolom untuk tabel Appointment
-  const appointmentColumns = [
-    { label: "No", field: "no", sort: "asc", width: 50 },
-    { label: "Nama Pemilik", field: "name_owner", sort: "asc", width: 150 },
-    { label: "Nama Hewan", field: "name_animal", sort: "asc", width: 150 },
-    { label: "Jenis", field: "jenis", sort: "asc", width: 100 },
-    { label: "Ras", field: "ras", sort: "asc", width: 100 },
-    {
-      label: "Kategori Layanan",
-      field: "kategori_service",
-      sort: "asc",
-      width: 150,
-    },
-    { label: "Status", field: "status_service", sort: "asc", width: 100 },
-  ];
+    const headers =
+      reportType === "product"
+        ? ["Period", "Product Name", "Total Quantity", "Total Price"]
+        : ["Service Category", "Quantity", "Type"];
 
-  // Data rows untuk transaksi
-  const transactionRows = transactionData.map((item, index) => ({
-    no: index + 1,
-    name_owner: item.name_owner,
-    transaction_date: item.transaction_date,
-    status_payment: item.status_payment || "Pending",
-    total_price: `Rp${item.total_price.toLocaleString()}`,
-    payment_proof: item.payment_url ? (
-      <a href={item.payment_url}>Lihat Bukti</a>
-    ) : (
-      "-"
-    ),
-  }));
+    const data = reportData.map((item) =>
+      reportType === "product"
+        ? [item.periode, item.name_product, item.qty_total, item.total_harga]
+        : [item.kategori_service, item.qty, item.jenis]
+    );
 
-  // Data rows untuk appointment
-  const appointmentRows = appointmentData.map((item, index) => ({
-    no: index + 1,
-    name_owner: item.Name_Owner,
-    name_animal: item.Name_Animal,
-    jenis: item.Jenis,
-    ras: item.RAS,
-    kategori_service: item.kategori_service, // Sesuaikan jika membutuhkan nama kategori
-    status_service: item.status,
-  }));
+    doc.autoTable({
+      head: [headers],
+      body: data,
+      startY: 20,
+      theme: "striped",
+    });
 
-  const data = {
-    columns: filter === "Transaksi" ? transactionColumns : appointmentColumns,
-    rows: filter === "Transaksi" ? transactionRows : appointmentRows,
+    doc.save(`${reportType}_report.pdf`);
+  };
+
+  const renderTable = () => {
+    if (loading) {
+      return <Spinner animation="border" role="status" />;
+    }
+    if (error) {
+      return <p>{error}</p>;
+    }
+
+    if (reportType === "product") {
+      return (
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>Product Name</th>
+              <th>Total Quantity</th>
+              <th>Total Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reportData.map((item, index) => (
+              <tr key={index}>
+                <td>{item.periode}</td>
+                <td>{item.name_product}</td>
+                <td>{item.qty_total}</td>
+                <td>
+                  {new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(item.total_harga)}
+                </td>
+                {/* <td>{item.total_harga}</td> */}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      );
+    } else if (reportType === "service") {
+      return (
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Service Category</th>
+              <th>Quantity</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reportData.map((item, index) => (
+              <tr key={index}>
+                <td>{item.kategori_service}</td>
+                <td>{item.qty}</td>
+                <td>{item.jenis}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      );
+    }
   };
 
   return (
     <div>
-      <h2>Laporan</h2>
-      <div style={{ marginBottom: "20px" }}>
-        <label>Pilih Tipe Laporan: </label>
-        <select
-          value={filter}
-          onChange={handleFilterChange}
-          style={{ marginLeft: "10px" }}
-        >
-          <option value="Transaksi">List Transaksi</option>
-          <option value="Appointment">List Appointment</option>
-        </select>
-      </div>
+      <DropdownButton
+        variant="secondary"
+        id="dropdown-basic-button"
+        title={`Report Type: ${reportType}`}
+        onSelect={(eventKey) => setReportType(eventKey)}
+      >
+        <Dropdown.Item eventKey="product">Product Report</Dropdown.Item>
+        <Dropdown.Item eventKey="service">Service Report</Dropdown.Item>
+      </DropdownButton>
 
-      <CDBDataTable
-        striped
-        bordered
-        hover
-        data={data}
-        entriesOptions={[5, 10, 20]}
-        entries={10}
-        pagesAmount={4}
-        pagination
-      />
+      <h3 className="mt-4">
+        {reportType === "product" ? "Product Sales Report" : "Service Report"}
+      </h3>
+
+      <Button variant="primary" className="mb-3" onClick={downloadPDF}>
+        Download PDF
+      </Button>
+
+      {renderTable()}
     </div>
   );
 };

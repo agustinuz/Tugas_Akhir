@@ -13,7 +13,8 @@ const RegisterModal = ({ show, handleClose }) => {
   const navigate = useNavigate();
 
   const validatePassword = (password) => {
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s:]).{1,}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s:]).{8,}$/;
     return passwordRegex.test(password);
   };
 
@@ -21,7 +22,7 @@ const RegisterModal = ({ show, handleClose }) => {
     e.preventDefault();
     if (!validatePassword(password)) {
       setMsg(
-        "Password harus memiliki setidaknya satu huruf besar, satu karakter khusus, dan satu angka."
+        "Password harus memiliki huruf besar, huruf kecil, satu karakter khusus, dan satu angka."
       );
       return;
     }

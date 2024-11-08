@@ -139,8 +139,8 @@ const HomePage = ({ id }) => {
       </div>
 
       <div>
-        <h1>Report Page</h1>
-        <button onClick={downloadTransactionReport} disabled={loadingReport}>
+        {/* <h1>Report Page</h1> */}
+        {/* <button onClick={downloadTransactionReport} disabled={loadingReport}>
           {loadingReport
             ? "Downloading Transaction Report..."
             : "Download Transaction Report"}
@@ -149,7 +149,7 @@ const HomePage = ({ id }) => {
           {loadingReport
             ? "Downloading Appointment Report..."
             : "Download Appointment Report"}
-        </button>
+        </button> */}
       </div>
     </div>
   );

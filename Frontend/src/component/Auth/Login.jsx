@@ -31,7 +31,7 @@ const Login = ({ show, handleClose }) => {
       }).then(() => {
         handleClose();
         if (userRole === "admin") {
-          navigate("/Dashboard/*");
+          navigate("/Dashboard/product");
         } else if (userRole === "customer") {
           navigate("/");
         }
