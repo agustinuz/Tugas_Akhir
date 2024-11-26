@@ -122,48 +122,48 @@ const AppointmentTable = () => {
       </figcaption>
 
       <div className="bg-white rounded p-5 shadow-sm">
-        <Row className="align-items-center">
-          {/* <Button className="mb-2" onClick={() => setShowModal(true)}>
-              Create New Service
-            </Button> */}
+        <Row className="align-items-center mb-4">
+          <Col md={8} className="d-flex">
+            <Form.Label className="mb-0 me-2" style={{ flexShrink: 0 }}>
+              Show entries:
+            </Form.Label>
+            <Form.Control
+              as="select"
+              value={entriesPerPage}
+              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+              style={{ maxWidth: "80px" }} // Membatasi lebar form dropdown
+              // Memindahkan dropdown ke kanan
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </Form.Control>
 
-          <Col md={{ span: 2, offset: 10 }} className="text-md-end">
-            <InputGroup className="mb-2">
-              <Form.Control
-                type="text"
-                placeholder="Search Kategori"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </InputGroup>
+            <Form.Control
+              type="text"
+              placeholder="Search Orders"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="ms-2"
+              style={{ maxWidth: "200px" }} // Membatasi lebar pencarian
+            />
           </Col>
         </Row>
-        <Form.Group controlId="entriesPerPage" className="col-1 mb-2">
-          <Form.Control
-            as="select"
-            value={entriesPerPage}
-            onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-          >
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-          </Form.Control>
-        </Form.Group>
 
         {/* Data Table */}
         <Table striped bordered hover className="mb-0">
           <thead>
             <tr>
-              <th className="fw-bold fs-4">#</th>
-              <th className="fw-bold fs-5">Name Owner</th>
-              <th className="fw-bold fs-5">Animal</th>
-              <th className="fw-bold fs-5">Birthday Animal</th>
-              <th className="fw-bold fs-5">Jenis</th>
-              <th className="fw-bold fs-5">Ras</th>
-              <th className="fw-bold fs-5">Quantity</th>
-              <th className="fw-bold fs-5">Kategori</th>
-              <th className="fw-bold fs-5">Status</th>
-              <th className="fw-bold fs-5">Action</th>
+              <th className="fw-bold fs-6">No.</th>
+              <th className="fw-bold fs-6">Name Owner</th>
+              <th className="fw-bold fs-6">Animal</th>
+              <th className="fw-bold fs-6">Birthday Animal</th>
+              <th className="fw-bold fs-6">Jenis</th>
+              <th className="fw-bold fs-6">Ras</th>
+              <th className="fw-bold fs-6">Quantity</th>
+              <th className="fw-bold fs-6">Kategori</th>
+              <th className="fw-bold fs-6">Status</th>
+              <th className="fw-bold fs-6">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -251,22 +251,18 @@ const AppointmentTable = () => {
           </Modal.Body>
         </Modal>
         {/* Pagination Controls */}
-        <div className="d-flex justify-content-between align-items-center mt-2">
-          <Button
-            disabled={currentPage === 1}
-            onClick={() => handlePagination(currentPage - 1)}
-          >
-            Previous
-          </Button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            disabled={currentPage === totalPages}
-            onClick={() => handlePagination(currentPage + 1)}
-          >
-            Next
-          </Button>
+        {/* Pagination Controls */}
+        <div className="d-flex justify-content-center mt-4">
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <Button
+              key={index}
+              variant="outline-secondary"
+              className={`mx-1 ${currentPage === index + 1 ? "active" : ""}`}
+              onClick={() => handlePagination(index + 1)}
+            >
+              {index + 1}
+            </Button>
+          ))}
         </div>
       </div>
     </Container>

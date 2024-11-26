@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { CDBBtn } from "cdbreact";
 import {
-  CDBCard,
-  CDBCardBody,
-  CDBDataTable,
-  CDBContainer,
-  CDBBtn,
-} from "cdbreact";
-import { Modal, Button, Form } from "react-bootstrap";
+  Button,
+  Modal,
+  Table,
+  Form,
+  InputGroup,
+  Row,
+  Col,
+  Container,
+} from "react-bootstrap";
 import Swal from "sweetalert2";
 
 const User_Table = () => {
@@ -20,6 +23,9 @@ const User_Table = () => {
   const [password, setPassword] = useState("");
   const [confPassword, setConfpassword] = useState("");
   const [msg, setMsg] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [entriesPerPage, setEntriesPerPage] = useState(5);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -108,167 +114,195 @@ const User_Table = () => {
     setSelectedUserId(null);
     setShowDeleteModal(false);
   };
-  // Define the columns for CDBDataTable
-  const columns = [
-    {
-      label: "#",
-      field: "index",
-      sort: "asc",
-      width: 50,
-    },
-    {
-      label: "Name Users",
-      field: "name",
-      sort: "asc",
-      width: 150,
-    },
-    {
-      label: "Email",
-      field: "email",
-      sort: "asc",
-      width: 270,
-    },
-    {
-      label: "Role",
-      field: "role",
-      sort: "asc",
-      width: 100,
-    },
-    {
-      label: "Action",
-      field: "action",
-      width: 150,
-    },
-  ];
 
-  // Format the user data for the DataTable
-  const data = {
-    columns: columns,
-    rows: users.map((user, index) => ({
-      index: index + 1,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      action: (
-        <>
-          <Button
-            className="btn btn-danger btn-sm text-capitalize"
-            onClick={() => handleOpenDeleteModal(user.id)} // Set ID user untuk hapus
-          >
-            Delete
-          </Button>
-        </>
-      ),
-    })),
+  const filteredUsers = users.filter((Users) =>
+    Users.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalEntries = filteredUsers.length;
+  const totalPages = Math.ceil(totalEntries / entriesPerPage);
+
+  const handlePagination = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
+  const displayedUser = filteredUsers.slice(
+    (currentPage - 1) * entriesPerPage,
+    currentPage * entriesPerPage
+  );
+
   return (
-    <CDBContainer fluid>
-      <div className="container-fluid px-4">
-        <h2 className="mb-3">
-          <strong>Users</strong>
-        </h2>
-        <figcaption className="blockquote-footer mb-5">
-          Data <cite title="Source Title">User</cite>
-        </figcaption>
-        <CDBCard style={{ borderRadius: "15px" }}>
-          <CDBCardBody>
+    <Container fluid className="px-4">
+      <h2 className="mb-3">
+        <strong>Users</strong>
+      </h2>
+      <figcaption className="blockquote-footer mb-5">
+        Data <cite title="Source Title">User</cite>
+      </figcaption>
+
+      <div className="bg-white rounded p-5 shadow-sm">
+        <Row className="align-items-center">
+          <Col md={6} className="d-flex gap-3">
             <CDBBtn
+              className="mb-2"
               color="primary"
               size="large"
               circle
-              onClick={handleOpenCreateModal}
+              onClick={() => setShowCreateModal(true)}
             >
               Create New User
             </CDBBtn>
-            <CDBDataTable
-              responsive
-              striped
-              bordered
-              hover
-              data={data}
-              pagination
-              materialSearch={true}
-            />
-          </CDBCardBody>
-        </CDBCard>
+            <Form.Label className="my-auto">Show entries:</Form.Label>
 
-        {/* Modal Create User */}
-        <Modal show={showCreateModal} onHide={handleCloseCreateModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Create New User</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form onSubmit={handleCreateUser}>
-              <Form.Group className="mb-3" controlId="formName">
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </Form.Group>
+            <Form.Control
+              as="select"
+              value={entriesPerPage}
+              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+              className="w-auto ms-2"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </Form.Control>
+          </Col>
 
-              <Form.Group className="mb-3" controlId="formEmail">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="Enter email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </Form.Group>
+          <Col md={{ span: 2, offset: 10 }} className="text-md-end">
+            <InputGroup className="mb-2">
+              <Form.Control
+                type="text"
+                placeholder="Search Kategori"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-auto"
+              />
+            </InputGroup>
+          </Col>
+        </Row>
 
-              <Form.Group className="mb-3" controlId="formPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="formConfPassword">
-                <Form.Label>Confirm Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  placeholder="Confirm Password"
-                  value={confPassword}
-                  onChange={(e) => setConfpassword(e.target.value)}
-                  required
-                />
-              </Form.Group>
-
-              <p className="text-danger">{msg}</p>
-
-              <Button variant="primary" type="submit">
-                Create User
-              </Button>
-            </Form>
-          </Modal.Body>
-        </Modal>
-        {/* Modal Konfirmasi Hapus */}
-        <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Delete User</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>Are you sure you want to delete this user?</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseDeleteModal}>
-              Cancel
+        {/* Data Table */}
+        <Table striped bordered hover responsive className="mb-4">
+          <thead>
+            <tr>
+              <th className="fw-bold fs-6">No.</th>
+              <th className="fw-bold fs-6">Nama</th>
+              <th className="fw-bold fs-6">Email</th>
+              <th className="fw-bold fs-6">Role</th>
+              <th className="fw-bold fs-6">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedUser.map((Users, index) => (
+              <tr key={Users.id}>
+                <td>{(currentPage - 1) * entriesPerPage + index + 1}</td>
+                <td>{Users.name}</td>
+                <td>{Users.email}</td>
+                <td>{Users.role}</td>
+                <td>
+                  <Button
+                    variant="danger"
+                    size="md"
+                    onClick={() => {
+                      setShowDeleteModal(true);
+                      setSelectedUserId(Users.id);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+        {/* Pagination Controls */}
+        <div className="d-flex justify-content-center mt-4">
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <Button
+              key={index}
+              variant="outline-secondary"
+              className={`mx-1 ${currentPage === index + 1 ? "active" : ""}`}
+              onClick={() => handlePagination(index + 1)}
+            >
+              {index + 1}
             </Button>
-            <Button variant="danger" onClick={handleDelete}>
-              Delete
-            </Button>
-          </Modal.Footer>
-        </Modal>
+          ))}
+        </div>
       </div>
-    </CDBContainer>
+
+      {/* Modal Create User */}
+      <Modal show={showCreateModal} onHide={handleCloseCreateModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create New User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleCreateUser}>
+            <Form.Group className="mb-3" controlId="formName">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formEmail">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formConfPassword">
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Confirm Password"
+                value={confPassword}
+                onChange={(e) => setConfpassword(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <p className="text-danger">{msg}</p>
+
+            <Button variant="primary" type="submit">
+              Create User
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+      {/* Modal Konfirmasi Hapus */}
+      <Modal show={showDeleteModal} onHide={handleCloseDeleteModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this user?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseDeleteModal}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </Container>
   );
 };
 

@@ -19,7 +19,7 @@ import HomePage from "./nav";
 import Kategori_Service from "./Kategori_Service";
 import OrderListTable from "./Order_Table";
 import ReportTable from "./Report";
-// import HomePage from "./nav";
+import Swal from "sweetalert2";
 
 const Main_Dashboard = () => {
   const [isLight, setIsLight] = useState(() => localStorage.getItem("light"));
@@ -68,6 +68,17 @@ const Main_Dashboard = () => {
       const name = decodedToken.name; // Mengambil nama pengguna dari token
       setName(name);
     }
+    const decodedToken = jwt_decode(accessToken);
+    const userRole = decodedToken.userRole;
+    if (userRole === "customer")
+      Swal.fire({
+        icon: "warning",
+        title: "Access denied",
+        text: "Your account is Customer. You cannot use this Admin dashboard.",
+        confirmButtonText: "OK",
+      }).then(() => {
+        navigate("/");
+      });
   }, []);
 
   const handleLogout = () => {

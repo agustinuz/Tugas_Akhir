@@ -6,6 +6,9 @@ import {
   Dropdown,
   Button,
   Spinner,
+  Form,
+  Row,
+  Col,
 } from "react-bootstrap";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
@@ -13,8 +16,10 @@ import "jspdf-autotable";
 const ReportTable = () => {
   const [reportData, setReportData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [reportType, setReportType] = useState(`product`); // Default to 'product'
+  const [reportType, setReportType] = useState("product"); // Default to 'product'
   const [error, setError] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
     fetchReportData(reportType);
@@ -23,13 +28,25 @@ const ReportTable = () => {
   const fetchReportData = async (type) => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/data/${type}`);
+      const response = await axios.get(`http://localhost:5000/data/${type}`, {
+        params: { start_date: startDate, end_date: endDate },
+      });
       setReportData(response.data.data);
     } catch (err) {
       setError("Error fetching report data");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFilter = (e) => {
+    e.preventDefault();
+    if (!startDate || !endDate) {
+      setError("Start date and end date are required.");
+      return;
+    }
+    setError(null);
+    fetchReportData("product");
   };
 
   const downloadPDF = () => {
@@ -94,7 +111,6 @@ const ReportTable = () => {
                     minimumFractionDigits: 0,
                   }).format(item.total_harga)}
                 </td>
-                {/* <td>{item.total_harga}</td> */}
               </tr>
             ))}
           </tbody>
@@ -139,6 +155,36 @@ const ReportTable = () => {
       <h3 className="mt-4">
         {reportType === "product" ? "Product Sales Report" : "Service Report"}
       </h3>
+
+      <Form onSubmit={handleFilter} className="mb-4">
+        <Row>
+          <Col md={5}>
+            <Form.Group controlId="startDate">
+              <Form.Label>Start Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={5}>
+            <Form.Group controlId="endDate">
+              <Form.Label>End Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </Form.Group>
+          </Col>
+          <Col md={2} className="d-flex align-items-end">
+            <Button type="submit" variant="primary" block>
+              Filter
+            </Button>
+          </Col>
+        </Row>
+      </Form>
 
       <Button variant="primary" className="mb-3" onClick={downloadPDF}>
         Download PDF

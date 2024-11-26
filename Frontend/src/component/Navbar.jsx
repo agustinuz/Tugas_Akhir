@@ -197,7 +197,7 @@ const Navbar = () => {
                 Your Pet's Happiness is Our Priority
               </h1>
               {/* Tagline */}
-              <figcaption
+              {/* <figcaption
                 className="blockquote-footer mb-5 text-white"
                 style={{
                   textShadow: "1px 1px 3px rgba(0, 0, 0, 0.5)",
@@ -209,7 +209,7 @@ const Navbar = () => {
                     fontWeight: 600,
                   }}
                 ></h5>
-              </figcaption>
+              </figcaption> */}
               {/* Button */}
               <div className="d-flex align-items-center justify-content-center justify-content-lg-start pt-5">
                 <Link

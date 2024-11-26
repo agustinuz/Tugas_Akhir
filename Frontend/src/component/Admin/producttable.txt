@@ -19,7 +19,58 @@
 
 
 
+ const columns = [
+    {
+      label: "No.",
+      field: "index",
+      sort: "asc",
+      width: 50,
+    },
+    {
+      label: "Name Users",
+      field: "name",
+      sort: "asc",
+      width: 150,
+    },
+    {
+      label: "Email",
+      field: "email",
+      sort: "asc",
+      width: 270,
+    },
+    {
+      label: "Role",
+      field: "role",
+      sort: "asc",
+      width: 100,
+    },
+    {
+      label: "Action",
+      field: "action",
+      width: 150,
+    },
+  ];
 
+  // Format the user data for the DataTable
+  const data = {
+    columns: columns,
+    rows: users.map((user, index) => ({
+      index: index + 1,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      action: (
+        <>
+          <Button
+            className="btn btn-danger btn-sm text-capitalize"
+            onClick={() => handleOpenDeleteModal(user.id)} // Set ID user untuk hapus
+          >
+            Delete
+          </Button>
+        </>
+      ),
+    })),
+  };
 
 
 

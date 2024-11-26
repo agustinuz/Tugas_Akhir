@@ -230,15 +230,20 @@ export const deleteTransaksi = async (req, res) => {
   }
 };
 
-export const GetReportTransaction = async (req,res) =>{
+export const GetReportTransaction = async (req, res) => {
   const { type } = req.params;
-  if (type.toLowerCase() != 'product' && type.toLowerCase() != 'service')
-    return res.status(404).json({msg:"Report Type Not Found"});
-  const query = type=='product' ? "select  if(isnull(date_format(m.transaction_date,'%Y-%M')),'No Sales',date_format(m.transaction_date,'%Y-%M')) as periode,p.name as name_product,if(isnull(sum(d.qty)),0,sum(d.qty)) as qty_total,if(isnull(sum(d.qty)),0,sum(d.qty)) * p.price as total_harga from transaction_master m inner join transaction_detail d on m.id=d.transaction_id and m.status='Terkirim' right join product as p on d.product_id=p.id  Group by p.id,date_format(m.transaction_date,'%Y-%M');" :
-  `select ks.nameKategori as kategori_service,if(isnull(sum(fs.quantity)),0,sum(fs.quantity)) as qty ,if(isnull(fs.jenis),'-',fs.jenis) as jenis from form_service fs right join 
+  const { start_date, end_date } = req.query;
+  if (type.toLowerCase() != "product" && type.toLowerCase() != "service")
+    return res.status(404).json({ msg: "Report Type Not Found" });
+  const query =
+    type == "product"
+      ? "select  if(isnull(date_format(m.transaction_date,'%Y-%M-%D')),'No Sales',date_format(m.transaction_date,'%Y-%M-%D')) as periode,p.name as name_product,if(isnull(sum(d.qty)),0,sum(d.qty)) as qty_total,if(isnull(sum(d.qty)),0,sum(d.qty)) * p.price as total_harga from transaction_master m inner join transaction_detail d on m.id=d.transaction_id and m.status='Terkirim' right join product as p on d.product_id=p.id where (m.transaction_date between date_add(?,interval -1 day) and date_add(?,interval 1 day)) or (?='' or ?='')  Group by p.id,date_format(m.transaction_date,'%Y-%M-%D');"
+      : `select ks.nameKategori as kategori_service,if(isnull(sum(fs.quantity)),0,sum(fs.quantity)) as qty ,if(isnull(fs.jenis),'-',fs.jenis) as jenis from form_service fs right join 
   kategori_service ks on fs.kategori_service=ks.id and fs.status='Confirm' Group by ks.id,fs.jenis;`;
-  const report = await db.query(query,{
-    type: QueryTypes.SELECT
+  const report = await db.query(query, {
+    type: QueryTypes.SELECT,
+    replacements:
+      type == "product" ? [start_date, end_date, start_date, end_date] : [],
   });
-  return res.json({data:report});
-}
+  return res.json({ data: report });
+};

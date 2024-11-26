@@ -9,6 +9,7 @@ import {
   Row,
   Col,
   Container,
+  Card,
 } from "react-bootstrap";
 
 const AdminTransactions = () => {
@@ -103,43 +104,44 @@ const AdminTransactions = () => {
         List <cite title="Source Title">Orders</cite>
       </figcaption>
       <div className="bg-white rounded p-5 shadow-sm">
-        <Row className="align-items-center">
-          {/* <Button className="mb-2" onClick={() => setShowModal(true)}>
-              Create New Service
-            </Button> */}
+        <Row className="align-items-center mb-4">
+          <Col md={8} className="d-flex">
+            <Form.Label className="mb-0 me-2" style={{ flexShrink: 0 }}>
+              Show entries:
+            </Form.Label>
+            <Form.Control
+              as="select"
+              value={entriesPerPage}
+              onChange={(e) => setEntriesPerPage(Number(e.target.value))}
+              style={{ maxWidth: "80px" }} // Membatasi lebar form dropdown
+              // Memindahkan dropdown ke kanan
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </Form.Control>
 
-          <Col md={{ span: 2, offset: 10 }} className="text-md-end">
-            <InputGroup className="mb-2">
-              <Form.Control
-                type="text"
-                placeholder="Search Kategori"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </InputGroup>
+            <Form.Control
+              type="text"
+              placeholder="Search Orders"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="ms-2"
+              style={{ maxWidth: "200px" }} // Membatasi lebar pencarian
+            />
           </Col>
         </Row>
-        <Form.Group controlId="entriesPerPage" className="col-1 mb-2">
-          <Form.Control
-            as="select"
-            value={entriesPerPage}
-            onChange={(e) => setEntriesPerPage(Number(e.target.value))}
-          >
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-          </Form.Control>
-        </Form.Group>
+
         <Table striped bordered hover className="mb-0">
           <thead>
             <tr>
-              <th className="fw-bold fs-4">#</th>
-              <th className="fw-bold fs-5">Name</th>
-              <th className="fw-bold fs-5">Date</th>
-              <th className="fw-bold fs-5">Status</th>
-              <th className="fw-bold fs-5">SubTotal</th>
-              <th className="fw-bold fs-5">Paid</th>
-              <th className="fw-bold fs-5">Action</th>
+              <th className="fw-bold fs-6">No.</th>
+              <th className="fw-bold fs-6">Name</th>
+              <th className="fw-bold fs-6">Date</th>
+              <th className="fw-bold fs-6">Status</th>
+              <th className="fw-bold fs-6">SubTotal</th>
+              <th className="fw-bold fs-6">Paid</th>
+              <th className="fw-bold fs-6">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -147,7 +149,6 @@ const AdminTransactions = () => {
               <tr key={transaction.id}>
                 <td>{(currentPage - 1) * entriesPerPage + index + 1}</td>
                 <td>{transaction.name}</td>
-
                 <td>
                   {new Date(transaction.transaction_date).toLocaleDateString(
                     "en-US"
@@ -186,6 +187,20 @@ const AdminTransactions = () => {
             ))}
           </tbody>
         </Table>
+
+        {/* Pagination Controls */}
+        <div className="d-flex justify-content-center mt-4">
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <Button
+              key={index}
+              variant="outline-secondary"
+              className={`mx-1 ${currentPage === index + 1 ? "active" : ""}`}
+              onClick={() => handlePagination(index + 1)}
+            >
+              {index + 1}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Modal for Transaction Details */}
@@ -195,7 +210,7 @@ const AdminTransactions = () => {
         </Modal.Header>
         <Modal.Body>
           {selectedTransaction ? (
-            <table className="table">
+            <Table striped bordered hover>
               <thead>
                 <tr>
                   <th>Product Name</th>
@@ -234,7 +249,7 @@ const AdminTransactions = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </Table>
           ) : (
             <p>No details available</p>
           )}
@@ -253,32 +268,30 @@ const AdminTransactions = () => {
         </Modal.Header>
         <Modal.Body>
           {selectedPayment ? (
-            <div>
-              <p>
-                <strong>Address:</strong> {selectedPayment[0].alamat}
-              </p>
-              <p>
-                <strong>Phone:</strong> {selectedPayment[0].no_hp}
-              </p>
-              <p>
-                <strong>Total Payment:</strong>{" "}
-                {new Intl.NumberFormat("id-ID", {
-                  style: "currency",
-                  currency: "IDR",
-                  minimumFractionDigits: 0,
-                }).format(selectedPayment[0].totalPembayaran)}
-              </p>
-              <p>
-                <strong>Payment Proof:</strong>
-              </p>
-              <img
-                src={selectedPayment[0].url}
-                alt="Payment Proof"
-                width="200"
-              />
-            </div>
+            <Card>
+              <Card.Body>
+                <Card.Title>Payment Information</Card.Title>
+                <Card.Text>
+                  <strong>Address:</strong> {selectedPayment[0].alamat}
+                </Card.Text>
+                <Card.Text>
+                  <strong>Phone:</strong> {selectedPayment[0].no_hp}
+                </Card.Text>
+                <Card.Text>
+                  <strong>Total Payment:</strong>{" "}
+                  {new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(selectedPayment[0].total)}
+                </Card.Text>
+                <Button variant="primary" onClick={handleConfirmPayment}>
+                  Confirm Payment
+                </Button>
+              </Card.Body>
+            </Card>
           ) : (
-            <p>No payment details available</p>
+            <p>No payment information available</p>
           )}
         </Modal.Body>
         <Modal.Footer>
@@ -288,30 +301,8 @@ const AdminTransactions = () => {
           >
             Close
           </Button>
-          <Button variant="primary" onClick={handleConfirmPayment}>
-            Confirm
-          </Button>
         </Modal.Footer>
       </Modal>
-      {message && <p>{message}</p>}
-      {/* Pagination Controls */}
-      <div className="d-flex justify-content-between align-items-center mt-2">
-        <Button
-          disabled={currentPage === 1}
-          onClick={() => handlePagination(currentPage - 1)}
-        >
-          Previous
-        </Button>
-        <span>
-          Page {currentPage} of {totalPages}
-        </span>
-        <Button
-          disabled={currentPage === totalPages}
-          onClick={() => handlePagination(currentPage + 1)}
-        >
-          Next
-        </Button>
-      </div>
     </Container>
   );
 };
