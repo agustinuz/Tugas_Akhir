@@ -5,6 +5,7 @@ import {
   Login,
   DeleteUser,
   ForgotPassword,
+  ResetPassword,
 } from "../controllers/User.js";
 import multer from "multer";
 import path from "path";
@@ -132,4 +133,5 @@ router.get("/report/transactions", getTransactionReport);
 router.get("/report/appointments", getAppointmentReport);
 router.get("/appointments/count/:id", getAppointmentCount);
 router.get('/data/:type',GetReportTransaction);
+router.get('/reset-password/:token',ResetPassword);
 export default router;

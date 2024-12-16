@@ -123,14 +123,14 @@ export const ForgotPassword = async (req, res) => {
     );
 
     // Create a reset link (you should replace 'yourfrontendurl.com' with your actual frontend URL)
-    const resetLink = `http://yourfrontendurl.com/reset-password?token=${token}`;
+    const resetLink = `http://${process.env.HOSTNAME}/reset-password/${token}`;
 
     // Setup email transport
     const transporter = nodemailer.createTransport({
       service: "gmail", // Replace with your email service provider
       auth: {
-        user: process.env.EMAIL_USER, // Your email
-        pass: process.env.EMAIL_PASS, // Your email password
+        user: process.env.EMAIL_FROM, // Your email
+        pass: process.env.EMAIL_PASSWORD, // Your email password
       },
     });
 
@@ -149,3 +149,15 @@ export const ForgotPassword = async (req, res) => {
     res.status(500).json({ msg: "Internal Server Error" });
   }
 };
+export const ResetPassword = async (req,res)=>{
+  try
+  {
+    const {token} = req.params;
+    const jwtdata = jwt.verify(token,process.env.RESET_TOKEN_SECRET);
+    return res.json(jwtdata);
+  }
+  catch (err)
+  {
+    return res.redirect('/');
+  } 
+}
