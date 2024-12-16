@@ -306,7 +306,7 @@ const AddProduct = () => {
             <InputGroup className="mb-2">
               <Form.Control
                 type="text"
-                placeholder="Search Kategori"
+                placeholder="Search Product Name"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-auto"

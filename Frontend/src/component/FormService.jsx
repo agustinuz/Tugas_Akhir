@@ -157,7 +157,7 @@ const CreateServiceModal = ({ show, handleClose }) => {
             <Form.Label>Jumlah</Form.Label>
             <Form.Control
               type="number"
-              placeholder="Masukkan Jumlah"
+              placeholder="Masukkan Jumlah Hewan"
               name="Quantity"
               value={formData.Quantity}
               onChange={handleChange}
