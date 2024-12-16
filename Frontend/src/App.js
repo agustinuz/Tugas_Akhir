@@ -11,13 +11,12 @@ import Main_Dashboard from "./component/Admin/Dashboard";
 import Dashboard_2 from "./component/Customer/Dashboard2";
 import ProfilePage from "./component/Customer/Profile";
 import ForgotPassword from "./component/Auth/forgotPassword";
-import 'datatables.net-dt/css/dataTables.dataTables.min.css';
-import 'datatables.net-select-dt';
-import 'datatables.net-responsive-dt';
+import "datatables.net-dt/css/dataTables.dataTables.min.css";
+import "datatables.net-select-dt";
+import "datatables.net-responsive-dt";
 // import UserProfile from "./component/ShoppingCard";
 // import ProductList from "./component/ShowProduct";
 // import ProductList2 from "./component/Product_List";
-
 
 function App() {
   return (
