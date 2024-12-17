@@ -116,14 +116,14 @@ export const ForgotPassword = async (req, res) => {
     }
 
     // Generate a password reset token
-    const token = jwt.sign(
-      { email: user.email },
-      process.env.RESET_TOKEN_SECRET,
-      { expiresIn: "1h" }
-    );
+    // const token = jwt.sign(
+    //   { email: user.email },
+    //   process.env.RESET_TOKEN_SECRET,
+    //   { expiresIn: "1h" }
+    // );
 
     // Create a reset link (you should replace 'yourfrontendurl.com' with your actual frontend URL)
-    const resetLink = `http://${process.env.HOSTNAME}/reset-password/${token}`;
+//    const resetLink = `http://${process.env.HOSTNAME}/reset-password/${token}`;
 
     // Setup email transport
     const transporter = nodemailer.createTransport({
@@ -133,13 +133,18 @@ export const ForgotPassword = async (req, res) => {
         pass: process.env.EMAIL_PASSWORD, // Your email password
       },
     });
-
+    const newPassword = makeRandomPassword(12);
+    const message = `Your have been resetted, here is the new password: ${newPassword}`;
+    const salt = await bcrypt.genSalt();
+    const hashPasswordNew = await bcrypt.hash(newPassword, salt);
+    user.setDataValue('password',hashPasswordNew);
+    user.save();
     // Send email
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Reset Password",
-      text: `Click this link to reset your password: ${resetLink}`,
+      text: message,
     };
 
     await transporter.sendMail(mailOptions);
@@ -152,12 +157,35 @@ export const ForgotPassword = async (req, res) => {
 export const ResetPassword = async (req,res)=>{
   try
   {
-    const {token} = req.params;
-    const jwtdata = jwt.verify(token,process.env.RESET_TOKEN_SECRET);
-    return res.json(jwtdata);
+    const {id} = req.params;
+    const {newPassword,oldPassword} = req.body;
+    const user = await Users.findOne({where:{id:id}});
+    if (!user) {
+      return res.status(404).json({ msg: "User tidak ditemukan" });
+    }
+    const isValid = bcrypt.compare(oldPassword,user.password);
+    if (!isValid)
+        return res.status(401).json({ msg: "Password Invalid" });
+        const salt = await bcrypt.genSalt();
+    const hashPasswordNew = await bcrypt.hash(newPassword, salt);
+    user.setDataValue('password',hashPasswordNew);
+    user.save();
+    return res.status(200).json({msg:"User Password berhasil diupdate"});
   }
   catch (err)
   {
     return res.redirect('/');
   } 
+}
+
+const makeRandomPassword = (length) => {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
 }

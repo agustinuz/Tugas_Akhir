@@ -133,5 +133,5 @@ router.get("/report/transactions", getTransactionReport);
 router.get("/report/appointments", getAppointmentReport);
 router.get("/appointments/count/:id", getAppointmentCount);
 router.get('/data/:type',GetReportTransaction);
-router.get('/reset-password/:token',ResetPassword);
+router.put('/change-password/:id',ResetPassword);
 export default router;
